@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Letters lesson icon" shape-rendering="crispEdges">
+  <rect x="10" y="18" width="20" height="30" rx="3" fill="#f7f1d5"/>
+  <rect x="34" y="18" width="20" height="30" rx="3" fill="#e5eef7"/>
+  <rect x="30" y="18" width="4" height="32" fill="#9c6644"/>
+  <rect x="14" y="24" width="12" height="3" fill="#4d908e"/>
+  <rect x="14" y="31" width="10" height="3" fill="#4d908e"/>
+  <rect x="38" y="24" width="12" height="3" fill="#6d5dd3"/>
+  <rect x="38" y="31" width="9" height="3" fill="#6d5dd3"/>
+  <path d="M43 11h9l-4 18h-5z" fill="#f6c85f"/>
+  <rect x="45" y="28" width="4" height="18" fill="#2f1f2f"/>
+</svg>

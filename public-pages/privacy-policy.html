@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Privacy Policy | Star Apprentice</title>
+    <meta name="description" content="Privacy policy candidate for Star Apprentice." />
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #202124;
+        --muted: #5f6368;
+        --line: #d9dce3;
+        --paper: #ffffff;
+        --soft: #f4f6fb;
+        --brand: #6D5DD3;
+        --accent: #157a6e;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        letter-spacing: 0;
+        line-height: 1.6;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .topbar {
+        border-bottom: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.94);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .topbar-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 14px 20px;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .brand img {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+      }
+
+      nav {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      nav a {
+        border-radius: 8px;
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 700;
+        padding: 8px 10px;
+        text-decoration: none;
+      }
+
+      nav a[aria-current="page"] {
+        background: var(--soft);
+        color: var(--ink);
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+        gap: 32px;
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 32px 20px 22px;
+        align-items: center;
+      }
+
+      .hero-media {
+        background: #f1f3f8;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      .hero-media img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      .hero-copy h1,
+      .content h1 {
+        margin: 6px 0 12px;
+        font-size: 64px;
+        line-height: 1.02;
+      }
+
+      .hero-copy p,
+      .content p {
+        color: var(--muted);
+        margin: 0 0 14px;
+      }
+
+      .eyebrow {
+        color: var(--accent) !important;
+        font-size: 13px;
+        font-weight: 800;
+        margin: 0 0 6px !important;
+        text-transform: uppercase;
+      }
+
+      .store-line {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 18px;
+      }
+
+      .store-line span {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: var(--ink);
+        font-size: 13px;
+        font-weight: 700;
+        padding: 6px 9px;
+      }
+
+      .content {
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 12px 20px 56px;
+      }
+
+      .content.narrow {
+        max-width: 780px;
+        padding-top: 40px;
+      }
+
+      .section {
+        border-top: 1px solid var(--line);
+        padding: 24px 0;
+      }
+
+      .section h2 {
+        font-size: 22px;
+        line-height: 1.2;
+        margin: 0 0 10px;
+      }
+
+      .section h3 {
+        font-size: 16px;
+        margin: 18px 0 6px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .grid article {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+      }
+
+      .footer {
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 13px;
+        padding: 20px;
+        text-align: center;
+      }
+
+      @media (max-width: 760px) {
+        .topbar-inner {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        nav {
+          flex-wrap: wrap;
+        }
+
+        .hero {
+          grid-template-columns: 1fr;
+          padding-top: 22px;
+        }
+
+        .hero-copy h1,
+        .content h1 {
+          font-size: 38px;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="brand" href="./index.html">
+          <img src="./assets/icon-512.png" alt="" />
+          <span>Star Apprentice</span>
+        </a>
+        <nav aria-label="Public release pages">
+          <a href="./index.html">Home</a><a href="./privacy-policy.html" aria-current="page">Privacy</a><a href="./support.html">Support</a>
+        </nav>
+      </div>
+    </header>
+    
+      <main class="content narrow">
+        <section class="section">
+          <p class="eyebrow">Last updated 2026-06-18</p>
+          <h1>Privacy Policy</h1>
+          <p><strong>별빛 견습생 / Star Apprentice</strong> is a bundled mobile game. The first release is designed to run without account login, server save, payment, production ads, analytics, or tracking SDKs.</p>
+        </section>
+
+        <section class="section">
+          <h2>Data We Collect</h2>
+          <p>We do not collect, share, sell, or transmit user data in the first release boundary represented by this repository.</p>
+          <p>Game progress and ending collection data are saved locally on your device only. They are not sent to a Seorilabs server.</p>
+        </section>
+
+        <section class="section">
+          <h2>Local Storage</h2>
+          <p>The app uses local device storage to keep one progress slot and the ending collection. Removing the app or clearing app data may delete this local progress.</p>
+        </section>
+
+        <section class="section">
+          <h2>Accounts, Payments, Ads, Analytics</h2>
+          <p>This release has no account system, no in-app purchase, no billing SDK, no production ad SDK, no Firebase SDK, no analytics SDK, and no third-party tracking SDK.</p>
+        </section>
+
+        <section class="section">
+          <h2>Permissions And Network</h2>
+          <p>The Android shell may include the standard WebView internet permission from Capacitor, but the shipped app bundle does not configure a remote app URL and the game source does not use network APIs in this MVP boundary.</p>
+        </section>
+
+        <section class="section">
+          <h2>Contact</h2>
+          <p>For support, contact <a href="mailto:cs@seorilabs.com">cs@seorilabs.com</a>. Before store submission, replace the unresolved store config fields with the hosted privacy policy and support URLs.</p>
+        </section>
+      </main>
+    
+    <footer class="footer">
+      별빛 견습생 / Star Apprentice · Static release page candidate · Last updated 2026-06-18
+    </footer>
+  </body>
+</html>

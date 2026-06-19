@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "appName": "starlit-apprentice",
+  "status": "pending",
+  "lastUpdated": "2026-06-18",
+  "releaseCandidateRequiresApproval": true,
+  "scope": {
+    "version": "0.1.0",
+    "targets": ["AppsInToss", "Google Play", "App Store"],
+    "requiresManualQaPassed": true,
+    "requiresConsoleEvidencePassed": true,
+    "requiresNoUnresolvedStoreFields": true
+  },
+  "decision": {
+    "approvedAt": "확정 필요",
+    "approver": "확정 필요",
+    "manualQaBuildId": "확정 필요",
+    "targetsApproved": [],
+    "decision": "확정 필요",
+    "releaseAction": "확정 필요",
+    "attachments": {
+      "screenshots": [],
+      "recordings": [],
+      "consoleReferences": []
+    },
+    "notes": "확정 필요"
+  }
+}

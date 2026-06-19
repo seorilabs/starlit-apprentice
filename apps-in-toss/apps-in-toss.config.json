@@ -1,0 +1,48 @@
+{
+  "appName": "starlit-apprentice",
+  "appType": "game",
+  "entryRoute": "/",
+  "featureRegistration": {
+    "status": "game-optional",
+    "reason": "AppsInToss docs require at least one app feature for non-game apps; this app is classified as a game.",
+    "candidateFeature": {
+      "ko": "육성하기",
+      "en": "Raise",
+      "path": "/",
+      "url": "intoss://starlit-apprentice/"
+    }
+  },
+  "build": {
+    "viteDistSource": "apps/starlit-apprentice/dist",
+    "source": "apps-in-toss/build/webview-dist",
+    "candidateArchive": "apps-in-toss/build/starlit-apprentice-webview-candidate.zip",
+    "uploadableAit": "apps-in-toss/build/starlit-apprentice.ait",
+    "unpackedSizeLimitBytes": 104857600,
+    "isUploadableAit": true,
+    "uploadableAitStatus": "local-ait-built-pending-console-upload"
+  },
+  "assets": {
+    "logo": "apps/starlit-apprentice/public/starlit-apprentice-icon-600.png",
+    "thumbnail": "apps/starlit-apprentice/public/starlit-apprentice-thumbnail-1932x828.png",
+    "screenshots": [
+      "apps/starlit-apprentice/public/screenshots/starlit-apprentice-start-636x1048.png",
+      "apps/starlit-apprentice/public/screenshots/starlit-apprentice-main-636x1048.png",
+      "apps/starlit-apprentice/public/screenshots/starlit-apprentice-result-636x1048.png"
+    ]
+  },
+  "manualEvidence": {
+    "consoleGameCategoryAndExposure": "확정 필요",
+    "gameRatingEvidence": "확정 필요",
+    "aitBundleUpload": "확정 필요",
+    "qrTossAppTest": "확정 필요",
+    "deploymentApproval": "확정 필요"
+  },
+  "sourceUrls": {
+    "consoleRegistration": "https://developers-apps-in-toss.toss.im/prepare/console-workspace.md",
+    "deploy": "https://developers-apps-in-toss.toss.im/development/deploy.md",
+    "tossTest": "https://developers-apps-in-toss.toss.im/development/test/toss.md",
+    "appFeature": "https://developers-apps-in-toss.toss.im/development/test/function.md",
+    "webViewProps": "https://developers-apps-in-toss.toss.im/bedrock/reference/framework/속성",
+    "externalLinkPolicy": "https://developers-apps-in-toss.toss.im/checklist/miniapp-external-link.md"
+  }
+}

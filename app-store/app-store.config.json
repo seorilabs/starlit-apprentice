@@ -1,0 +1,92 @@
+{
+  "bundleId": "com.seorilabs.starlitapprentice",
+  "sku": "확정 필요",
+  "primaryLocale": "ko-KR",
+  "platform": "ios",
+  "pricing": "free",
+  "deviceFamilies": ["iphone", "ipad"],
+  "category": {
+    "primary": "Games",
+    "primarySubcategory": "Simulation",
+    "secondarySubcategory": "Role Playing"
+  },
+  "contact": {
+    "firstName": "확정 필요",
+    "lastName": "확정 필요",
+    "email": "cs@seorilabs.com",
+    "phone": "확정 필요"
+  },
+  "privacyPolicyUrl": "확정 필요",
+  "supportUrl": "확정 필요",
+  "marketingUrl": "확정 필요",
+  "storeListing": {
+    "appName": {
+      "ko-KR": "별빛 견습생",
+      "en-US": "Star Apprentice"
+    },
+    "subtitle": {
+      "ko-KR": "픽셀 육성 시뮬",
+      "en-US": "Pixel life sim"
+    },
+    "promotionalText": {
+      "ko-KR": "한 달 4주 일정을 정하고 견습생의 미래를 만들어 보세요.",
+      "en-US": "Plan each month and guide an apprentice toward one of many futures."
+    },
+    "description": {
+      "ko-KR": "별빛 견습생은 한 달 4주 일정을 정해 견습생의 능력과 미래를 만들어 가는 픽셀 육성 시뮬레이션 게임입니다.\n\n공부, 일, 휴식, 외출을 조합해 12개월을 보내고, 선택의 누적 결과에 따라 서로 다른 엔딩을 확인합니다. 모든 진행은 기기 안에 저장되며, 초기 버전에는 로그인, 결제, 서버 저장, 광고 SDK가 포함되지 않습니다.\n\n주요 특징\n- 월마다 4주 일정을 선택하는 간결한 육성 루프\n- 지성, 감성, 예법, 기술, 체력, 평판 등 14가지 능력과 골드, 기력, 스트레스 자원 변화\n- 성장 방향에 따라 달라지는 30가지 엔딩\n- 짧은 세션으로 진행할 수 있는 모바일 중심 UI\n- 오프라인에서도 유지되는 로컬 저장 기반 진행",
+      "en-US": "Star Apprentice is a pixel life simulation game where you choose four weekly activities each month and guide an apprentice toward a future.\n\nBalance study, work, rest, and outings across 12 months. Your accumulated choices change the apprentice's 14 growth stats and resources, then lead to different endings. The first version stores progress on the device and does not include login, payments, server saves, or production ad SDKs.\n\nFeatures\n- A compact monthly planning loop with four weekly choices\n- Changes across 14 growth stats plus gold, energy, and stress resources\n- 30 endings shaped by long-term growth choices\n- Mobile-first screens designed for short play sessions\n- Local save progress that remains available offline"
+    },
+    "keywords": {
+      "ko-KR": "육성,시뮬레이션,픽셀,엔딩,캐주얼,선택",
+      "en-US": "life sim,pixel,simulation,endings,casual,choice"
+    },
+    "whatsNew": {
+      "ko-KR": "초기 출시 후보입니다. 12개월 육성 루프와 30가지 엔딩을 포함합니다.",
+      "en-US": "Initial release candidate with a 12-month growth loop and 30 endings."
+    }
+  },
+  "assets": {
+    "appIcon": "app-store/assets/starlit-apprentice-store-icon-1024.png",
+    "iphone69Screenshots": [
+      "app-store/screenshots/iphone-6-9/starlit-apprentice-start-1290x2796.png",
+      "app-store/screenshots/iphone-6-9/starlit-apprentice-main-1290x2796.png",
+      "app-store/screenshots/iphone-6-9/starlit-apprentice-schedule-1290x2796.png",
+      "app-store/screenshots/iphone-6-9/starlit-apprentice-result-1290x2796.png"
+    ],
+    "ipad13Screenshots": [
+      "app-store/screenshots/ipad-13/starlit-apprentice-start-2048x2732.png",
+      "app-store/screenshots/ipad-13/starlit-apprentice-main-2048x2732.png",
+      "app-store/screenshots/ipad-13/starlit-apprentice-schedule-2048x2732.png",
+      "app-store/screenshots/ipad-13/starlit-apprentice-result-2048x2732.png"
+    ]
+  },
+  "reviewDeclarations": {
+    "ageRating": "확정 필요 - App Store Connect 연령 등급 설문 입력 필요",
+    "privacyNutritionLabels": {
+      "status": "repo-evidence-prepared",
+      "appPrivacyLabel": "Data Not Collected",
+      "dataCollected": "none",
+      "tracking": "no",
+      "thirdPartyPartnerCollection": "none",
+      "evidence": "docs/privacy-and-data-safety.md",
+      "consoleStatus": "pending-app-store-connect-submission"
+    },
+    "exportCompliance": {
+      "status": "repo-evidence-prepared",
+      "usesNonExemptEncryption": false,
+      "infoPlistKey": "ITSAppUsesNonExemptEncryption=false",
+      "evidence": "docs/app-store-release.md",
+      "consoleStatus": "pending-app-store-connect-confirmation"
+    },
+    "contentRights": "owns-or-has-rights",
+    "advertisingIdentifier": "no"
+  },
+  "reviewNotes": {
+    "position": "Bundled Capacitor game. It is not a remote website wrapper and does not download executable game code after review.",
+    "flow": ["Launch app", "Tap 새로 시작", "Select four weekly actions", "Advance through 12 months", "Confirm ending card and collection"]
+  },
+  "sourceUrls": {
+    "screenshots": "https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/",
+    "productPage": "https://developer.apple.com/app-store/product-page/"
+  }
+}

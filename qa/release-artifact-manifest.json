@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 1,
+  "appName": "starlit-apprentice",
+  "packageName": "starlit-apprentice",
+  "appPackageName": "@starlit-apprentice/app",
+  "version": "0.1.0",
+  "artifacts": {
+    "webDist": {
+      "kind": "directory",
+      "path": "apps/starlit-apprentice/dist",
+      "fileCount": 3,
+      "totalBytes": 153945,
+      "sha256": "cb181a5a20f5ef598df2f9441d2128bd16aa50e56370c0339058271bd7adb583",
+      "files": [
+        {
+          "path": "assets/index-DMaAckPO.css",
+          "sizeBytes": 17887,
+          "sha256": "2dea1c84198e90efa05f3e0ef8dca30128e11354289680aa82a597b36e08f32d"
+        },
+        {
+          "path": "assets/index-gWOe40CV.js",
+          "sizeBytes": 134995,
+          "sha256": "a9170fa66db8514b34266e35763e14a476b3591e6523ca6be725293bcbc73259"
+        },
+        {
+          "path": "index.html",
+          "sizeBytes": 1063,
+          "sha256": "5ee028116ef79f1619df8f801bd28cc2f83f94474f883b6b3635590eee75101f"
+        }
+      ]
+    },
+    "androidQaApk": {
+      "kind": "file",
+      "path": "apps/starlit-apprentice/android/app/build/outputs/apk/debug/app-debug.apk",
+      "sizeBytes": 4413105,
+      "sha256": "4d6f56e0d303c10bc391daf458478f356afbd25548419c08d68a8f29125672ce"
+    },
+    "androidAab": {
+      "kind": "file",
+      "path": "apps/starlit-apprentice/android/app/build/outputs/bundle/release/app-release.aab",
+      "sizeBytes": 3103304,
+      "sha256": "607cae595c19ba0254aac04e3f190e2be5c2cfe1fbc52f1d39be51155ebbdd2e"
+    },
+    "iosApp": {
+      "kind": "directory",
+      "path": "apps/starlit-apprentice/ios/DerivedData/AppRelease/Build/Products/Release-iphoneos/App.app",
+      "fileCount": 26,
+      "totalBytes": 2328813,
+      "sha256": "8220090b068b70b26d5e66750a0f9be8b86f86cfbf7613188dc50d5f765cb5f1",
+      "files": [
+        {
+          "path": "App",
+          "sizeBytes": 101376,
+          "sha256": "0e094cf8e0b0db86566ce46ea8e6010de7ba03423d8f3ac8a5ecd6f3320a5044"
+        },
+        {
+          "path": "AppIcon60x60@2x.png",
+          "sizeBytes": 5293,
+          "sha256": "c3570191dcec9ea8665dbc70f95c29d68bbe644cb4669b235e8cd86f9dea73a6"
+        },
+        {
+          "path": "AppIcon76x76@2x~ipad.png",
+          "sizeBytes": 6273,
+          "sha256": "c605c61af2f92b290577923ca3a9d4900f08bdbc1debbf2e35ad28247b002d73"
+        },
+        {
+          "path": "Assets.car",
+          "sizeBytes": 397336,
+          "sha256": "376b76bd4dc283f3bc96a86def29c5eb06219451b372cdc9e61c7533af72e2b2"
+        },
+        {
+          "path": "Base.lproj/LaunchScreen.storyboardc/01J-lp-oVM-view-snD-IY-ifK.nib",
+          "sizeBytes": 1278,
+          "sha256": "ab27030fc1dd3f62c41ee7337145789d77d2d5b5c5e619b718bbfd3b78b1622a"
+        },
+        {
+          "path": "Base.lproj/LaunchScreen.storyboardc/Info.plist",
+          "sizeBytes": 258,
+          "sha256": "1f255d5cc53b531e3f29a9406a8df49a958e2bf9443d3e20bd8374f707f7d5c8"
+        },
+        {
+          "path": "Base.lproj/LaunchScreen.storyboardc/UIViewController-01J-lp-oVM.nib",
+          "sizeBytes": 924,
+          "sha256": "10bfccdee8aafcd0569b0a1dab6112e70b8afb0dac03fb910823e5097a880051"
+        },
+        {
+          "path": "Base.lproj/Main.storyboardc/Info.plist",
+          "sizeBytes": 258,
+          "sha256": "3e9bdaa408d1eb6ae5e989b813a8644e0a4a981202c536905de52a7291e69aa4"
+        },
+        {
+          "path": "Base.lproj/Main.storyboardc/UIViewController-BYZ-38-t0r.nib",
+          "sizeBytes": 858,
+          "sha256": "f9d413195ae089725549257dcf3d11af9e6c426a129fc0376b77ba9337a00312"
+        },
+        {
+          "path": "Frameworks/Capacitor.framework/Capacitor",
+          "sizeBytes": 1474800,
+          "sha256": "bc2fa9b730117aa7da0e92cfa6a6e93dd2c5b24263fd1dbb741ce5c440b7de37"
+        },
+        {
+          "path": "Frameworks/Capacitor.framework/Info.plist",
+          "sizeBytes": 786,
+          "sha256": "4137d0b13c341456da2dc6a1fa76e5e102cfa938b3cd0905cae58704ac5f89d1"
+        },
+        {
+          "path": "Frameworks/Capacitor.framework/PrivacyInfo.xcprivacy",
+          "sizeBytes": 373,
+          "sha256": "1bac827f49b2b8a5358491b9698203bf191791a6f1ba3a3ace3b1285d52d2d17"
+        },
+        {
+          "path": "Frameworks/Capacitor.framework/native-bridge.js",
+          "sizeBytes": 53102,
+          "sha256": "48b589d954751db7ebad3f5ef6983b523f96bab4c2db0b0f85b8a311b0123a5e"
+        },
+        {
+          "path": "Frameworks/Cordova.framework/Cordova",
+          "sizeBytes": 128888,
+          "sha256": "3f68871c6fc8a3a2fd975c53a2f177582026de4578ce799f136e5cbd75fe8a1c"
+        },
+        {
+          "path": "Frameworks/Cordova.framework/Info.plist",
+          "sizeBytes": 782,
+          "sha256": "64eda18d3b4345c96b308e14a18a3f8171367840374a70031afca7c93b74daab"
+        },
+        {
+          "path": "Frameworks/Cordova.framework/PrivacyInfo.xcprivacy",
+          "sizeBytes": 373,
+          "sha256": "5a9b8fc0cddb10201bb47cc2804b3f004c7251476622d25bfc4eb54ed46e1084"
+        },
+        {
+          "path": "Info.plist",
+          "sizeBytes": 1383,
+          "sha256": "4f42489772fae0bddcbc9529efff796e492d345a4738f8a794bfc36fc7070459"
+        },
+        {
+          "path": "PkgInfo",
+          "sizeBytes": 8,
+          "sha256": "82502191c9484b04d685374f9879a0066069c49b8acae7a04b01d38d07e8eca0"
+        },
+        {
+          "path": "PrivacyInfo.xcprivacy",
+          "sizeBytes": 167,
+          "sha256": "162ca095029713027dcdfcbd1834a8a534e55541e7f39a64ec900a29dd9a363d"
+        },
+        {
+          "path": "capacitor.config.json",
+          "sizeBytes": 167,
+          "sha256": "bcb2e2b20972a6e8641f11d9325c20496938f3633f92bd4f3c04fb34eb6a785a"
+        },
+        {
+          "path": "config.xml",
+          "sizeBytes": 185,
+          "sha256": "e9dcda493e663c5c4db9e3cb3bd968477a6e90aa8840bcbba40d72ed54b767ce"
+        },
+        {
+          "path": "public/assets/index-DMaAckPO.css",
+          "sizeBytes": 17887,
+          "sha256": "2dea1c84198e90efa05f3e0ef8dca30128e11354289680aa82a597b36e08f32d"
+        },
+        {
+          "path": "public/assets/index-gWOe40CV.js",
+          "sizeBytes": 134995,
+          "sha256": "a9170fa66db8514b34266e35763e14a476b3591e6523ca6be725293bcbc73259"
+        },
+        {
+          "path": "public/cordova.js",
+          "sizeBytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "public/cordova_plugins.js",
+          "sizeBytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "public/index.html",
+          "sizeBytes": 1063,
+          "sha256": "5ee028116ef79f1619df8f801bd28cc2f83f94474f883b6b3635590eee75101f"
+        }
+      ]
+    },
+    "appsInTossCandidate": {
+      "kind": "file",
+      "path": "apps-in-toss/build/starlit-apprentice-webview-candidate.zip",
+      "sizeBytes": 40164,
+      "sha256": "0e043fe9a11ee28bc0f78f4e253f2af9b9a129e2bf20347f286819e7b89fc9c9"
+    },
+    "appsInTossAit": {
+      "kind": "file",
+      "path": "apps-in-toss/build/starlit-apprentice.ait",
+      "sizeBytes": 3718871,
+      "sha256": "c1433d482ce9c92bacb4cdc71d4b173913d7bd8cc16d25b8f35bc1cc9e7957d9"
+    }
+  },
+  "verificationCommands": [
+    "pnpm check:release-packages",
+    "pnpm build:apps-in-toss:candidate",
+    "pnpm check:package",
+    "pnpm release:artifact-manifest",
+    "pnpm check:release-artifact-manifest",
+    "pnpm check:release-verification-commands",
+    "pnpm check:release-manual-blockers",
+    "pnpm check:public-url-guard",
+    "pnpm check:release:automated"
+  ],
+  "manualQaEvidence": {
+    "sourceFile": "qa/manual-qa-evidence.json",
+    "buildArtifactFormat": "Include this manifest manualQaBuildId plus the tested platform artifact path or store/TestFlight/AppsInToss build reference."
+  },
+  "generatedAt": "2026-06-19T08:36:09.203Z",
+  "manualQaBuildId": "sha256:ab844098720ce98597f74a71d87fa5493b569906c16e5278fcca17346679cecc"
+}

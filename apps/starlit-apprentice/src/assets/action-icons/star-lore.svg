@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Star lore lesson icon" shape-rendering="crispEdges">
+  <path d="M47 8l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="#f6c85f"/>
+  <rect x="15" y="36" width="32" height="8" transform="rotate(-22 31 40)" fill="#4d908e"/>
+  <rect x="42" y="26" width="9" height="12" transform="rotate(-22 46.5 32)" fill="#e5eef7"/>
+  <rect x="27" y="42" width="5" height="13" fill="#f7f1d5"/>
+  <rect x="18" y="53" width="24" height="4" fill="#9c6644"/>
+  <rect x="18" y="18" width="3" height="3" fill="#e5eef7"/>
+  <rect x="25" y="12" width="2" height="2" fill="#e5eef7"/>
+  <rect x="12" y="27" width="2" height="2" fill="#e5eef7"/>
+</svg>

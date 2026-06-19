@@ -1,0 +1,690 @@
+import type { EndingDefinition, EndingRequirementDefinition, ScheduleAction, StatKey } from "./types.js";
+
+function freezeRecord<T extends object>(value: T): T {
+  return Object.freeze(value);
+}
+
+function freezeList<T>(values: T[]): T[] {
+  return Object.freeze(values) as T[];
+}
+
+function freezeAction(action: ScheduleAction): ScheduleAction {
+  return Object.freeze({
+    ...action,
+    statEffects: freezeRecord({ ...action.statEffects })
+  }) as ScheduleAction;
+}
+
+function freezeRequirement(requirement: EndingRequirementDefinition): EndingRequirementDefinition {
+  if (requirement.type === "flag-sum") {
+    return freezeRecord({
+      ...requirement,
+      flags: freezeList([...requirement.flags])
+    });
+  }
+  if (requirement.type === "average") {
+    return freezeRecord({
+      ...requirement,
+      stats: freezeList([...requirement.stats])
+    });
+  }
+  return freezeRecord({ ...requirement });
+}
+
+function freezeEnding(ending: EndingDefinition): EndingDefinition {
+  return freezeRecord({
+    ...ending,
+    requirements: ending.requirements === undefined ? undefined : freezeList(ending.requirements.map(freezeRequirement))
+  }) as EndingDefinition;
+}
+
+export const STAT_LABELS: Record<StatKey, string> = freezeRecord({
+  intellect: "지성",
+  sensibility: "감성",
+  etiquette: "예법",
+  craft: "기술",
+  stamina: "체력",
+  reputation: "평판",
+  focus: "집중",
+  charm: "매력",
+  courage: "담력",
+  empathy: "공감",
+  business: "장사",
+  magic: "별감응",
+  leadership: "리더십",
+  creativity: "창의"
+});
+
+const RAW_ACTIONS: ScheduleAction[] = [
+  {
+    id: "letters",
+    category: "lesson",
+    label: "문장학",
+    shortLabel: "문장",
+    place: "도서관 강의실",
+    description: "고문서와 기록법을 배워 지성을 키운다.",
+    statEffects: { intellect: 8, focus: 4 },
+    goldDelta: -40,
+    energyDelta: -12,
+    stressDelta: 8,
+    flag: "lesson:letters"
+  },
+  {
+    id: "music",
+    category: "lesson",
+    label: "음악",
+    shortLabel: "음악",
+    place: "극장 연습실",
+    description: "무대 호흡과 리듬을 익혀 감성을 키운다.",
+    statEffects: { sensibility: 8, creativity: 4, charm: 2 },
+    goldDelta: -40,
+    energyDelta: -12,
+    stressDelta: 8,
+    flag: "lesson:music"
+  },
+  {
+    id: "manners",
+    category: "lesson",
+    label: "예법",
+    shortLabel: "예법",
+    place: "찻집 별실",
+    description: "궁정 인사와 대화법을 배워 예법을 키운다.",
+    statEffects: { etiquette: 8, empathy: 3, charm: 2 },
+    goldDelta: -40,
+    energyDelta: -12,
+    stressDelta: 8,
+    flag: "lesson:manners"
+  },
+  {
+    id: "crafts",
+    category: "lesson",
+    label: "공예",
+    shortLabel: "공예",
+    place: "작은 공방",
+    description: "도구 다루는 법을 익혀 기술을 키운다.",
+    statEffects: { craft: 8, creativity: 3, focus: 2 },
+    goldDelta: -40,
+    energyDelta: -12,
+    stressDelta: 8,
+    flag: "lesson:crafts"
+  },
+  {
+    id: "star-lore",
+    category: "lesson",
+    label: "별빛학",
+    shortLabel: "별빛",
+    place: "천문탑",
+    description: "밤하늘의 기록을 읽으며 지성과 평판을 쌓는다.",
+    statEffects: { intellect: 8, magic: 5, reputation: 2 },
+    goldDelta: -40,
+    energyDelta: -12,
+    stressDelta: 8,
+    flag: "lesson:star-lore"
+  },
+  {
+    id: "stamina-drill",
+    category: "lesson",
+    label: "체력훈련",
+    shortLabel: "체력",
+    place: "아카데미 마당",
+    description: "기초 체력을 다져 긴 일정을 버틴다.",
+    statEffects: { stamina: 8, courage: 4, focus: 1 },
+    goldDelta: -40,
+    energyDelta: -12,
+    stressDelta: 8,
+    flag: "lesson:stamina-drill"
+  },
+  {
+    id: "library-help",
+    category: "work",
+    label: "도서관 보조",
+    shortLabel: "도서관",
+    place: "도시 도서관",
+    description: "책을 정리하며 약간의 지성과 골드를 얻는다.",
+    statEffects: { intellect: 2, focus: 2 },
+    goldDelta: 35,
+    energyDelta: -14,
+    stressDelta: 10,
+    flag: "work:library-help"
+  },
+  {
+    id: "tea-service",
+    category: "work",
+    label: "찻집 서빙",
+    shortLabel: "찻집",
+    place: "달빛 찻집",
+    description: "손님을 응대하며 예법과 골드를 얻는다.",
+    statEffects: { etiquette: 2, charm: 2, business: 2, reputation: 1 },
+    goldDelta: 35,
+    energyDelta: -14,
+    stressDelta: 10,
+    flag: "work:tea-service"
+  },
+  {
+    id: "workshop-errand",
+    category: "work",
+    label: "공방 심부름",
+    shortLabel: "공방",
+    place: "장인의 골목",
+    description: "재료를 옮기며 기술과 골드를 얻는다.",
+    statEffects: { craft: 2, business: 1, focus: 1 },
+    goldDelta: 35,
+    energyDelta: -14,
+    stressDelta: 10,
+    flag: "work:workshop-errand"
+  },
+  {
+    id: "garden-care",
+    category: "work",
+    label: "정원관리",
+    shortLabel: "정원",
+    place: "아카데미 정원",
+    description: "정원을 돌보며 체력과 골드를 얻는다.",
+    statEffects: { stamina: 2, empathy: 1, leadership: 4 },
+    goldDelta: 35,
+    energyDelta: -14,
+    stressDelta: 10,
+    flag: "work:garden-care"
+  },
+  {
+    id: "theater-crew",
+    category: "work",
+    label: "극장 스태프",
+    shortLabel: "극장",
+    place: "도시 극장",
+    description: "무대 뒤를 돕고 감성과 골드를 얻는다.",
+    statEffects: { sensibility: 2, creativity: 2, charm: 1 },
+    goldDelta: 35,
+    energyDelta: -14,
+    stressDelta: 10,
+    flag: "work:theater-crew"
+  },
+  {
+    id: "scribe-aide",
+    category: "work",
+    label: "서기관 보조",
+    shortLabel: "서기관",
+    place: "행정관 서재",
+    description: "문서를 베끼며 지성과 평판을 조금 얻는다.",
+    statEffects: { intellect: 2, etiquette: 1, focus: 1, reputation: 1 },
+    goldDelta: 35,
+    energyDelta: -14,
+    stressDelta: 10,
+    flag: "work:scribe-aide"
+  },
+  {
+    id: "home-rest",
+    category: "rest",
+    label: "집에서 쉬기",
+    shortLabel: "휴식",
+    place: "작은 방",
+    description: "방을 정돈하고 기력을 회복한다.",
+    statEffects: { focus: 1, empathy: 1 },
+    goldDelta: 0,
+    energyDelta: 30,
+    stressDelta: -18,
+    flag: "rest:home-rest"
+  },
+  {
+    id: "sleep-in",
+    category: "rest",
+    label: "늦잠",
+    shortLabel: "늦잠",
+    place: "포근한 침대",
+    description: "하루를 비워 기력을 크게 회복한다.",
+    statEffects: { focus: 1 },
+    goldDelta: 0,
+    energyDelta: 34,
+    stressDelta: -15,
+    flag: "rest:sleep-in"
+  },
+  {
+    id: "hot-spring",
+    category: "rest",
+    label: "온천권 사용",
+    shortLabel: "온천",
+    place: "별샘 온천",
+    description: "골드를 쓰고 스트레스를 크게 낮춘다.",
+    statEffects: { charm: 1 },
+    goldDelta: -20,
+    energyDelta: 28,
+    stressDelta: -24,
+    flag: "rest:hot-spring"
+  },
+  {
+    id: "market",
+    category: "outing",
+    label: "시장",
+    shortLabel: "시장",
+    place: "해질녘 시장",
+    description: "상인들의 이야기를 듣고 평판을 얻는다.",
+    statEffects: { business: 3, reputation: 2, charm: 1 },
+    goldDelta: -15,
+    energyDelta: -6,
+    stressDelta: -6,
+    flag: "outing:market"
+  },
+  {
+    id: "plaza",
+    category: "outing",
+    label: "광장",
+    shortLabel: "광장",
+    place: "도시 광장",
+    description: "축제 준비를 구경하며 감성을 얻는다.",
+    statEffects: { charm: 2, creativity: 1, leadership: 2, reputation: 1 },
+    goldDelta: -15,
+    energyDelta: -6,
+    stressDelta: -6,
+    flag: "outing:plaza"
+  },
+  {
+    id: "library",
+    category: "outing",
+    label: "도서관",
+    shortLabel: "산책",
+    place: "조용한 도서관",
+    description: "사서의 추천서를 읽고 지성을 얻는다.",
+    statEffects: { intellect: 2, focus: 1 },
+    goldDelta: -15,
+    energyDelta: -6,
+    stressDelta: -6,
+    flag: "outing:library"
+  },
+  {
+    id: "park",
+    category: "outing",
+    label: "공원",
+    shortLabel: "공원",
+    place: "별잎 공원",
+    description: "가벼운 산책으로 마음을 정리한다.",
+    statEffects: { empathy: 2, sensibility: 1, stamina: 1 },
+    goldDelta: -15,
+    energyDelta: -6,
+    stressDelta: -6,
+    flag: "outing:park"
+  }
+];
+
+export const ACTIONS: ScheduleAction[] = freezeList(RAW_ACTIONS.map(freezeAction));
+
+const RAW_ENDINGS: EndingDefinition[] = [
+  {
+    code: "scholar",
+    title: "별빛 연구자",
+    summary: "견습생은 별의 기록을 읽는 연구자가 된다.",
+    shareText: "내 견습생은 별빛 연구자가 됐어요.",
+    hint: "지성과 별빛학 경험을 높게 쌓기",
+    requirements: [
+      { type: "stat", stat: "intellect", target: 70 },
+      { type: "flag", flag: "lesson:star-lore", target: 3, label: "별빛학" }
+    ]
+  },
+  {
+    code: "court-scribe",
+    title: "궁정 서기관",
+    summary: "견습생은 왕국의 문서를 맡는 서기관이 된다.",
+    shareText: "내 견습생은 궁정 서기관이 됐어요.",
+    hint: "지성, 예법, 평판을 함께 올리기",
+    priority: 30,
+    requirements: [
+      { type: "stat", stat: "intellect", target: 60 },
+      { type: "stat", stat: "etiquette", target: 55 },
+      { type: "stat", stat: "reputation", target: 35 }
+    ]
+  },
+  {
+    code: "artisan",
+    title: "공방 장인",
+    summary: "견습생은 작은 공방을 책임지는 장인이 된다.",
+    shareText: "내 견습생은 공방 장인이 됐어요.",
+    hint: "기술과 공방 경험을 집중해서 쌓기",
+    requirements: [
+      { type: "stat", stat: "craft", target: 70 },
+      {
+        type: "flag-sum",
+        flags: ["lesson:crafts", "work:workshop-errand"],
+        target: 4,
+        label: "공방 경험"
+      }
+    ]
+  },
+  {
+    code: "performer",
+    title: "무대 예술가",
+    summary: "견습생은 도시 축제의 무대에 선다.",
+    shareText: "내 견습생은 무대 예술가가 됐어요.",
+    hint: "감성과 음악/극장 경험을 늘리기",
+    requirements: [
+      { type: "stat", stat: "sensibility", target: 65 },
+      {
+        type: "flag-sum",
+        flags: ["lesson:music", "work:theater-crew"],
+        target: 4,
+        label: "무대 경험"
+      }
+    ]
+  },
+  {
+    code: "merchant",
+    title: "도시 상인",
+    summary: "견습생은 시장에서 신뢰받는 상인이 된다.",
+    shareText: "내 견습생은 도시 상인이 됐어요.",
+    hint: "일을 많이 하고 골드와 평판을 모으기",
+    requirements: [
+      { type: "resource", resource: "gold", target: 500, label: "골드" },
+      { type: "stat", stat: "reputation", target: 35 },
+      { type: "flag", flag: "category:work", target: 8, label: "일 경험" }
+    ]
+  },
+  {
+    code: "mentor",
+    title: "아카데미 조교",
+    summary: "견습생은 다음 견습생을 돕는 조교가 된다.",
+    shareText: "내 견습생은 아카데미 조교가 됐어요.",
+    hint: "여러 능력을 고르게 키우고 스트레스를 낮게 유지하기",
+    requirements: [
+      {
+        type: "average",
+        stats: ["intellect", "sensibility", "etiquette", "craft", "stamina"],
+        target: 45,
+        label: "균형 능력"
+      },
+      { type: "resource", resource: "stress", target: 35, direction: "at-most", label: "스트레스" }
+    ]
+  },
+  {
+    code: "wanderer",
+    title: "자유 여행자",
+    summary: "견습생은 도시 밖의 별길을 따라 떠난다.",
+    shareText: "내 견습생은 자유 여행자가 됐어요.",
+    hint: "외출을 자주 하고 감성을 키우기",
+    requirements: [
+      { type: "flag", flag: "category:outing", target: 8, label: "외출 경험" },
+      { type: "stat", stat: "sensibility", target: 45 }
+    ]
+  },
+  {
+    code: "royal-diplomat",
+    title: "왕국 외교관",
+    summary: "견습생은 말과 예절로 도시 사이의 약속을 잇는다.",
+    shareText: "내 견습생은 왕국 외교관이 됐어요.",
+    hint: "예법, 매력, 평판을 크게 키우기",
+    priority: 30,
+    requirements: [
+      { type: "stat", stat: "etiquette", target: 75 },
+      { type: "stat", stat: "charm", target: 60 },
+      { type: "stat", stat: "reputation", target: 45 }
+    ]
+  },
+  {
+    code: "observatory-director",
+    title: "천문대장",
+    summary: "견습생은 도시 천문대의 관측 기록을 책임진다.",
+    shareText: "내 견습생은 천문대장이 됐어요.",
+    hint: "지성, 별감응, 별빛학 경험 집중",
+    requirements: [
+      { type: "stat", stat: "intellect", target: 75 },
+      { type: "stat", stat: "magic", target: 60 },
+      { type: "flag", flag: "lesson:star-lore", target: 5, label: "별빛학" }
+    ]
+  },
+  {
+    code: "star-priest",
+    title: "별의 사제",
+    summary: "견습생은 별빛을 읽어 지친 사람들의 밤을 달랜다.",
+    shareText: "내 견습생은 별의 사제가 됐어요.",
+    hint: "별감응과 공감, 낮은 스트레스 유지",
+    requirements: [
+      { type: "stat", stat: "magic", target: 75 },
+      { type: "stat", stat: "empathy", target: 55 },
+      { type: "resource", resource: "stress", target: 45, direction: "at-most", label: "스트레스" }
+    ]
+  },
+  {
+    code: "spellwright",
+    title: "주문 설계사",
+    summary: "견습생은 별빛 문장을 설계하는 희귀한 기술자가 된다.",
+    shareText: "내 견습생은 주문 설계사가 됐어요.",
+    hint: "별감응, 기술, 집중을 함께 올리기",
+    priority: 30,
+    requirements: [
+      { type: "stat", stat: "magic", target: 65 },
+      { type: "stat", stat: "craft", target: 55 },
+      { type: "stat", stat: "focus", target: 50 }
+    ]
+  },
+  {
+    code: "guild-master",
+    title: "길드 마스터",
+    summary: "견습생은 일꾼과 장인을 모아 작은 길드를 이끈다.",
+    shareText: "내 견습생은 길드 마스터가 됐어요.",
+    hint: "리더십, 장사, 많은 일 경험",
+    requirements: [
+      { type: "stat", stat: "leadership", target: 70 },
+      { type: "stat", stat: "business", target: 55 },
+      { type: "flag", flag: "category:work", target: 10, label: "일 경험" }
+    ]
+  },
+  {
+    code: "tea-house-owner",
+    title: "달빛 찻집 주인",
+    summary: "견습생은 손님이 쉬어 가는 작은 찻집을 연다.",
+    shareText: "내 견습생은 달빛 찻집 주인이 됐어요.",
+    hint: "예법, 매력, 장사와 찻집 경험",
+    requirements: [
+      { type: "stat", stat: "etiquette", target: 50 },
+      { type: "stat", stat: "charm", target: 55 },
+      { type: "stat", stat: "business", target: 45 },
+      { type: "flag", flag: "work:tea-service", target: 5, label: "찻집 경험" }
+    ]
+  },
+  {
+    code: "festival-planner",
+    title: "축제 기획자",
+    summary: "견습생은 도시의 계절 축제를 준비하는 기획자가 된다.",
+    shareText: "내 견습생은 축제 기획자가 됐어요.",
+    hint: "창의, 리더십, 광장 경험",
+    requirements: [
+      { type: "stat", stat: "creativity", target: 65 },
+      { type: "stat", stat: "leadership", target: 45 },
+      { type: "flag", flag: "outing:plaza", target: 4, label: "광장 경험" }
+    ]
+  },
+  {
+    code: "healer",
+    title: "마음 치유사",
+    summary: "견습생은 사람들의 불안을 다독이는 상담자가 된다.",
+    shareText: "내 견습생은 마음 치유사가 됐어요.",
+    hint: "공감, 감성, 낮은 스트레스",
+    requirements: [
+      { type: "stat", stat: "empathy", target: 75 },
+      { type: "stat", stat: "sensibility", target: 45 },
+      { type: "resource", resource: "stress", target: 40, direction: "at-most", label: "스트레스" }
+    ]
+  },
+  {
+    code: "garden-architect",
+    title: "정원 설계사",
+    summary: "견습생은 별빛 아래에서 쉬어 갈 정원을 설계한다.",
+    shareText: "내 견습생은 정원 설계사가 됐어요.",
+    hint: "체력, 기술, 공감과 정원관리 경험",
+    requirements: [
+      { type: "stat", stat: "stamina", target: 45 },
+      { type: "stat", stat: "craft", target: 55 },
+      { type: "stat", stat: "empathy", target: 50 },
+      { type: "flag", flag: "work:garden-care", target: 4, label: "정원 경험" }
+    ]
+  },
+  {
+    code: "bookbinder",
+    title: "별책 제본가",
+    summary: "견습생은 낡은 책과 별빛 기록을 새로 묶는 장인이 된다.",
+    shareText: "내 견습생은 별책 제본가가 됐어요.",
+    hint: "기술, 집중, 도서관 보조 경험",
+    requirements: [
+      { type: "stat", stat: "craft", target: 60 },
+      { type: "stat", stat: "focus", target: 60 },
+      { type: "flag", flag: "work:library-help", target: 4, label: "도서관 보조" }
+    ]
+  },
+  {
+    code: "cartographer",
+    title: "별길 지도사",
+    summary: "견습생은 도시 밖 길과 밤하늘을 함께 기록한다.",
+    shareText: "내 견습생은 별길 지도사가 됐어요.",
+    hint: "지성, 집중, 외출 경험",
+    requirements: [
+      { type: "stat", stat: "intellect", target: 55 },
+      { type: "stat", stat: "focus", target: 55 },
+      { type: "flag", flag: "category:outing", target: 6, label: "외출 경험" }
+    ]
+  },
+  {
+    code: "travel-writer",
+    title: "여행 작가",
+    summary: "견습생은 도시와 들판의 이야기를 글로 남긴다.",
+    shareText: "내 견습생은 여행 작가가 됐어요.",
+    hint: "감성, 지성, 외출 경험",
+    requirements: [
+      { type: "stat", stat: "sensibility", target: 55 },
+      { type: "stat", stat: "intellect", target: 45 },
+      { type: "flag", flag: "category:outing", target: 8, label: "외출 경험" }
+    ]
+  },
+  {
+    code: "academy-professor",
+    title: "아카데미 교수",
+    summary: "견습생은 후배에게 별과 기록을 가르치는 교수가 된다.",
+    shareText: "내 견습생은 아카데미 교수가 됐어요.",
+    hint: "높은 지성, 집중, 많은 수업 경험",
+    requirements: [
+      { type: "stat", stat: "intellect", target: 80 },
+      { type: "stat", stat: "focus", target: 55 },
+      { type: "flag", flag: "category:lesson", target: 12, label: "수업 경험" }
+    ]
+  },
+  {
+    code: "city-councilor",
+    title: "도시 의회관",
+    summary: "견습생은 도시 사람들의 요청을 정리하는 의회관이 된다.",
+    shareText: "내 견습생은 도시 의회관이 됐어요.",
+    hint: "평판, 리더십, 예법",
+    requirements: [
+      { type: "stat", stat: "reputation", target: 60 },
+      { type: "stat", stat: "leadership", target: 55 },
+      { type: "stat", stat: "etiquette", target: 45 }
+    ]
+  },
+  {
+    code: "theater-director",
+    title: "극장 연출가",
+    summary: "견습생은 무대 뒤에서 사람과 빛을 지휘한다.",
+    shareText: "내 견습생은 극장 연출가가 됐어요.",
+    hint: "창의, 매력, 극장 경험",
+    requirements: [
+      { type: "stat", stat: "creativity", target: 70 },
+      { type: "stat", stat: "charm", target: 55 },
+      { type: "flag", flag: "work:theater-crew", target: 4, label: "극장 경험" }
+    ]
+  },
+  {
+    code: "inventor",
+    title: "별빛 발명가",
+    summary: "견습생은 별빛을 담는 작은 장치를 만든다.",
+    shareText: "내 견습생은 별빛 발명가가 됐어요.",
+    hint: "기술, 창의, 집중",
+    requirements: [
+      { type: "stat", stat: "craft", target: 70 },
+      { type: "stat", stat: "creativity", target: 55 },
+      { type: "stat", stat: "focus", target: 45 }
+    ]
+  },
+  {
+    code: "market-analyst",
+    title: "시장 분석가",
+    summary: "견습생은 물건과 사람의 흐름을 읽는 분석가가 된다.",
+    shareText: "내 견습생은 시장 분석가가 됐어요.",
+    hint: "장사, 지성, 시장 경험",
+    requirements: [
+      { type: "stat", stat: "business", target: 70 },
+      { type: "stat", stat: "intellect", target: 50 },
+      { type: "flag", flag: "outing:market", target: 4, label: "시장 경험" }
+    ]
+  },
+  {
+    code: "civic-organizer",
+    title: "시민 기획자",
+    summary: "견습생은 동네 사람들을 모아 작은 일을 크게 만든다.",
+    shareText: "내 견습생은 시민 기획자가 됐어요.",
+    hint: "공감, 리더십, 평판",
+    requirements: [
+      { type: "stat", stat: "empathy", target: 55 },
+      { type: "stat", stat: "leadership", target: 60 },
+      { type: "stat", stat: "reputation", target: 45 }
+    ]
+  },
+  {
+    code: "guardian-guide",
+    title: "수호 안내자",
+    summary: "견습생은 밤길을 무서워하는 사람들을 안전하게 안내한다.",
+    shareText: "내 견습생은 수호 안내자가 됐어요.",
+    hint: "담력, 체력, 공원 경험",
+    requirements: [
+      { type: "stat", stat: "courage", target: 70 },
+      { type: "stat", stat: "stamina", target: 60 },
+      { type: "flag", flag: "outing:park", target: 4, label: "공원 경험" }
+    ]
+  },
+  {
+    code: "etiquette-master",
+    title: "예법 스승",
+    summary: "견습생은 어렵던 예절을 따뜻하게 가르치는 스승이 된다.",
+    shareText: "내 견습생은 예법 스승이 됐어요.",
+    hint: "예법, 공감, 예법 수업 경험",
+    requirements: [
+      { type: "stat", stat: "etiquette", target: 75 },
+      { type: "stat", stat: "empathy", target: 45 },
+      { type: "flag", flag: "lesson:manners", target: 5, label: "예법 수업" }
+    ]
+  },
+  {
+    code: "workshop-founder",
+    title: "공방 창업가",
+    summary: "견습생은 실력과 장사 감각으로 자신의 공방을 연다.",
+    shareText: "내 견습생은 공방 창업가가 됐어요.",
+    hint: "기술, 장사, 창업 자금",
+    requirements: [
+      { type: "stat", stat: "craft", target: 65 },
+      { type: "stat", stat: "business", target: 60 },
+      { type: "resource", resource: "gold", target: 350, label: "골드" }
+    ]
+  },
+  {
+    code: "archive-detective",
+    title: "기록 탐정",
+    summary: "견습생은 오래된 문서 속 단서를 찾아 사건을 푼다.",
+    shareText: "내 견습생은 기록 탐정이 됐어요.",
+    hint: "지성, 담력, 집중",
+    requirements: [
+      { type: "stat", stat: "intellect", target: 65 },
+      { type: "stat", stat: "courage", target: 50 },
+      { type: "stat", stat: "focus", target: 55 }
+    ]
+  },
+  {
+    code: "quiet-life",
+    title: "조용한 일상",
+    summary: "견습생은 평범하지만 안정적인 생활을 고른다.",
+    shareText: "내 견습생은 조용한 일상을 골랐어요.",
+    hint: "특정 루트 조건을 채우지 못하면 도달"
+  }
+];
+
+export const ENDINGS: EndingDefinition[] = freezeList(RAW_ENDINGS.map(freezeEnding));
+
+export const ACTION_CATEGORY_LABELS: Record<ScheduleAction["category"], string> = freezeRecord({
+  lesson: "수업",
+  work: "일",
+  rest: "휴식",
+  outing: "외출"
+});

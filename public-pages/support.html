@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Support | Star Apprentice</title>
+    <meta name="description" content="Support page candidate for Star Apprentice." />
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #202124;
+        --muted: #5f6368;
+        --line: #d9dce3;
+        --paper: #ffffff;
+        --soft: #f4f6fb;
+        --brand: #6D5DD3;
+        --accent: #157a6e;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        letter-spacing: 0;
+        line-height: 1.6;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .topbar {
+        border-bottom: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.94);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .topbar-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 14px 20px;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .brand img {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+      }
+
+      nav {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      nav a {
+        border-radius: 8px;
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 700;
+        padding: 8px 10px;
+        text-decoration: none;
+      }
+
+      nav a[aria-current="page"] {
+        background: var(--soft);
+        color: var(--ink);
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+        gap: 32px;
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 32px 20px 22px;
+        align-items: center;
+      }
+
+      .hero-media {
+        background: #f1f3f8;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      .hero-media img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      .hero-copy h1,
+      .content h1 {
+        margin: 6px 0 12px;
+        font-size: 64px;
+        line-height: 1.02;
+      }
+
+      .hero-copy p,
+      .content p {
+        color: var(--muted);
+        margin: 0 0 14px;
+      }
+
+      .eyebrow {
+        color: var(--accent) !important;
+        font-size: 13px;
+        font-weight: 800;
+        margin: 0 0 6px !important;
+        text-transform: uppercase;
+      }
+
+      .store-line {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 18px;
+      }
+
+      .store-line span {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: var(--ink);
+        font-size: 13px;
+        font-weight: 700;
+        padding: 6px 9px;
+      }
+
+      .content {
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 12px 20px 56px;
+      }
+
+      .content.narrow {
+        max-width: 780px;
+        padding-top: 40px;
+      }
+
+      .section {
+        border-top: 1px solid var(--line);
+        padding: 24px 0;
+      }
+
+      .section h2 {
+        font-size: 22px;
+        line-height: 1.2;
+        margin: 0 0 10px;
+      }
+
+      .section h3 {
+        font-size: 16px;
+        margin: 18px 0 6px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .grid article {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+      }
+
+      .footer {
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 13px;
+        padding: 20px;
+        text-align: center;
+      }
+
+      @media (max-width: 760px) {
+        .topbar-inner {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        nav {
+          flex-wrap: wrap;
+        }
+
+        .hero {
+          grid-template-columns: 1fr;
+          padding-top: 22px;
+        }
+
+        .hero-copy h1,
+        .content h1 {
+          font-size: 38px;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="brand" href="./index.html">
+          <img src="./assets/icon-512.png" alt="" />
+          <span>Star Apprentice</span>
+        </a>
+        <nav aria-label="Public release pages">
+          <a href="./index.html">Home</a><a href="./privacy-policy.html">Privacy</a><a href="./support.html" aria-current="page">Support</a>
+        </nav>
+      </div>
+    </header>
+    
+      <main class="content narrow">
+        <section class="section">
+          <p class="eyebrow">Support</p>
+          <h1>별빛 견습생 Support</h1>
+          <p>This static page is the hostable support-page source for store review. For support, contact <a href="mailto:cs@seorilabs.com">cs@seorilabs.com</a>. The final public HTTPS support URL and App Store review contact name/phone still require confirmation before production submission.</p>
+        </section>
+
+        <section class="section">
+          <h2>Common Questions</h2>
+          <h3>Where is my progress saved?</h3>
+          <p>Progress is saved only on the device. There is no account login or server save in the first release.</p>
+          <h3>Can progress be restored after reinstalling?</h3>
+          <p>No. Because the first release does not use a server account, uninstalling the app or clearing app data may remove local progress.</p>
+          <h3>How do I delete my data?</h3>
+          <p>Delete the app or clear app data from the operating system settings. There is no server-held account data to request for deletion.</p>
+          <h3>Does the app include purchases or ads?</h3>
+          <p>No. The first release boundary has no payment SDK, no billing flow, and no production ad SDK.</p>
+        </section>
+
+        <section class="section">
+          <h2>Store Review Contact Boundary</h2>
+          <p>Do not submit this support page as a final store URL until it is hosted on a confirmed HTTPS domain and the remaining contact/review fields in the release packet are completed.</p>
+        </section>
+      </main>
+    
+    <footer class="footer">
+      별빛 견습생 / Star Apprentice · Static release page candidate · Last updated 2026-06-18
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,31 @@
+{
+  "name": "@starlit-apprentice/app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:apps-in-toss": "granite dev",
+    "build": "pnpm build:web",
+    "build:web": "tsc -p tsconfig.json && vite build",
+    "build:web:apps-in-toss": "tsc -p tsconfig.json && vite build --outDir ait-dist",
+    "build:apps-in-toss": "ait build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "tsc -p tsconfig.json",
+    "cap:sync": "pnpm build && cap sync",
+    "deploy:apps-in-toss": "ait deploy"
+  },
+  "dependencies": {
+    "@capacitor/core": "^7.0.0"
+  },
+  "devDependencies": {
+    "@apps-in-toss/web-framework": "2.9.1",
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/cli": "^7.0.0",
+    "@capacitor/ios": "^7.0.0",
+    "@types/node": "^24.10.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.0.0",
+    "vitest": "^3.2.4"
+  }
+}

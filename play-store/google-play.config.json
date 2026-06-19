@@ -1,0 +1,70 @@
+{
+  "packageName": "com.seorilabs.starlitapprentice",
+  "defaultLanguage": "ko-KR",
+  "appType": "game",
+  "freeOrPaid": "free",
+  "contactEmail": "cs@seorilabs.com",
+  "privacyPolicyUrl": "확정 필요",
+  "storeListing": {
+    "appName": {
+      "ko-KR": "별빛 견습생",
+      "en-US": "Star Apprentice"
+    },
+    "shortDescription": {
+      "ko-KR": "4주 일정을 선택해 견습생을 성장시키는 픽셀 육성 시뮬레이션",
+      "en-US": "Raise an apprentice through monthly plans in a pixel life sim"
+    },
+    "fullDescription": {
+      "ko-KR": "별빛 견습생은 한 달 4주 일정을 정해 견습생의 능력과 미래를 만들어 가는 픽셀 육성 시뮬레이션 게임입니다.\n\n공부, 일, 휴식, 외출을 조합해 12개월을 보내고, 선택의 누적 결과에 따라 서로 다른 엔딩을 확인합니다. 모든 진행은 기기 안에 저장되며, 초기 버전에는 로그인, 결제, 서버 저장, 광고 SDK가 포함되지 않습니다.\n\n주요 특징\n- 월마다 4주 일정을 선택하는 간결한 육성 루프\n- 지성, 감성, 예법, 기술, 체력, 평판 등 14가지 능력과 골드, 기력, 스트레스 자원 변화\n- 성장 방향에 따라 달라지는 30가지 엔딩\n- 짧은 세션으로 진행할 수 있는 모바일 중심 UI\n- 오프라인에서도 유지되는 로컬 저장 기반 진행",
+      "en-US": "Star Apprentice is a pixel life simulation game where you choose four weekly activities each month and guide an apprentice toward a future.\n\nBalance study, work, rest, and outings across 12 months. Your accumulated choices change the apprentice's 14 growth stats and resources, then lead to different endings. The first version stores progress on the device and does not include login, payments, server saves, or production ad SDKs.\n\nFeatures\n- A compact monthly planning loop with four weekly choices\n- Changes across 14 growth stats plus gold, energy, and stress resources\n- 30 endings shaped by long-term growth choices\n- Mobile-first screens designed for short play sessions\n- Local save progress that remains available offline"
+    }
+  },
+  "assets": {
+    "playIcon": "play-store/assets/icon-512.png",
+    "featureGraphic": "play-store/assets/feature-graphic-1024x500.png",
+    "phoneScreenshots": [
+      "play-store/screenshots/phone/starlit-apprentice-start-1080x1920.png",
+      "play-store/screenshots/phone/starlit-apprentice-main-1080x1920.png",
+      "play-store/screenshots/phone/starlit-apprentice-schedule-1080x1920.png",
+      "play-store/screenshots/phone/starlit-apprentice-result-1080x1920.png"
+    ],
+    "sevenInchTabletScreenshots": [
+      "play-store/screenshots/tablet-7/starlit-apprentice-start-1440x2560.png",
+      "play-store/screenshots/tablet-7/starlit-apprentice-main-1440x2560.png",
+      "play-store/screenshots/tablet-7/starlit-apprentice-schedule-1440x2560.png",
+      "play-store/screenshots/tablet-7/starlit-apprentice-result-1440x2560.png"
+    ],
+    "tenInchTabletScreenshots": [
+      "play-store/screenshots/tablet-10/starlit-apprentice-start-1800x3200.png",
+      "play-store/screenshots/tablet-10/starlit-apprentice-main-1800x3200.png",
+      "play-store/screenshots/tablet-10/starlit-apprentice-schedule-1800x3200.png",
+      "play-store/screenshots/tablet-10/starlit-apprentice-result-1800x3200.png"
+    ]
+  },
+  "contentDeclarations": {
+    "dataSafety": {
+      "status": "repo-evidence-prepared",
+      "dataCollected": "none",
+      "dataShared": "none",
+      "onDeviceData": "local progress and ending collection only",
+      "accountDeletion": "not-applicable-no-account-system",
+      "privacyPolicyRequired": true,
+      "evidence": "docs/privacy-and-data-safety.md",
+      "consoleStatus": "pending-play-console-submission"
+    },
+    "contentRating": "확정 필요 - IARC 및 한국 게임 등급 증빙 필요",
+    "targetAudience": "general-audience-not-children",
+    "ads": "no",
+    "koreaDistribution": "yes",
+    "koreaGameRating": "확정 필요 - Play Console 또는 게임물관리위원회 증빙 필요"
+  },
+  "manualEvidence": {
+    "androidAppBundle": "확정 필요",
+    "playConsoleListing": "확정 필요",
+    "policyQuestionnaire": "확정 필요"
+  },
+  "sourceUrls": {
+    "previewAssets": "https://support.google.com/googleplay/android-developer/answer/9866151",
+    "iconSpec": "https://developer.android.com/distribute/google-play/resources/icon-design-specifications"
+  }
+}
