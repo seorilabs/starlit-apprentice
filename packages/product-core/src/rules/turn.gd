@@ -81,6 +81,12 @@ static func resolve(
 		out["awakened"] = true
 		promoted = true
 
+	# ── 연속 휴식 추적 (상태이상 해제 조건) ───────────────────────────
+	var is_rest := _text(action.get("category", "")) == "rest"
+	out["consecutive_rests"] = int(out.get("consecutive_rests", 0)) + 1 if is_rest else 0
+	if (out.get("conditions", []) as Array).has(SaRisk.COND_INJURY):
+		out["injury_turns"] = int(out.get("injury_turns", 0)) + 1
+
 	# ── 연속 실패·고스트레스 추적 (상태이상 진입 조건) ────────────────
 	out["consecutive_fails"] = int(out.get("consecutive_fails", 0)) + 1 if outcome == SaRisk.OUTCOME_FAIL else 0
 	out["high_stress_turns"] = int(out.get("high_stress_turns", 0)) + 1 if int(out["stress"]) >= 70 else 0
@@ -88,6 +94,16 @@ static func resolve(
 		out["slump_light_turns"] = int(out.get("slump_light_turns", 0)) + 1
 
 	out = SaResources.clamp_state(out)
+
+	# ── 상태이상 해제가 진입보다 먼저다. 같은 턴에 나갔다 들어오지 않게 한다.
+	var exited := SaRisk.exiting_conditions(out, is_rest, outcome)
+	for c in exited:
+		(out["conditions"] as Array).erase(c)
+		if c == SaRisk.COND_SLUMP_LIGHT:
+			out["slump_light_turns"] = 0
+			out["consecutive_fails"] = 0
+		elif c == SaRisk.COND_INJURY:
+			out["injury_turns"] = 0
 
 	# ── 상태이상 진입 ─────────────────────────────────────────────────
 	var entered := SaRisk.entering_conditions(out)

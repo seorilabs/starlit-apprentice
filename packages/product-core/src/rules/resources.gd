@@ -51,6 +51,8 @@ static func new_state(seed_value: int) -> Dictionary:
 		"high_stress_turns": 0,
 		"slump_light_turns": 0,
 		"milestone_failures": 0,
+		"consecutive_rests": 0,
+		"injury_turns": 0,
 		"seed": seed_value,
 	}
 

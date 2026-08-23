@@ -52,9 +52,24 @@ func _initialize() -> void:
 				break
 			for c in (result["entered_conditions"] as Array):
 				condition_hits[c] = int(condition_hits.get(c, 0)) + 1
-			# 3턴 중 1턴 가중 추첨으로 이벤트를 뽑는다.
-			if int(state["turn"]) % 3 == 0:
-				var ev := SaEventResolution.pick(state, events, rng)
+			# 마일스톤·진로는 추첨이 아니라 예정된 비트다. 매 턴 자격을 확인한다.
+			var scheduled: Array = []
+			for e in events:
+				var cat := String((e as Dictionary).get("category", ""))
+				if cat == "milestone" or cat == "path" or cat == "condition":
+					scheduled.append(e)
+			var due := SaEventResolution.eligible(state, scheduled)
+			# 3턴 중 1턴은 나머지 풀에서 가중 추첨한다.
+			var drawn := {}
+			if due.is_empty() and int(state["turn"]) % 3 == 0:
+				var pool: Array = []
+				for e in events:
+					var cat2 := String((e as Dictionary).get("category", ""))
+					if cat2 != "milestone" and cat2 != "path" and cat2 != "condition":
+						pool.append(e)
+				drawn = SaEventResolution.pick(state, pool, rng)
+			var ev: Dictionary = due[0] if not due.is_empty() else drawn
+			if true:
 				if not ev.is_empty():
 					var choices: Array = ev.get("choices", [])
 					var open_choices: Array = []
@@ -96,6 +111,11 @@ func _initialize() -> void:
 	print("상태이상 진입: %s" % str(condition_hits))
 	print("이벤트 발동 %d회, 고유 %d종 | 잠긴 선택지 노출 %d회"
 		% [events_fired, distinct_events.size(), locked_choices_seen])
+	var by_cat := {}
+	for id in distinct_events.keys():
+		var prefix := String(id).split(".")[0]
+		by_cat[prefix] = int(by_cat.get(prefix, 0)) + 1
+	print("고유 이벤트 분포: %s" % str(by_cat))
 	print("턴 29 이전 캡 도달: %s" % ("없음" if earliest_cap == 99 else "턴 %d" % earliest_cap))
 
 	if completed != SEEDS.size():

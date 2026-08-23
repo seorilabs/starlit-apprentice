@@ -100,6 +100,33 @@ static func forces_turn_skip(conditions: Array) -> bool:
 static func locks_legendary(conditions: Array) -> bool:
 	return conditions.has(COND_FAILED)
 
+## 상태이상 해제 판정. 설계상 각 상태에는 탈출 경로가 있어야 한다.
+## 이것이 없으면 부진이 영구 지속되고 카운터가 계속 올라 슬럼프를 반복 유발한다.
+static func exiting_conditions(state: Dictionary, was_rest: bool, outcome: String) -> Array[String]:
+	var out: Array[String] = []
+	var active: Array = state.get("conditions", [])
+
+	# 부진: 휴식 2턴 연속 또는 대성공 1회
+	if active.has(COND_SLUMP_LIGHT):
+		if int(state.get("consecutive_rests", 0)) >= 2:
+			out.append(COND_SLUMP_LIGHT)
+		elif outcome == OUTCOME_CRIT or outcome == OUTCOME_AWAKEN:
+			out.append(COND_SLUMP_LIGHT)
+
+	# 슬럼프: 휴식 3턴 연속 (온천·NPC 경로는 이벤트가 처리한다)
+	if active.has(COND_SLUMP) and int(state.get("consecutive_rests", 0)) >= 3:
+		out.append(COND_SLUMP)
+
+	# 부상: 3턴 경과
+	if active.has(COND_INJURY) and int(state.get("injury_turns", 0)) >= 3:
+		out.append(COND_INJURY)
+
+	# 평판 추락: 평판 15 회복
+	if active.has(COND_DISGRACE) and int(state.get("reputation", 0)) >= 15:
+		out.append(COND_DISGRACE)
+
+	return out
+
 static func current_condition_key(conditions: Array) -> String:
 	if conditions.has(COND_SLUMP):
 		return COND_SLUMP
