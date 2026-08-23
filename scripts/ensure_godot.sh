@@ -9,7 +9,7 @@ Usage:
   ensure_godot.sh [--with-export-templates]
 
 Environment:
-  GODOT_VERSION defaults to the repository .godot-version (or 4.7.1.stable)
+  GODOT_VERSION defaults to the repository .godot-version (or 4.7.2.stable)
   GODOT_STATUS defaults to stable
 USAGE
 }
@@ -38,7 +38,7 @@ version_file="${project_dir}/.godot-version"
 if [ -z "${GODOT_VERSION:-}" ] && [ -f "${version_file}" ]; then
   GODOT_VERSION="$(sed -n 's/[[:space:]]*#.*$//; s/[[:space:]]*$//; /^[[:space:]]*$/d; p' "${version_file}" | head -n 1)"
 fi
-godot_version="${GODOT_VERSION:-4.7.1.stable}"
+godot_version="${GODOT_VERSION:-4.7.2.stable}"
 if [[ "${godot_version}" != *.* ]]; then
   godot_version="${godot_version}.stable"
 fi

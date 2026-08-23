@@ -33,7 +33,7 @@ jobs:
     uses: seorilabs/.github/.github/workflows/godot-checks.yml@main
     secrets: inherit
     with:
-      godot_version: "4.7.1"
+      godot_version: "4.7.2"
       godot_status: stable
       project_dir: "."
       with_export_templates: false

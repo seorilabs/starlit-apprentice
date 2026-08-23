@@ -13,7 +13,7 @@
 | app-id | `starlit-apprentice` |
 | 패키지 / 번들 | `com.seorilabs.starlitapprentice` (기존 값 승계) |
 | 장르 | 육성 시뮬레이션 |
-| 엔진 | Godot `4.7.1.stable` |
+| 엔진 | Godot `4.7.2.stable` |
 | 화면 | 세로 고정 720×1280 |
 | 출시 타깃 | Google Play, Apple App Store, AppsInToss |
 | 언어 | 한국어 전용 (i18n 구조는 선반영) |

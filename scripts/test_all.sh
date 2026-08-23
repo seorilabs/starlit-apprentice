@@ -46,6 +46,7 @@ run_godot endings     "${godot_bin}" --headless --path "${project_dir}" --script
 run_godot balance     "${godot_bin}" --headless --path "${project_dir}" --script res://tests/balance_runner.gd
 run_godot simulation  "${godot_bin}" --headless --path "${project_dir}" --script res://tests/simulation_runner.gd
 run_godot smoke       "${godot_bin}" --headless --path "${project_dir}" --script res://tests/test_runner.gd
+run_godot layout      "${godot_bin}" --path "${project_dir}" --resolution 720x1280 --script res://tests/layout_probe.gd
 
 echo "[test-all] $([ "$fail" -eq 0 ] && echo 통과 || echo 실패)" >&2
 rm -rf "${log_dir}"

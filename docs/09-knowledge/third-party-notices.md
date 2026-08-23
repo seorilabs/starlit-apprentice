@@ -17,6 +17,6 @@
 
 ### Godot Engine
 
-- 버전: 4.7.1.stable
+- 버전: 4.7.2.stable
 - 라이선스: MIT
 - 출처: https://godotengine.org

@@ -9,7 +9,7 @@
 
 | | |
 |---|---|
-| 엔진 | Godot `4.7.1.stable` |
+| 엔진 | Godot `4.7.2.stable` |
 | 화면 | 세로 고정 720×1280 |
 | 출시 타깃 | Google Play · Apple App Store · AppsInToss |
 | 언어 | 한국어 (i18n 구조 선반영) |

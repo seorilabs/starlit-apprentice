@@ -95,6 +95,42 @@ static func affordability(state: Dictionary, action: Dictionary) -> Dictionary:
 		return {"ok": false, "reason": "슬럼프 중에는 심화·비전을 할 수 없다"}
 	if conditions.has(SaRisk.COND_INJURY) and _text(action.get("stat", "")) == SaStatKeys.STAMINA:
 		return {"ok": false, "reason": "부상 중에는 몸을 쓸 수 없다"}
+	return unlock_status(state, action)
+
+## 해금 조건. 이것을 검사하지 않으면 심화·비전·진로 전용이 턴 1 부터 열려
+## 티어 진행 설계 전체가 무력화된다.
+static func unlock_status(state: Dictionary, action: Dictionary) -> Dictionary:
+	var unlock: Variant = action.get("unlock")
+	if unlock == null or not (unlock is Dictionary):
+		return {"ok": true, "reason": ""}
+	var u: Dictionary = unlock
+
+	if u.has("declared_path"):
+		if _text(state.get("declared_path", "")) != _text(u.get("declared_path", "")):
+			return {"ok": false, "reason": "진로를 선언해야 열린다"}
+
+	if u.has("month_min"):
+		if month_of(int(state.get("turn", 1))) < int(u["month_min"]):
+			return {"ok": false, "reason": "%d월부터 열린다" % int(u["month_min"])}
+
+	if u.has("stat_min"):
+		var stat := _text(action.get("stat", ""))
+		var have := int((state.get("stats", {}) as Dictionary).get(stat, 0))
+		if have < int(u["stat_min"]):
+			return {"ok": false, "reason": "%d 이상 필요 (지금 %d)" % [int(u["stat_min"]), have]}
+
+	if u.has("line_count"):
+		var flag := _text(action.get("flag", ""))
+		var count := int((state.get("flags", {}) as Dictionary).get(flag, 0))
+		if count < int(u["line_count"]):
+			return {"ok": false, "reason": "이 계열을 %d회 더 해야 한다" % (int(u["line_count"]) - count)}
+
+	if u.has("affinity_min"):
+		var npc := _text(action.get("npc_tag", ""))
+		var aff := int((state.get("affinity", {}) as Dictionary).get(npc, 0))
+		if aff < int(u["affinity_min"]):
+			return {"ok": false, "reason": "호감 %d 이상 필요" % int(u["affinity_min"])}
+
 	return {"ok": true, "reason": ""}
 
 ## 자원과 무관하게 항상 고를 수 있는 행동. 소프트락을 불가능하게 만든다.

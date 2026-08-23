@@ -9,7 +9,7 @@
 
 | 항목 | 값 | 근거 |
 |---|---|---|
-| 엔진 | **Godot `4.7.1.stable`** (`.godot-version` 핀) | org 최근 론칭 2개(spiritgate·jomul)와 동일. 4.7.1 export template 로컬 설치 확인 |
+| 엔진 | **Godot `4.7.2.stable`** (`.godot-version` 핀) | org 최근 론칭 2개(spiritgate·jomul)와 동일. 4.7.2 export template 로컬 설치 확인 |
 | 언어 | GDScript (strict typing) | org 표준 |
 | `project.godot` 위치 | **레포 루트** | 론칭 3개 게임 전부 루트. org 재사용 워크플로우 기본값 `project_dir: "."` |
 | 뷰포트 | 720×1280, `canvas_items`, `expand`, `orientation=1` | 같은 한국어 텍스트 중심 게임인 jomul과 동일 |
