@@ -9,6 +9,14 @@ project_dir="${1:-.}"
 out_dir="${project_dir}/build/web"
 godot_bin="${GODOT_BIN:-godot}"
 
+file_size() {
+  if stat -f%z "$1" >/dev/null 2>&1; then
+    stat -f%z "$1"
+  else
+    stat -c%s "$1"
+  fi
+}
+
 command -v "${godot_bin}" >/dev/null 2>&1 || {
   echo "[export-web] Godot 을 찾지 못했다: ${godot_bin}" >&2; exit 1; }
 
@@ -37,5 +45,5 @@ fi
 [ -s "${out_dir}/index.wasm" ] || { echo "[export-web] index.wasm 이 없다" >&2; exit 1; }
 
 printf "[export-web] 완료 · pck %d KB · wasm %d KB\n" \
-  $(( $(stat -f%z "${out_dir}/index.pck") / 1024 )) \
-  $(( $(stat -f%z "${out_dir}/index.wasm") / 1024 )) >&2
+  $(( $(file_size "${out_dir}/index.pck") / 1024 )) \
+  $(( $(file_size "${out_dir}/index.wasm") / 1024 )) >&2
