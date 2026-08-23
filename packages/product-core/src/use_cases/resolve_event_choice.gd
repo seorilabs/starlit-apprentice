@@ -41,6 +41,10 @@ static func eligible(state: Dictionary, events: Array) -> Array:
 			continue
 		if SaEventRequirements.any_satisfied(state, ev.get("exclusions", [])):
 			continue
+		# 이번 회차 덱에 없는 기회 이벤트는 아예 나오지 않는다.
+		var deck: Variant = ev.get("deck")
+		if deck != null and int(deck) != int(state.get("deck", 0)):
+			continue
 		out.append(ev)
 	# 특이도 높은 것이 먼저 온다. 호출자는 due[0] 하나만 재생하므로 정렬이
 	# 곧 판정이다. 배열 순서에 맡기면 조건이 가장 느슨한 비트가 늘 이기고

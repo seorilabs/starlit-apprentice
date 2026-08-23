@@ -19,10 +19,10 @@ var pending_events: Array = []
 ## 이벤트 판정용 상태. state 는 이미 다음 턴을 가리킨다.
 var beat: Dictionary = {}
 
-func start(seed_value: int, content: Dictionary) -> void:
+func start(seed_value: int, content: Dictionary, deck: int = 0) -> void:
 	rng = SaRng.new(seed_value)
 	aptitude = SaAptitude.assign(SaRng.new(seed_value * 31 + 7))
-	state = SaResources.new_state(seed_value)
+	state = SaResources.new_state(seed_value, deck)
 	actions = content.get("actions", [])
 	events = content.get("events", [])
 	endings = content.get("endings", [])

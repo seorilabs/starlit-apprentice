@@ -15,6 +15,7 @@ var _run := SaRunController.new()
 var _content := {}
 var _turn_screen: SaTurnScreen
 var _overlay: Control
+var _run_count := 0
 
 func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -66,7 +67,10 @@ func _show_title() -> void:
 
 func _start_run() -> void:
 	# 코어는 Time 을 모른다. 시드는 여기서 만들어 주입한다.
-	_run.start(int(Time.get_unix_time_from_system()) & 0x7FFFFFFF, _content)
+	# 회차마다 다른 기회 덱을 연다. 연속 두 회차의 기회 이벤트가 겹치지 않는다.
+	# 회차 수 영속화는 별빛 기록(메타 진행)에서 붙는다 — 지금은 세션 안에서만 센다.
+	_run.start(int(Time.get_unix_time_from_system()) & 0x7FFFFFFF, _content, _run_count)
+	_run_count += 1
 	_show_turn()
 
 # ── 턴 ─────────────────────────────────────────────────────────────

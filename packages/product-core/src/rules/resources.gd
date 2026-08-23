@@ -28,12 +28,18 @@ const DEBT_WORK_MULTIPLIER := 0.85
 static func rest_recovery(stamina: int) -> int:
 	return 18 + int(floor(float(stamina) / 6.0))
 
-static func new_state(seed_value: int) -> Dictionary:
+## deck 은 이번 회차에 열리는 기회 이벤트 덱(0~2). 회차마다 다른 덱을 주면
+## 연속 두 회차의 기회 이벤트가 하나도 겹치지 않는다 — 재플레이 서사의 핵심 장치라
+## 호출자가 회차 수에서 유도해 주입한다. 코어는 회차 수를 모른다.
+const DECK_COUNT := 3
+
+static func new_state(seed_value: int, deck: int = 0) -> Dictionary:
 	var stats := {}
 	for key in SaStatKeys.ALL:
 		stats[key] = START_STAT
 	return {
 		"turn": 1,
+		"deck": posmod(deck, DECK_COUNT),
 		"stats": stats,
 		"gold": START_GOLD,
 		"energy": START_ENERGY,

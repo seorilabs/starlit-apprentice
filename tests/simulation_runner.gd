@@ -29,10 +29,13 @@ func _initialize() -> void:
 	var npc_events := 0
 	var peak_affinity := {}
 
+	var seed_index := -1
 	for seed_value in SEEDS:
+		seed_index += 1
 		var rng := SaRng.new(seed_value)
 		var apt := SaAptitude.assign(SaRng.new(seed_value * 31 + 7))
-		var state := SaResources.new_state(seed_value)
+		# 덱을 돌려야 기회 이벤트 24종이 전부 검증 범위에 들어온다.
+		var state := SaResources.new_state(seed_value, seed_index % SaResources.DECK_COUNT)
 		var min_gold := 99999
 		var min_energy := 99999
 		var guard := 0
@@ -107,6 +110,11 @@ func _initialize() -> void:
 				beat = SaEventResolution.beat_state(state, int(result["played_turn"]))
 				events_fired += 1
 				distinct_events[str(ev.get("id"))] = true
+				# 덱 격리가 깨지면 회차 간 서사 차별화 장치가 무력화된다.
+				var ev_deck: Variant = ev.get("deck")
+				if ev_deck != null and int(ev_deck) != int(state.get("deck", 0)):
+					failures.append("%s: 덱 %d 회차에서 덱 %d 이벤트가 떴다"
+						% [str(ev.get("id")), int(state.get("deck", 0)), int(ev_deck)])
 				if String(ev.get("category", "")) == "npc":
 					npc_events += 1
 
@@ -151,6 +159,17 @@ func _initialize() -> void:
 	if locked_choices_seen == 0:
 		failures.append("잠긴 선택지가 한 번도 노출되지 않았다. 요건 게이팅이 동작하지 않는다")
 	# 함께가 죽으면 호감이 라이더(+2)만 남아 NPC 콘텐츠 30종이 통째로 도달 불가가 된다.
+	var opp_total := 0
+	for e in events:
+		if String((e as Dictionary).get("category", "")) == "opportunity":
+			opp_total += 1
+	var opp_seen := 0
+	for id in distinct_events.keys():
+		if String(id).begins_with("opp."):
+			opp_seen += 1
+	# 덱을 돌려도 안 뜨는 기회 이벤트가 많으면 저작이 낭비된다.
+	if opp_total > 0 and opp_seen < int(opp_total * 0.7):
+		failures.append("기회 이벤트 커버리지가 낮다: %d/%d" % [opp_seen, opp_total])
 	if together_used == 0:
 		failures.append("함께 수식이 한 번도 사용되지 않았다. 호감의 주 채널이 죽었다")
 	if npc_events < SEEDS.size() * 3:

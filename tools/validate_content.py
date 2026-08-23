@@ -6,6 +6,7 @@
 """
 from __future__ import annotations
 import json
+import re
 import sys
 from collections import Counter
 from pathlib import Path
@@ -217,20 +218,50 @@ def check_endings(data: dict) -> None:
             seen[key] = str(e.get("code"))
 
 
-# 이벤트와 엔딩은 평가기가 다르고 어휘도 다르다. 한쪽 어휘를 다른 쪽에 쓰면
-# 코어가 모르는 타입이 되어 조건이 조용히 영구 거짓이 된다 — 에러는 나지 않는다.
-EVENT_REQ_TYPES = {
-    "stat", "resource", "affinity", "npc_met", "flag",
-    "turn_range", "condition", "declared_path",
-}
-ENDING_REQ_TYPES = {
-    "stat", "resource", "flag", "flag-sum", "average",
-    "affinity", "condition", "declared",
-}
-RESOURCE_KEYS = {"gold", "energy", "stress", "reputation", "turn"}
+# 어휘는 코어 소스에서 직접 뽑는다. 손으로 관리하면 반드시 낡고, 낡은 린트는
+# 통과 표시를 내면서 아무것도 보장하지 않는다. 실제로 turn_skip 을 빠뜨렸다.
+CORE = Path("packages/product-core/src")
 
 
-def check_requirement_types(events: dict, endings: dict) -> None:
+def _core_text(rel: str, root: Path) -> str:
+    path = root / CORE / rel
+    if not path.exists():
+        err(f"코어 파일을 찾지 못했다: {rel} — 어휘 검사를 할 수 없다")
+        return ""
+    return path.read_text(encoding="utf-8")
+
+
+def core_vocabularies(root: Path) -> dict[str, set[str]]:
+    """코어가 실제로 읽는 요건 타입·비용 키·효과 키를 소스에서 추출한다."""
+    ev = _core_text("domain/event_requirements.gd", root)
+    en = _core_text("domain/ending_requirements.gd", root)
+    rc = _core_text("use_cases/resolve_event_choice.gd", root)
+    st = _core_text("domain/stat_keys.gd", root)
+
+    # match 문의 case 라벨
+    event_types = set(re.findall(r'^\t\t"([a-z_]+)":$', ev, re.M))
+    # const TYPE_X := "value"
+    ending_types = set(re.findall(r'const TYPE_\w+ := "([a-z-]+)"', en))
+    cost_keys = set(re.findall(r'cost\.get\("([a-z_]+)"', rc))
+    effect_keys = set(re.findall(r'effects\.get\("([a-z_]+)"', rc))
+    resource_keys = set(re.findall(r'out\["([a-z]+)"\] = int\(out\.get', rc)) | {"turn"}
+    # const NAME := "value" 중 ALL 배열에 실제로 들어간 것만
+    consts = dict(re.findall(r'const ([A-Z_]+) := "([a-z]+)"', st))
+    # 배열 리터럴 안쪽만 본다. `Array[String]` 의 대괄호와 뒤따르는 상수를 함께
+    # 긁으면 REPUTATION 이 스탯으로 섞인다 — 평판은 스탯이 아니다.
+    tail = st.split("const ALL")[1] if "const ALL" in st else ""
+    all_block = tail.split("= [", 1)[1].split("]")[0] if "= [" in tail else ""
+    stats = {consts[n] for n in re.findall(r'\b([A-Z_]+)\b', all_block) if n in consts}
+
+    missing = [n for n, s in [("이벤트 요건", event_types), ("엔딩 요건", ending_types),
+                              ("비용 키", cost_keys), ("효과 키", effect_keys)] if not s]
+    for n in missing:
+        err(f"코어에서 {n} 어휘를 추출하지 못했다 — 린트가 무력화된 상태다")
+    return {"event": event_types, "ending": ending_types, "cost": cost_keys,
+            "effect": effect_keys, "resource": resource_keys, "stats": stats or set(STATS)}
+
+
+def check_requirement_types(events: dict, endings: dict, vocab: dict) -> None:
     def scan(reqs: object, where: str, allowed: set[str]) -> None:
         if not isinstance(reqs, list):
             return
@@ -241,19 +272,59 @@ def check_requirement_types(events: dict, endings: dict) -> None:
             if kind not in allowed:
                 err(f"{where}: 코어가 모르는 요건 타입 '{kind}' — 이 조건은 영원히 거짓이다")
                 continue
-            if kind == "stat" and r.get("stat") not in STATS:
+            if kind == "stat" and r.get("stat") not in vocab["stats"]:
                 err(f"{where}: 모르는 스탯 요건 '{r.get('stat')}'")
-            if kind == "resource" and r.get("resource") not in RESOURCE_KEYS:
+            if kind == "resource" and r.get("resource") not in vocab["resource"]:
                 err(f"{where}: 모르는 자원 요건 '{r.get('resource')}'")
 
     for e in (events.get("events") or []):
         where = f"이벤트 '{e.get('id')}'"
-        scan(e.get("requirements"), where, EVENT_REQ_TYPES)
-        scan(e.get("exclusions"), where, EVENT_REQ_TYPES)
+        scan(e.get("requirements"), where, vocab["event"])
+        scan(e.get("exclusions"), where, vocab["event"])
         for c in (e.get("choices") or []):
-            scan(c.get("requirements"), f"{where} 선택지 '{c.get('id')}'", EVENT_REQ_TYPES)
+            scan(c.get("requirements"), f"{where} 선택지 '{c.get('id')}'", vocab["event"])
     for e in (endings.get("endings") or []):
-        scan(e.get("requirements"), f"엔딩 '{e.get('code')}'", ENDING_REQ_TYPES)
+        scan(e.get("requirements"), f"엔딩 '{e.get('code')}'", vocab["ending"])
+
+
+def check_effect_keys(events: dict, vocab: dict) -> None:
+    """코어가 읽지 않는 키는 조용히 무시된다. "stats2" 오타가 효과를 통째로 날려도
+    에러가 나지 않으므로 여기서 잡는다."""
+    for e in (events.get("events") or []):
+        for c in (e.get("choices") or []):
+            where = f"이벤트 '{e.get('id')}' 선택지 '{c.get('id')}'"
+            for k in (c.get("cost") or {}):
+                if k not in vocab["cost"]:
+                    err(f"{where}: 코어가 읽지 않는 비용 키 '{k}'")
+            for o in (c.get("outcomes") or []):
+                eff = o.get("effects") or {}
+                for k in eff:
+                    if k not in vocab["effect"]:
+                        err(f"{where}: 코어가 읽지 않는 효과 키 '{k}' — 조용히 무시된다")
+                for s in (eff.get("stats") or {}):
+                    if s not in vocab["stats"]:
+                        err(f"{where}: 모르는 스탯 '{s}'")
+
+
+def check_decks(events: dict) -> None:
+    """기회 이벤트는 회차마다 다른 덱이 열린다. 덱이 비거나 기울면
+    어떤 회차는 기회 이벤트가 거의 없는 채로 끝난다."""
+    opp = [e for e in (events.get("events") or []) if e.get("category") == "opportunity"]
+    if not opp:
+        return
+    counts: Counter = Counter()
+    for e in opp:
+        deck = e.get("deck")
+        if deck is None:
+            err(f"기회 이벤트 '{e.get('id')}' 에 deck 이 없다")
+        else:
+            counts[int(deck)] += 1
+    if not counts:
+        return
+    if sorted(counts) != [0, 1, 2]:
+        err(f"기회 덱이 0·1·2 세 개가 아니다: {sorted(counts)}")
+    if max(counts.values()) - min(counts.values()) > 1:
+        err(f"기회 덱 분량이 기울었다: {dict(sorted(counts.items()))}")
 
 
 def check_event_escape(events: dict) -> None:
@@ -372,7 +443,8 @@ def main() -> int:
         endings_doc = json.loads(endings_path.read_text(encoding="utf-8"))
         check_endings(endings_doc)
     events_for_types = json.loads(events_path.read_text(encoding="utf-8")) if events_path.exists() else {}
-    check_requirement_types(events_for_types, endings_doc)
+    vocab = core_vocabularies(root)
+    check_requirement_types(events_for_types, endings_doc, vocab)
     npcs_path = root / "data" / "npcs.json"
     if npcs_path.exists():
         events_doc = json.loads(events_path.read_text(encoding="utf-8")) if events_path.exists() else {}
@@ -381,7 +453,9 @@ def main() -> int:
         check_event_art(root, events_doc, npcs_doc)
     else:
         err("data/npcs.json 이 없다")
+    check_decks(events_for_types)
     check_event_escape(events_for_types)
+    check_effect_keys(events_for_types, vocab)
 
     if problems:
         for p in problems:

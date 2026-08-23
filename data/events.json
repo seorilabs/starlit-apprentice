@@ -4625,9 +4625,101 @@
    ]
   },
   {
+   "id": "opp.borrowed-robe",
+   "category": "opportunity",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "빌린 예복",
+   "art_key": "bg_room",
+   "body": "학장 초청 만찬이 사흘 뒤다. 예복이 없다. 빌려주겠다는 동기가 있고, 값싼 것을 사면 두 달치 식비가 날아가고, 안 가면 그만이다. 초대장은 책상 위에 그대로 있다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 7,
+     "to": 30
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "동기에게 빌린다",
+     "requirements": [],
+     "cost": {
+      "stress": 4
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "소매가 조금 길었다. 만찬에서 두 번 밟았고 세 번째에는 아예 걷어 올렸다. 옆자리 노부인이 그걸 보고 웃더니 자기도 처음엔 그랬다고 했다.",
+       "effects": {
+        "stats": {
+         "etiquette": 8
+        },
+        "reputation": 6,
+        "affinity": {
+         "harin": 8
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "예복을 산다",
+     "requirements": [
+      {
+       "type": "resource",
+       "resource": "gold",
+       "target": 150
+      }
+     ],
+     "cost": {
+      "gold": -150
+     },
+     "check": null,
+     "locked_reason": "금화 150 이상이어야 한다",
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "몸에 맞는 옷을 입고 서니 자세가 저절로 곧아졌다. 학장이 이름을 물었고, 그 자리에 있던 사람들이 그걸 들었다.",
+       "effects": {
+        "stats": {
+         "etiquette": 12
+        },
+        "reputation": 14
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "가지 않는다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "그날 밤 방에서 관측을 했다. 만찬보다 하늘이 맑았고, 기록 한 장이 남았다. 초대장은 서랍에 들어갔다.",
+       "effects": {
+        "stats": {
+         "starsense": 7
+        },
+        "stress": -6,
+        "reputation": -4
+       }
+      }
+     ]
+    }
+   ],
+   "deck": 0
+  },
+  {
    "id": "opp.broken-lens",
    "category": "opportunity",
-   "deck": 0,
+   "deck": 1,
    "weight": 7,
    "cooldown_turns": 5,
    "title": "금 간 렌즈",
@@ -4747,9 +4839,103 @@
    ]
   },
   {
+   "id": "opp.clock-tower",
+   "category": "opportunity",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "멈춘 시계탑",
+   "art_key": "bg_plaza",
+   "body": "광장 시계탑이 사흘째 멈춰 있다. 수리공은 부품이 없다며 손을 놓았고, 사람들은 종소리 없이 하루를 재는 데 애를 먹는다. 탑 문은 잠겨 있지 않다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 4,
+     "to": 30
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "올라가서 기계를 본다",
+     "requirements": [],
+     "cost": {
+      "energy": -10
+     },
+     "check": {
+      "stat": "craft",
+      "difficulty": 42
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "고장은 부품이 아니라 축에 낀 새 둥지였다. 조심스럽게 걷어 내자 초침이 다시 움직였다. 광장에 있던 사람들이 종소리에 일제히 고개를 들었다.",
+       "effects": {
+        "stats": {
+         "craft": 10
+        },
+        "reputation": 10,
+        "gold": 40
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "기계를 건드리다 톱니 하나를 어긋나게 했다. 수리공이 올라와 원래대로 돌려놓으며 한숨을 쉬었다. \"손대기 전에 그림부터 그리랬지.\"",
+       "effects": {
+        "stats": {
+         "craft": 4
+        },
+        "stress": 8,
+        "reputation": -3
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "기계 구조를 그림으로 옮긴다",
+     "requirements": [],
+     "cost": {
+      "energy": -6
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "세 시간에 걸쳐 톱니 배치를 종이에 옮겼다. 수리공이 그 그림을 보더니 이틀 만에 탑을 고쳤다. 그림은 시청 벽에 걸렸다.",
+       "effects": {
+        "stats": {
+         "craft": 6,
+         "intellect": 6
+        },
+        "reputation": 6
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "그냥 지나간다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "이튿날 종이 다시 울렸다. 누가 고쳤는지는 아무도 몰랐고, 견습생도 알아보지 않았다.",
+       "effects": {
+        "stress": -3
+       }
+      }
+     ]
+    }
+   ],
+   "deck": 2
+  },
+  {
    "id": "opp.coin-found",
    "category": "opportunity",
-   "deck": 2,
+   "deck": 0,
    "weight": 6,
    "cooldown_turns": 7,
    "title": "길에 떨어진 주머니",
@@ -4844,9 +5030,531 @@
    ]
   },
   {
+   "id": "opp.commission-portrait",
+   "category": "opportunity",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "별자리 초상",
+   "art_key": "bg_room",
+   "body": "어느 부인이 찾아와 부탁한다. \"딸이 태어난 밤의 하늘을 그려 주세요. 벽에 걸게요.\" 날짜와 시각만 있으면 계산은 되지만, 그림까지 그려야 한다. 값은 미리 치르겠다고 한다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 5,
+     "to": 32
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "계산하고 직접 그린다",
+     "requirements": [],
+     "cost": {
+      "energy": -12
+     },
+     "check": {
+      "stat": "craft",
+      "difficulty": 45
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "별 위치는 하루 만에 나왔고 그리는 데 나흘이 걸렸다. 부인은 그림을 보고 한참 아무 말도 못 했다. 그 뒤로 같은 부탁이 넉 달 동안 여섯 번 들어왔다.",
+       "effects": {
+        "stats": {
+         "craft": 10,
+         "starsense": 6
+        },
+        "gold": 190,
+        "reputation": 12
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "계산은 맞는데 그림이 안 됐다. 부인은 값을 그대로 두고 갔고, 견습생은 그 절반을 돌려주려 했지만 받지 않았다.",
+       "effects": {
+        "stats": {
+         "starsense": 6
+        },
+        "gold": 70,
+        "stress": 10
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "계산만 하고 화공을 소개한다",
+     "requirements": [],
+     "cost": {
+      "energy": -6
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "광장 초상화가에게 배치도를 넘겼다. 완성된 그림은 견습생이 그렸을 것보다 훨씬 좋았고, 화공은 다음 일감도 함께 하자고 했다.",
+       "effects": {
+        "stats": {
+         "starsense": 6,
+         "commerce": 6
+        },
+        "gold": 110,
+        "reputation": 8
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "할 수 없다고 말한다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "부인은 실망한 기색 없이 인사하고 돌아갔다. 문을 닫고 나서 그 날짜의 하늘이 어땠을지 잠깐 계산해 봤다. 좋은 밤이었다.",
+       "effects": {
+        "stats": {
+         "starsense": 4
+        },
+        "stress": -3
+       }
+      }
+     ]
+    }
+   ],
+   "deck": 1
+  },
+  {
+   "id": "opp.duel-request",
+   "category": "opportunity",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "결투 신청",
+   "art_key": "bg_plaza",
+   "body": "다른 학당 견습생이 광장에서 이름을 부른다. \"별빛 아카데미가 우리 관측을 베꼈다더군.\" 사실이 아니다. 구경꾼이 모여든다. 상대는 물러설 생각이 없어 보인다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 8,
+     "to": 32
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "관측으로 겨루자고 제안한다",
+     "requirements": [],
+     "cost": {
+      "energy": -12,
+      "stress": 6
+     },
+     "check": {
+      "stat": "starsense",
+      "difficulty": 50
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "그날 밤 두 사람이 같은 별을 재고 기록을 맞췄다. 오차가 작은 쪽이 이겼고, 상대는 약속대로 공개 사과했다. 그러고는 악수를 청했다.",
+       "effects": {
+        "stats": {
+         "starsense": 12,
+         "courage": 6
+        },
+        "reputation": 16
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "오차가 더 컸다. 상대는 사과를 요구하지 않았다. \"베꼈다는 말은 취소하지.\" 그게 더 아팠다.",
+       "effects": {
+        "stats": {
+         "starsense": 6
+        },
+        "reputation": -6,
+        "stress": 12
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "근거를 대라고 요구한다",
+     "requirements": [],
+     "cost": {
+      "stress": 4
+     },
+     "check": {
+      "stat": "eloquence",
+      "difficulty": 46
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "세 번 물었고 세 번 다 대답이 없었다. 구경꾼들이 하나둘 흩어졌고 상대는 마지막에 남았다. 그 뒤로 그 말은 어디서도 돌지 않았다.",
+       "effects": {
+        "stats": {
+         "eloquence": 12
+        },
+        "reputation": 10
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "상대가 어디서 들었다는 이름을 댔다. 그 이름은 실제로 아카데미 사람이었고, 견습생은 대답할 말이 없었다.",
+       "effects": {
+        "stress": 10,
+        "reputation": -8,
+        "stats": {
+         "eloquence": 4
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "등을 돌린다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "등 뒤에서 야유가 났다. 광장을 벗어나자 소리는 금세 잦아들었다. 이튿날 그 일을 기억하는 사람은 별로 없었다.",
+       "effects": {
+        "stress": 6,
+        "stats": {
+         "etiquette": 3
+        }
+       }
+      }
+     ]
+    }
+   ],
+   "deck": 2
+  },
+  {
+   "id": "opp.funeral-song",
+   "category": "opportunity",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "장례의 노래",
+   "art_key": "bg_plaza",
+   "body": "아카데미 문지기가 세상을 떠났다. 가족이 없어 장례를 학교가 치른다. 관 앞에서 아무도 노래를 부르지 못하고 서 있다. 이 도시에서는 떠나는 사람에게 한 곡을 불러 주는 것이 예다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 10,
+     "to": 34
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "앞으로 나가 부른다",
+     "requirements": [],
+     "cost": {
+      "stress": 8
+     },
+     "check": {
+      "stat": "sensibility",
+      "difficulty": 44
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "음정이 완벽하지는 않았지만 끝까지 불렀다. 노래가 끝나자 아무도 움직이지 않았다. 그날 견습생의 이름을 외운 사람이 여럿이었다.",
+       "effects": {
+        "stats": {
+         "sensibility": 12,
+         "courage": 6
+        },
+        "reputation": 14
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "두 소절에서 목이 막혔다. 옆에 있던 사람이 이어 불러 주었고, 나중에는 여럿이 함께 불렀다. 결과적으로 노래는 끝났다.",
+       "effects": {
+        "stats": {
+         "sensibility": 8
+        },
+        "reputation": 6,
+        "stress": 6
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "악기를 가져와 반주한다",
+     "requirements": [],
+     "cost": {
+      "energy": -8
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "방까지 뛰어갔다 왔다. 반주가 붙자 목소리를 낼 용기를 낸 사람이 셋 나왔다. 견습생은 끝까지 얼굴을 들지 않고 줄만 짚었다.",
+       "effects": {
+        "stats": {
+         "sensibility": 9,
+         "craft": 4
+        },
+        "reputation": 8,
+        "stress": 4
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "조용히 자리를 지킨다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "결국 아무도 부르지 않았다. 관이 나가는 동안 광장은 조용했고, 그 조용함도 하나의 예였다고 나중에 누군가 말했다.",
+       "effects": {
+        "stats": {
+         "sensibility": 5
+        },
+        "stress": 6
+       }
+      }
+     ]
+    }
+   ],
+   "deck": 0
+  },
+  {
+   "id": "opp.hungry-winter",
+   "category": "opportunity",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "겨울 배급",
+   "art_key": "bg_plaza",
+   "body": "흉년이 들어 아카데미가 배급을 시작했다. 줄이 길고, 견습생 몫은 하루 한 번이다. 앞줄에 선 아이가 두 번째로 다시 서 있는 걸 봤다. 배급원은 아직 못 봤다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 14,
+     "to": 34
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "내 몫을 대신 준다",
+     "requirements": [],
+     "cost": {
+      "energy": -12
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "그날 저녁을 굶었다. 이튿날 그 아이가 광장에서 견습생을 알아보고 달려왔다. 손에 든 건 어디서 났는지 모를 사과 하나였다.",
+       "effects": {
+        "stats": {
+         "sensibility": 10,
+         "etiquette": 6
+        },
+        "reputation": 8,
+        "stress": -6
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "배급원에게 사정을 말한다",
+     "requirements": [],
+     "cost": {
+      "stress": 4
+     },
+     "check": {
+      "stat": "eloquence",
+      "difficulty": 40
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "배급원은 잠깐 고민하더니 어린아이 몫을 따로 만들었다. 그 줄은 그해 겨울 내내 유지됐고, 견습생은 매번 그 줄을 지나쳐 갔다.",
+       "effects": {
+        "stats": {
+         "eloquence": 10,
+         "etiquette": 6
+        },
+        "reputation": 14
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "규정은 규정이라는 대답이 돌아왔다. 아이는 그날 이후 줄에서 보이지 않았고, 어디로 갔는지는 아무도 몰랐다.",
+       "effects": {
+        "stress": 12,
+        "stats": {
+         "eloquence": 4
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "모른 척한다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "사흘 뒤 배급원이 알아채고 그 아이를 줄에서 내보냈다. 견습생은 그 장면을 보고도 젓가락을 놓지 않았다.",
+       "effects": {
+        "stress": 8,
+        "stats": {
+         "stamina": 3
+        }
+       }
+      }
+     ]
+    }
+   ],
+   "deck": 1
+  },
+  {
+   "id": "opp.lantern-order",
+   "category": "opportunity",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "등불 백 개",
+   "art_key": "bg_plaza",
+   "body": "축제 준비 위원회가 급하게 사람을 찾는다. 사흘 안에 등불 백 개에 별자리를 그려 넣어야 하는데 그리던 사람이 손을 다쳤다. \"그림보다 별자리를 아는 게 중요합니다.\"",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 5,
+     "to": 30
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "혼자 사흘을 매달린다",
+     "requirements": [],
+     "cost": {
+      "energy": -18,
+      "stress": 8
+     },
+     "check": {
+      "stat": "craft",
+      "difficulty": 48
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "백 개를 다 채웠다. 축제 밤 광장에 걸린 등불이 실제 밤하늘과 같은 배치로 늘어섰다. 그걸 알아본 사람은 몇 안 됐지만 알아본 사람들은 오래 서 있었다.",
+       "effects": {
+        "stats": {
+         "craft": 12,
+         "starsense": 6
+        },
+        "gold": 150,
+        "reputation": 14
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "여든 개에서 손이 굳었다. 나머지는 위원회가 아무렇게나 채웠다. 값은 팔 할만 받았고, 광장 한쪽의 별자리는 어느 하늘에도 없는 모양이었다.",
+       "effects": {
+        "stats": {
+         "craft": 6
+        },
+        "gold": 90,
+        "stress": 12,
+        "energy": -10
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "사람을 모아 나눠 그린다",
+     "requirements": [],
+     "cost": {
+      "energy": -10,
+      "gold": -40
+     },
+     "check": {
+      "stat": "eloquence",
+      "difficulty": 42
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "여섯 명이 붙어 이틀 만에 끝났다. 견습생은 배치도만 그리고 검수를 했다. 축제 밤 여섯 사람이 각자 자기가 그린 등불 앞에서 사진처럼 서 있었다.",
+       "effects": {
+        "stats": {
+         "eloquence": 12,
+         "craft": 5
+        },
+        "gold": 170,
+        "reputation": 16,
+        "affinity": {
+         "harin": 6
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "모인 사람마다 별자리를 다르게 알고 있었다. 고치는 데 그리는 것보다 시간이 더 들었고, 결국 견습생이 절반을 다시 그렸다.",
+       "effects": {
+        "stats": {
+         "craft": 6,
+         "eloquence": 4
+        },
+        "gold": 80,
+        "stress": 14
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "맡지 않는다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "축제 밤 광장 등불에는 꽃 무늬가 그려져 있었다. 예쁘긴 했다.",
+       "effects": {
+        "stress": -4
+       }
+      }
+     ]
+    }
+   ],
+   "deck": 2
+  },
+  {
    "id": "opp.lost-child",
    "category": "opportunity",
-   "deck": 2,
+   "deck": 0,
    "weight": 7,
    "cooldown_turns": 5,
    "title": "광장의 아이",
@@ -4936,6 +5644,211 @@
      ]
     }
    ]
+  },
+  {
+   "id": "opp.mapmaker",
+   "category": "opportunity",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "지도장이의 부탁",
+   "art_key": "bg_plaza",
+   "body": "지도장이가 완성한 해안 지도를 펼쳐 놓고 곤란해한다. \"북쪽 별로 방위를 잡았는데, 이게 맞는지 확인해 줄 사람이 없어.\" 틀리면 배가 잘못 간다. 값은 후하다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 6,
+     "to": 30
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "방위를 다시 잰다",
+     "requirements": [],
+     "cost": {
+      "energy": -10
+     },
+     "check": {
+      "stat": "starsense",
+      "difficulty": 44
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "두 곳이 반 도 어긋나 있었다. 고쳐 준 지도가 그해 겨울 항구에서 팔렸고, 뒷면 구석에 견습생의 이름이 아주 작게 들어갔다.",
+       "effects": {
+        "stats": {
+         "starsense": 10,
+         "craft": 4
+        },
+        "gold": 130,
+        "reputation": 8
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "세 번 재고 세 번 다른 값이 나왔다. 지도장이는 값을 반만 치르고 다른 사람을 찾아갔다. 무안했지만 거짓말은 하지 않았다.",
+       "effects": {
+        "stats": {
+         "starsense": 5
+        },
+        "gold": 40,
+        "stress": 8
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "방위 재는 법을 가르쳐 준다",
+     "requirements": [],
+     "cost": {
+      "energy": -8,
+      "stress": 3
+     },
+     "check": {
+      "stat": "eloquence",
+      "difficulty": 38
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "지도장이는 손이 야무져서 금방 배웠다. 그 뒤로 방위 확인 일감은 오지 않았지만, 대신 지도장이가 다른 손님을 여럿 보내 주었다.",
+       "effects": {
+        "stats": {
+         "eloquence": 9,
+         "starsense": 4
+        },
+        "gold": 60,
+        "reputation": 10
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "설명이 길어질수록 지도장이의 표정이 굳었다. 결국 \"그냥 봐 주면 안 되겠나\" 하는 말로 끝났다.",
+       "effects": {
+        "stats": {
+         "eloquence": 4
+        },
+        "stress": 6
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "바쁘다고 한다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "지도는 그대로 팔렸다. 봄에 배 한 척이 항로를 벗어났다는 소문이 돌았지만 그 지도 때문인지는 알 수 없었다.",
+       "effects": {
+        "stress": 4
+       }
+      }
+     ]
+    }
+   ],
+   "deck": 1
+  },
+  {
+   "id": "opp.night-caller",
+   "category": "opportunity",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "한밤의 부름",
+   "art_key": "bg_room",
+   "body": "자정에 문을 두드리는 소리. 낯선 하인이 등불을 들고 서 있다. \"주인어른이 별점을 봐 달라십니다. 지금요.\" 마차가 기다리고 있고, 손에는 선금이 들려 있다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 8,
+     "to": 34
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "마차에 오른다",
+     "requirements": [],
+     "cost": {
+      "energy": -14,
+      "stress": 6
+     },
+     "check": {
+      "stat": "starsense",
+      "difficulty": 48
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "저택 옥상에서 새벽까지 관측했다. 주인은 결과보다 견습생이 모르는 것을 모른다고 말한 대목을 마음에 들어 했다. 선금의 세 배를 더 주었다.",
+       "effects": {
+        "stats": {
+         "starsense": 10
+        },
+        "gold": 180,
+        "reputation": 8
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "구름이 걷히지 않아 아무것도 보지 못했다. 주인은 선금을 돌려받지 않았지만 다시 부르지도 않았다.",
+       "effects": {
+        "gold": 45,
+        "stress": 10,
+        "stats": {
+         "starsense": 3
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"낮에 오시면 봐 드리겠습니다\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "하인은 난처해했지만 돌아갔다. 사흘 뒤 그 집에서 정식으로 사람이 왔다. 밤중에 부르는 쪽보다 값을 후하게 쳐 주었다.",
+       "effects": {
+        "gold": 90,
+        "stats": {
+         "etiquette": 6
+        },
+        "reputation": 5,
+        "stress": -4
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "문을 닫는다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "등불이 멀어지는 소리를 들으며 다시 누웠다. 다음 날 아침 문 앞에 동전 몇 개가 놓여 있었다. 미안하다는 뜻인지 비웃음인지는 알 수 없었다.",
+       "effects": {
+        "gold": 25,
+        "stress": -8
+       }
+      }
+     ]
+    }
+   ],
+   "deck": 2
   },
   {
    "id": "opp.night-market-ledger",
@@ -5047,9 +5960,409 @@
    ]
   },
   {
+   "id": "opp.old-instrument",
+   "category": "opportunity",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "창고의 물건",
+   "art_key": "bg_tower",
+   "body": "관측탑 창고를 치우다 천으로 싸인 물건이 나왔다. 이름 모를 관측기구인데 어디에도 기록이 없다. 학교는 버리라고 했고, 고물상은 값을 쳐 주겠다고 한다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 6,
+     "to": 32
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "무엇인지 알아낸다",
+     "requirements": [],
+     "cost": {
+      "energy": -14,
+      "stress": 5
+     },
+     "check": {
+      "stat": "craft",
+      "difficulty": 52
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "백 년 전 항해용 각도기였다. 지금 기준으로도 오차가 작다. 복원해서 다시 쓰기 시작하자 교수들이 하나씩 구경하러 왔다.",
+       "effects": {
+        "stats": {
+         "craft": 14,
+         "starsense": 6
+        },
+        "reputation": 12,
+        "affinity": {
+         "gu": 10
+        },
+        "flags": {
+         "opp.instrument": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "분해까지는 했는데 조립이 되지 않았다. 부품 여섯 개가 남았다. 구 노인이 그걸 보고 말했다. \"남은 게 여섯이면 처음부터 여섯을 잘못 뺀 거다.\"",
+       "effects": {
+        "stats": {
+         "craft": 6
+        },
+        "stress": 10,
+        "affinity": {
+         "gu": 4
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "고물상에 넘긴다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "생각보다 값을 후하게 쳐 주었다. 그게 오히려 마음에 걸려 며칠 뒤 고물상에 다시 가 봤더니 이미 팔린 뒤였다.",
+       "effects": {
+        "gold": 160,
+        "stress": 5
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "천을 다시 덮어 둔다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "창고 문을 닫으며 위치를 외워 뒀다. 언젠가 손이 늘면 다시 오겠다고 생각했고, 그런 생각은 대개 지켜지지 않는다.",
+       "effects": {
+        "stats": {
+         "sensibility": 4
+        },
+        "stress": -4
+       }
+      }
+     ]
+    }
+   ],
+   "deck": 1
+  },
+  {
+   "id": "opp.pawned-book",
+   "category": "opportunity",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "전당포의 책",
+   "art_key": "bg_plaza",
+   "body": "전당포 진열장에 낡은 천문서가 놓여 있다. 아카데미 장서인이 찍혀 있는 걸 보면 누군가 몰래 내다 판 것이다. 값은 만만찮고, 주인은 출처를 묻지 말라고 한다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 8,
+     "to": 32
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "사서 서고에 돌려놓는다",
+     "requirements": [
+      {
+       "type": "resource",
+       "resource": "gold",
+       "target": 130
+      }
+     ],
+     "cost": {
+      "gold": -130
+     },
+     "check": null,
+     "locked_reason": "금화 130 이상이어야 한다",
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "사서는 책을 받아 들고 오래 말이 없었다. \"이거 십 년 전에 없어진 겁니다.\" 누가 가져갔는지는 끝내 밝혀지지 않았지만, 그 뒤로 서고 열쇠가 하나 늘었다.",
+       "effects": {
+        "stats": {
+         "intellect": 10
+        },
+        "reputation": 14,
+        "affinity": {
+         "sera": 10
+        },
+        "flags": {
+         "opp.book_returned": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "학교에 신고한다",
+     "requirements": [],
+     "cost": {
+      "stress": 5
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "조사가 시작되자 전당포 주인은 책을 맡긴 사람 이름을 댔다. 아카데미 사람이었고, 사정이 딱했다. 책은 돌아왔고 그 사람은 돌아오지 않았다.",
+       "effects": {
+        "stats": {
+         "etiquette": 6
+        },
+        "reputation": 8,
+        "stress": 8
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "못 본 척한다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "이튿날 그 자리에 다른 물건이 놓여 있었다. 팔린 것이다. 어디로 갔는지 궁금해하다 말았다.",
+       "effects": {
+        "stress": 3,
+        "stats": {
+         "sensibility": 3
+        }
+       }
+      }
+     ]
+    }
+   ],
+   "deck": 2
+  },
+  {
+   "id": "opp.plague-ward",
+   "category": "opportunity",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "열병이 도는 골목",
+   "art_key": "bg_plaza",
+   "body": "남쪽 골목에 열병이 돌아 사람들이 나오지 않는다. 의원 한 명이 혼자 감당하는 중이고, 아카데미는 학생 출입을 금했다. 금지는 벌이 있고 골목에는 일손이 없다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 12,
+     "to": 32
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "몰래 가서 돕는다",
+     "requirements": [],
+     "cost": {
+      "energy": -16,
+      "stress": 8
+     },
+     "check": {
+      "stat": "stamina",
+      "difficulty": 46
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "닷새를 물 나르고 약을 달였다. 열이 잦아들 무렵 의원이 이름을 물었고, 견습생은 대답하지 않았다. 골목 사람들이 알아서 이름을 알아냈다.",
+       "effects": {
+        "stats": {
+         "stamina": 10,
+         "etiquette": 6
+        },
+        "reputation": 16,
+        "stress": 6
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "사흘째에 견습생도 열이 났다. 의원이 되레 견습생을 눕혔다. 일주일을 앓고 나서야 방으로 돌아왔고, 학교는 끝내 몰랐다.",
+       "effects": {
+        "stats": {
+         "stamina": 4
+        },
+        "energy": -25,
+        "stress": 14,
+        "reputation": 4
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "약값을 보태고 돌아온다",
+     "requirements": [
+      {
+       "type": "resource",
+       "resource": "gold",
+       "target": 100
+      }
+     ],
+     "cost": {
+      "gold": -100
+     },
+     "check": null,
+     "locked_reason": "금화 100 이상이어야 한다",
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "의원은 돈을 세지 않고 받았다. 열흘 뒤 골목이 열렸을 때 누가 보탰는지는 아무도 몰랐다. 견습생도 말하지 않았다.",
+       "effects": {
+        "stats": {
+         "etiquette": 8,
+         "sensibility": 6
+        },
+        "reputation": 6
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "금지를 지킨다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "이 주 뒤 골목이 열렸다. 몇 집이 비었다는 말을 들었다. 견습생은 그 골목으로 가는 길을 한동안 돌아서 다녔다.",
+       "effects": {
+        "stress": 8,
+        "stats": {
+         "sensibility": 4
+        }
+       }
+      }
+     ]
+    }
+   ],
+   "deck": 0
+  },
+  {
+   "id": "opp.printing-error",
+   "category": "opportunity",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "인쇄된 오류",
+   "art_key": "bg_tower",
+   "body": "올해 관측 연감이 나왔다. 펼쳐 보니 칠월 도표의 좌표가 통째로 한 줄씩 밀려 있다. 이미 삼백 부가 나갔고, 편집자는 아카데미에서 가장 성마른 사람이다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 8,
+     "to": 30
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "편집자에게 직접 말한다",
+     "requirements": [],
+     "cost": {
+      "stress": 8
+     },
+     "check": {
+      "stat": "courage",
+      "difficulty": 44
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "편집자는 삼십 분을 화냈고 그다음 삼십 분은 정오표를 만들었다. 마지막에 이렇게 말했다. \"자네가 아니었으면 내년까지 몰랐겠지.\"",
+       "effects": {
+        "stats": {
+         "courage": 10,
+         "intellect": 5
+        },
+        "reputation": 12
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "말을 꺼내자마자 자기 도표를 의심하느냐는 호통이 돌아왔다. 정오표는 두 달 뒤에야 나왔고, 그때는 다른 사람이 지적한 것으로 돼 있었다.",
+       "effects": {
+        "stress": 14,
+        "stats": {
+         "courage": 4
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "정오표를 만들어 조용히 끼워 넣는다",
+     "requirements": [],
+     "cost": {
+      "energy": -12
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "밤새 삼백 장을 찍어 서고의 연감마다 끼웠다. 누가 했는지는 알려지지 않았고, 칠월 도표를 쓴 사람들은 아무 문제도 겪지 않았다.",
+       "effects": {
+        "stats": {
+         "intellect": 8,
+         "craft": 5
+        },
+        "stress": 6,
+        "flags": {
+         "opp.errata": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "덮어 둔다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "칠월에 여러 사람이 헛수고를 했다. 원인을 찾느라 두 주가 걸렸고, 그때쯤 견습생은 그 도표를 본 적이 없다고 스스로도 믿게 됐다.",
+       "effects": {
+        "stress": 8,
+        "reputation": -4
+       }
+      }
+     ]
+    }
+   ],
+   "deck": 1
+  },
+  {
    "id": "opp.rain-archive",
    "category": "opportunity",
-   "deck": 1,
+   "deck": 2,
    "weight": 7,
    "cooldown_turns": 5,
    "title": "비 새는 서고",
@@ -5144,6 +6457,106 @@
      ]
     }
    ]
+  },
+  {
+   "id": "opp.rival-school",
+   "category": "opportunity",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "건너편 학당의 제안",
+   "art_key": "bg_plaza",
+   "body": "남쪽 학당 교수가 찾아왔다. \"우리는 수업료를 받지 않네. 대신 졸업 뒤 삼 년을 우리 쪽에서 일해 주면 되고.\" 조건은 나쁘지 않고, 남은 학기 학비가 지금 부담스럽다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 10,
+     "to": 28
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "거절한다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "교수는 서운해하지 않았다. \"그럴 줄 알았네. 그래도 물어봐야 했고.\" 그 얘기가 어떻게 새어 나갔는지, 며칠 뒤 세라가 한 마디 했다. \"들었다.\"",
+       "effects": {
+        "stats": {
+         "courage": 8
+        },
+        "affinity": {
+         "sera": 10
+        },
+        "reputation": 6
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "조건을 자세히 따져 본다",
+     "requirements": [],
+     "cost": {
+      "energy": -8
+     },
+     "check": {
+      "stat": "commerce",
+      "difficulty": 46
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "삼 년 봉급이 시세의 절반이었다. 학비를 갚는 셈 치면 오히려 손해다. 계산을 보여 주자 교수는 말없이 서류를 접었다.",
+       "effects": {
+        "stats": {
+         "commerce": 12
+        },
+        "gold": 40,
+        "reputation": 8
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "숫자를 아무리 봐도 손해인지 이득인지 판단이 서지 않았다. 사흘을 끌다 결국 대답하지 못했고, 제안은 저절로 사라졌다.",
+       "effects": {
+        "stats": {
+         "commerce": 5
+        },
+        "stress": 10
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "받아들인다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "학비 걱정이 사라졌다. 대신 아카데미 사람들이 견습생을 대하는 방식이 미묘하게 달라졌다. 무엇이 달라졌는지는 말로 하기 어려웠다.",
+       "effects": {
+        "gold": 300,
+        "reputation": -14,
+        "affinity": {
+         "sera": -10
+        },
+        "flags": {
+         "opp.south_contract": 1
+        }
+       }
+      }
+     ]
+    }
+   ],
+   "deck": 0
   },
   {
    "id": "opp.stage-understudy",
@@ -5248,7 +6661,7 @@
   {
    "id": "opp.stray-cat",
    "category": "opportunity",
-   "deck": 1,
+   "deck": 2,
    "weight": 6,
    "cooldown_turns": 6,
    "title": "처마 밑의 손님",
@@ -5320,6 +6733,335 @@
      ]
     }
    ]
+  },
+  {
+   "id": "opp.strike-kitchen",
+   "category": "opportunity",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "멈춘 식당",
+   "art_key": "bg_plaza",
+   "body": "아카데미 식당 일꾼들이 일손을 놓았다. 넉 달째 임금이 밀렸다는 것이다. 학교는 예산을 이유로 들고, 학생들은 끼니를 걱정한다. 양쪽 다 견습생에게 편을 들라고 한다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 12,
+     "to": 32
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "장부를 열어 보자고 제안한다",
+     "requirements": [],
+     "cost": {
+      "energy": -10,
+      "stress": 6
+     },
+     "check": {
+      "stat": "commerce",
+      "difficulty": 52
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "예산은 있었다. 다만 다른 항목에 묶여 있었다. 그 사실이 드러나자 사흘 만에 임금이 나왔다. 학교는 견습생을 고마워하지 않았고 일꾼들은 고마워했다.",
+       "effects": {
+        "stats": {
+         "commerce": 14
+        },
+        "reputation": 16,
+        "affinity": {
+         "harin": 10
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "장부는 끝내 열리지 않았다. 대신 견습생이 나섰다는 사실만 양쪽에 알려졌다. 그해 식당에서 견습생의 밥그릇은 늘 조금 더 담겨 있었다.",
+       "effects": {
+        "stats": {
+         "commerce": 6
+        },
+        "reputation": 4,
+        "stress": 10
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "학생들을 모아 임시로 밥을 짓는다",
+     "requirements": [],
+     "cost": {
+      "energy": -14
+     },
+     "check": {
+      "stat": "eloquence",
+      "difficulty": 44
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "엿새 동안 학생들이 돌아가며 솥을 걸었다. 맛은 형편없었지만 아무도 굶지 않았다. 일꾼들이 돌아온 날 학생들이 박수를 쳤다.",
+       "effects": {
+        "stats": {
+         "eloquence": 12,
+         "stamina": 6
+        },
+        "reputation": 14,
+        "stress": 6
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "이틀 만에 사람이 모이지 않았다. 솥은 식었고 견습생 혼자 남아 설거지를 했다. 그래도 그 이틀은 누군가 밥을 먹었다.",
+       "effects": {
+        "stats": {
+         "stamina": 5
+        },
+        "stress": 12,
+        "reputation": 4
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "편을 들지 않는다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "이 주 뒤 임금이 나왔고 식당이 다시 열렸다. 견습생에게 고맙다고 한 사람도, 원망한 사람도 없었다.",
+       "effects": {
+        "stress": 4,
+        "stats": {
+         "etiquette": 3
+        }
+       }
+      }
+     ]
+    }
+   ],
+   "deck": 0
+  },
+  {
+   "id": "opp.tax-clerk",
+   "category": "opportunity",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "세금 서기의 실수",
+   "art_key": "bg_plaza",
+   "body": "시장 좌판 상인들이 세금 고지서를 들고 웅성거린다. 같은 좌판에 두 번 매겨졌다는 것이다. 서기는 규정대로 했다고 하고, 상인들은 셈을 못 한다. 종이 뭉치가 견습생 앞에 밀려온다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 6,
+     "to": 32
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "고지서를 처음부터 다시 계산한다",
+     "requirements": [],
+     "cost": {
+      "energy": -12
+     },
+     "check": {
+      "stat": "commerce",
+      "difficulty": 45
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "이중 과세가 열한 건 나왔다. 서기는 얼굴이 붉어졌지만 정정해 주었다. 그날 시장에서 견습생은 어디를 가도 값을 깎아 주겠다는 말을 들었다.",
+       "effects": {
+        "stats": {
+         "commerce": 12
+        },
+        "reputation": 12,
+        "affinity": {
+         "harin": 8
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "숫자를 두 번 돌렸는데 결론이 두 번 달랐다. 상인들이 흩어지고 나서야 어디서 틀렸는지 알았다. 늦었다.",
+       "effects": {
+        "stats": {
+         "commerce": 5
+        },
+        "stress": 10
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "서기와 상인 사이를 중재한다",
+     "requirements": [],
+     "cost": {
+      "stress": 5
+     },
+     "check": {
+      "stat": "eloquence",
+      "difficulty": 40
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "양쪽 다 조금씩 물러섰다. 서기는 재검토를 약속했고 상인들은 사흘을 기다리기로 했다. 사흘 뒤 고지서가 정말 고쳐졌다.",
+       "effects": {
+        "stats": {
+         "eloquence": 10,
+         "etiquette": 5
+        },
+        "reputation": 8
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "말이 길어질수록 양쪽 다 견습생을 상대편으로 봤다. 결국 아무도 만족하지 않은 채 흩어졌다.",
+       "effects": {
+        "stress": 12,
+        "reputation": -5,
+        "stats": {
+         "eloquence": 3
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "상관하지 않는다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "며칠 뒤 좌판 몇 개가 비었다. 세금을 두 번 낸 사람들이 자리를 접은 것이다. 시장은 그만큼 조용해졌다.",
+       "effects": {
+        "stress": 4,
+        "stats": {
+         "sensibility": 3
+        }
+       }
+      }
+     ]
+    }
+   ],
+   "deck": 1
+  },
+  {
+   "id": "opp.wager-table",
+   "category": "opportunity",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "뒷골목의 판",
+   "art_key": "bg_plaza",
+   "body": "주점 뒷방. 다음 달 첫눈이 언제 올지 걸고 판을 벌이는 중이다. 기상은 별과 무관하지 않고, 견습생은 그걸 배웠다. 판돈은 적지 않다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 9,
+     "to": 32
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "계산해서 건다",
+     "requirements": [
+      {
+       "type": "resource",
+       "resource": "gold",
+       "target": 60
+      }
+     ],
+     "cost": {
+      "gold": -60
+     },
+     "check": {
+      "stat": "intellect",
+      "difficulty": 50
+     },
+     "locked_reason": "금화 60 이상이어야 한다",
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "이틀 오차로 맞혔다. 판돈을 쓸어 담는 동안 아무도 말이 없었다. 다음 판부터 견습생은 초대받지 못했다.",
+       "effects": {
+        "gold": 260,
+        "stats": {
+         "intellect": 8
+        },
+        "stress": 4
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "첫눈은 예상보다 아흐레 늦었다. 판돈은 사라졌고, 계산이 어디서 틀렸는지는 그 뒤로 사흘을 더 붙들었다.",
+       "effects": {
+        "stats": {
+         "intellect": 6
+        },
+        "stress": 12
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "판이 어떻게 도는지만 본다",
+     "requirements": [],
+     "cost": {
+      "energy": -6
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "두 시간 앉아 있으니 물주가 어떻게 이기는지 보였다. 날씨를 맞히는 게 아니라 배당을 짜는 쪽이 늘 남긴다. 그건 하늘 얘기가 아니었다.",
+       "effects": {
+        "stats": {
+         "commerce": 10,
+         "intellect": 4
+        },
+        "affinity": {
+         "harin": 6
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "나온다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "주점 문을 나서니 찬 공기가 훅 들어왔다. 첫눈은 그로부터 삼 주 뒤에 왔다.",
+       "effects": {
+        "stress": -5
+       }
+      }
+     ]
+    }
+   ],
+   "deck": 2
   },
   {
    "id": "path.declaration",
