@@ -1,0 +1,842 @@
+{
+  "schema": "actions-v1",
+  "note": "비용은 카테고리 안에서도 차등화한다. 구 구현은 수업 6종·일 6종·외출 4종이 각각 비용 튜플 1개로 완전히 동일했다. 주 스탯은 전액, 부차 스탯은 절반을 받는다.",
+  "recovery_formula": {
+    "stamina_scaled": "18 + floor(stamina/6)",
+    "fixed_30": 30
+  },
+  "actions": [
+    {
+      "id": "lesson.letters.basic",
+      "category": "lesson",
+      "line": "letters",
+      "tier": "basic",
+      "label": "문장학",
+      "place": "도서관 강의실",
+      "description": "고문서와 기록법을 배운다. 기초 과정이다.",
+      "stat": "intellect",
+      "npc_tag": "sera",
+      "cost": {
+        "gold": -20,
+        "energy": -8,
+        "stress": 5
+      },
+      "unlock": null,
+      "flag": "lesson:letters",
+      "secondary": "etiquette"
+    },
+    {
+      "id": "lesson.letters.advanced",
+      "category": "lesson",
+      "line": "letters",
+      "tier": "advanced",
+      "label": "심화 문장학",
+      "place": "도서관 강의실",
+      "description": "고문서와 기록법을 배운다. 심화 과정이다.",
+      "stat": "intellect",
+      "npc_tag": "sera",
+      "cost": {
+        "gold": -40,
+        "energy": -12,
+        "stress": 9
+      },
+      "unlock": {
+        "stat_min": 40,
+        "line_count": 4
+      },
+      "flag": "lesson:letters",
+      "secondary": "etiquette"
+    },
+    {
+      "id": "lesson.letters.arcane",
+      "category": "lesson",
+      "line": "letters",
+      "tier": "arcane",
+      "label": "비전 문장학",
+      "place": "도서관 강의실",
+      "description": "고문서와 기록법을 배운다. 비전 과정이다.",
+      "stat": "intellect",
+      "npc_tag": "sera",
+      "cost": {
+        "gold": -68,
+        "energy": -18,
+        "stress": 14
+      },
+      "unlock": {
+        "stat_min": 65,
+        "affinity_min": 45,
+        "month_min": 7
+      },
+      "flag": "lesson:letters",
+      "secondary": "etiquette"
+    },
+    {
+      "id": "lesson.music.basic",
+      "category": "lesson",
+      "line": "music",
+      "tier": "basic",
+      "label": "음률",
+      "place": "극장 연습실",
+      "description": "선율과 시구를 익힌다. 기초 과정이다.",
+      "stat": "sensibility",
+      "npc_tag": "yun",
+      "cost": {
+        "gold": -25,
+        "energy": -10,
+        "stress": 6
+      },
+      "unlock": null,
+      "flag": "lesson:music",
+      "secondary": "eloquence"
+    },
+    {
+      "id": "lesson.music.advanced",
+      "category": "lesson",
+      "line": "music",
+      "tier": "advanced",
+      "label": "심화 음률",
+      "place": "극장 연습실",
+      "description": "선율과 시구를 익힌다. 심화 과정이다.",
+      "stat": "sensibility",
+      "npc_tag": "yun",
+      "cost": {
+        "gold": -50,
+        "energy": -15,
+        "stress": 11
+      },
+      "unlock": {
+        "stat_min": 40,
+        "line_count": 4
+      },
+      "flag": "lesson:music",
+      "secondary": "eloquence"
+    },
+    {
+      "id": "lesson.music.arcane",
+      "category": "lesson",
+      "line": "music",
+      "tier": "arcane",
+      "label": "비전 음률",
+      "place": "극장 연습실",
+      "description": "선율과 시구를 익힌다. 비전 과정이다.",
+      "stat": "sensibility",
+      "npc_tag": "yun",
+      "cost": {
+        "gold": -85,
+        "energy": -22,
+        "stress": 17
+      },
+      "unlock": {
+        "stat_min": 65,
+        "affinity_min": 45,
+        "month_min": 7
+      },
+      "flag": "lesson:music",
+      "secondary": "eloquence"
+    },
+    {
+      "id": "lesson.manners.basic",
+      "category": "lesson",
+      "line": "manners",
+      "tier": "basic",
+      "label": "예법",
+      "place": "예법당",
+      "description": "격식과 응대를 몸에 새긴다. 기초 과정이다.",
+      "stat": "etiquette",
+      "npc_tag": "moran",
+      "cost": {
+        "gold": -30,
+        "energy": -7,
+        "stress": 6
+      },
+      "unlock": null,
+      "flag": "lesson:manners",
+      "secondary": "eloquence"
+    },
+    {
+      "id": "lesson.manners.advanced",
+      "category": "lesson",
+      "line": "manners",
+      "tier": "advanced",
+      "label": "심화 예법",
+      "place": "예법당",
+      "description": "격식과 응대를 몸에 새긴다. 심화 과정이다.",
+      "stat": "etiquette",
+      "npc_tag": "moran",
+      "cost": {
+        "gold": -60,
+        "energy": -10,
+        "stress": 11
+      },
+      "unlock": {
+        "stat_min": 40,
+        "line_count": 4
+      },
+      "flag": "lesson:manners",
+      "secondary": "eloquence"
+    },
+    {
+      "id": "lesson.manners.arcane",
+      "category": "lesson",
+      "line": "manners",
+      "tier": "arcane",
+      "label": "비전 예법",
+      "place": "예법당",
+      "description": "격식과 응대를 몸에 새긴다. 비전 과정이다.",
+      "stat": "etiquette",
+      "npc_tag": "moran",
+      "cost": {
+        "gold": -102,
+        "energy": -15,
+        "stress": 17
+      },
+      "unlock": {
+        "stat_min": 65,
+        "affinity_min": 45,
+        "month_min": 7
+      },
+      "flag": "lesson:manners",
+      "secondary": "eloquence"
+    },
+    {
+      "id": "lesson.crafts.basic",
+      "category": "lesson",
+      "line": "crafts",
+      "tier": "basic",
+      "label": "공예",
+      "place": "공방",
+      "description": "손끝으로 물건을 만든다. 기초 과정이다.",
+      "stat": "craft",
+      "npc_tag": "gu",
+      "cost": {
+        "gold": -22,
+        "energy": -14,
+        "stress": 5
+      },
+      "unlock": null,
+      "flag": "lesson:crafts",
+      "secondary": "stamina"
+    },
+    {
+      "id": "lesson.crafts.advanced",
+      "category": "lesson",
+      "line": "crafts",
+      "tier": "advanced",
+      "label": "심화 공예",
+      "place": "공방",
+      "description": "손끝으로 물건을 만든다. 심화 과정이다.",
+      "stat": "craft",
+      "npc_tag": "gu",
+      "cost": {
+        "gold": -44,
+        "energy": -21,
+        "stress": 9
+      },
+      "unlock": {
+        "stat_min": 40,
+        "line_count": 4
+      },
+      "flag": "lesson:crafts",
+      "secondary": "stamina"
+    },
+    {
+      "id": "lesson.crafts.arcane",
+      "category": "lesson",
+      "line": "crafts",
+      "tier": "arcane",
+      "label": "비전 공예",
+      "place": "공방",
+      "description": "손끝으로 물건을 만든다. 비전 과정이다.",
+      "stat": "craft",
+      "npc_tag": "gu",
+      "cost": {
+        "gold": -75,
+        "energy": -31,
+        "stress": 14
+      },
+      "unlock": {
+        "stat_min": 65,
+        "affinity_min": 45,
+        "month_min": 7
+      },
+      "flag": "lesson:crafts",
+      "secondary": "stamina"
+    },
+    {
+      "id": "lesson.drill.basic",
+      "category": "lesson",
+      "line": "drill",
+      "tier": "basic",
+      "label": "단련",
+      "place": "연무장",
+      "description": "몸을 쓰는 법을 배운다. 기초 과정이다.",
+      "stat": "stamina",
+      "npc_tag": "gu",
+      "cost": {
+        "gold": -10,
+        "energy": -18,
+        "stress": 3
+      },
+      "unlock": null,
+      "flag": "lesson:drill",
+      "secondary": "courage"
+    },
+    {
+      "id": "lesson.drill.advanced",
+      "category": "lesson",
+      "line": "drill",
+      "tier": "advanced",
+      "label": "심화 단련",
+      "place": "연무장",
+      "description": "몸을 쓰는 법을 배운다. 심화 과정이다.",
+      "stat": "stamina",
+      "npc_tag": "gu",
+      "cost": {
+        "gold": -20,
+        "energy": -27,
+        "stress": 5
+      },
+      "unlock": {
+        "stat_min": 40,
+        "line_count": 4
+      },
+      "flag": "lesson:drill",
+      "secondary": "courage"
+    },
+    {
+      "id": "lesson.drill.arcane",
+      "category": "lesson",
+      "line": "drill",
+      "tier": "arcane",
+      "label": "비전 단련",
+      "place": "연무장",
+      "description": "몸을 쓰는 법을 배운다. 비전 과정이다.",
+      "stat": "stamina",
+      "npc_tag": "gu",
+      "cost": {
+        "gold": -34,
+        "energy": -40,
+        "stress": 8
+      },
+      "unlock": {
+        "stat_min": 65,
+        "affinity_min": 45,
+        "month_min": 7
+      },
+      "flag": "lesson:drill",
+      "secondary": "courage"
+    },
+    {
+      "id": "lesson.starlore.basic",
+      "category": "lesson",
+      "line": "starlore",
+      "tier": "basic",
+      "label": "별빛학",
+      "place": "천문탑",
+      "description": "별의 운행과 감응을 읽는다. 기초 과정이다.",
+      "stat": "starsense",
+      "npc_tag": "sera",
+      "cost": {
+        "gold": -35,
+        "energy": -12,
+        "stress": 8
+      },
+      "unlock": null,
+      "flag": "lesson:starlore",
+      "secondary": "intellect"
+    },
+    {
+      "id": "lesson.starlore.advanced",
+      "category": "lesson",
+      "line": "starlore",
+      "tier": "advanced",
+      "label": "심화 별빛학",
+      "place": "천문탑",
+      "description": "별의 운행과 감응을 읽는다. 심화 과정이다.",
+      "stat": "starsense",
+      "npc_tag": "sera",
+      "cost": {
+        "gold": -70,
+        "energy": -18,
+        "stress": 14
+      },
+      "unlock": {
+        "stat_min": 40,
+        "line_count": 4
+      },
+      "flag": "lesson:starlore",
+      "secondary": "intellect"
+    },
+    {
+      "id": "lesson.starlore.arcane",
+      "category": "lesson",
+      "line": "starlore",
+      "tier": "arcane",
+      "label": "비전 별빛학",
+      "place": "천문탑",
+      "description": "별의 운행과 감응을 읽는다. 비전 과정이다.",
+      "stat": "starsense",
+      "npc_tag": "sera",
+      "cost": {
+        "gold": -119,
+        "energy": -26,
+        "stress": 22
+      },
+      "unlock": {
+        "stat_min": 65,
+        "affinity_min": 45,
+        "month_min": 7
+      },
+      "flag": "lesson:starlore",
+      "secondary": "intellect"
+    },
+    {
+      "id": "work.chores",
+      "category": "work",
+      "line": "chores",
+      "tier": "basic",
+      "label": "잡일",
+      "place": "광장 어귀",
+      "description": "누구나 할 수 있는 잔심부름. 언제든 가능하다.",
+      "stat": "commerce",
+      "npc_tag": "harin",
+      "cost": {
+        "gold": 18,
+        "energy": -12,
+        "stress": 8
+      },
+      "unlock": null,
+      "always_available": true,
+      "flag": "work:chores",
+      "secondary": "stamina"
+    },
+    {
+      "id": "work.scribe",
+      "category": "work",
+      "line": "scribe",
+      "tier": "basic",
+      "label": "서기 보조",
+      "place": "관청 문서실",
+      "description": "문서를 옮겨 적으며 삯을 받는다.",
+      "stat": "intellect",
+      "npc_tag": "sera",
+      "cost": {
+        "gold": 45,
+        "energy": -14,
+        "stress": 10
+      },
+      "unlock": null,
+      "always_available": false,
+      "flag": "work:scribe",
+      "secondary": "etiquette"
+    },
+    {
+      "id": "work.workshop",
+      "category": "work",
+      "line": "workshop",
+      "tier": "basic",
+      "label": "공방 조수",
+      "place": "구 노인 공방",
+      "description": "풀무와 끌을 다루며 삯을 받는다.",
+      "stat": "craft",
+      "npc_tag": "gu",
+      "cost": {
+        "gold": 38,
+        "energy": -18,
+        "stress": 7
+      },
+      "unlock": null,
+      "always_available": false,
+      "flag": "work:workshop",
+      "secondary": "stamina"
+    },
+    {
+      "id": "work.teahouse",
+      "category": "work",
+      "line": "teahouse",
+      "tier": "basic",
+      "label": "찻집 일",
+      "place": "달빛 찻집",
+      "description": "손님을 맞으며 삯을 받는다.",
+      "stat": "etiquette",
+      "npc_tag": "moran",
+      "cost": {
+        "gold": 34,
+        "energy": -11,
+        "stress": 9
+      },
+      "unlock": null,
+      "always_available": false,
+      "flag": "work:teahouse",
+      "secondary": "eloquence"
+    },
+    {
+      "id": "work.market",
+      "category": "work",
+      "line": "market",
+      "tier": "basic",
+      "label": "시장 상회",
+      "place": "밤시장",
+      "description": "장부와 흥정을 배우며 삯을 받는다.",
+      "stat": "commerce",
+      "npc_tag": "harin",
+      "cost": {
+        "gold": 42,
+        "energy": -13,
+        "stress": 11
+      },
+      "unlock": null,
+      "always_available": false,
+      "flag": "work:market",
+      "secondary": "eloquence"
+    },
+    {
+      "id": "work.watch",
+      "category": "work",
+      "line": "watch",
+      "tier": "basic",
+      "label": "야경 순찰",
+      "place": "성벽 초소",
+      "description": "밤을 지키며 삯을 받는다.",
+      "stat": "courage",
+      "npc_tag": "eden",
+      "cost": {
+        "gold": 40,
+        "energy": -20,
+        "stress": 9
+      },
+      "unlock": null,
+      "always_available": false,
+      "flag": "work:watch",
+      "secondary": "stamina"
+    },
+    {
+      "id": "outing.plaza",
+      "category": "outing",
+      "line": "plaza",
+      "tier": "basic",
+      "label": "광장 나들이",
+      "place": "별잎 광장",
+      "description": "사람들 틈에서 말을 배운다.",
+      "stat": "eloquence",
+      "npc_tag": "harin",
+      "cost": {
+        "gold": -12,
+        "energy": -5,
+        "stress": -10
+      },
+      "unlock": null,
+      "flag": "outing:plaza",
+      "secondary": "etiquette"
+    },
+    {
+      "id": "outing.park",
+      "category": "outing",
+      "line": "park",
+      "tier": "basic",
+      "label": "공원 산책",
+      "place": "별잎 공원",
+      "description": "바람을 맞으며 마음을 고른다.",
+      "stat": "sensibility",
+      "npc_tag": "yun",
+      "cost": {
+        "gold": -8,
+        "energy": -4,
+        "stress": -12
+      },
+      "unlock": null,
+      "flag": "outing:park",
+      "secondary": "starsense"
+    },
+    {
+      "id": "outing.library",
+      "category": "outing",
+      "line": "library",
+      "tier": "basic",
+      "label": "서고 탐방",
+      "place": "지하 서고",
+      "description": "아무도 찾지 않는 책장을 뒤진다.",
+      "stat": "intellect",
+      "npc_tag": "sera",
+      "cost": {
+        "gold": -15,
+        "energy": -6,
+        "stress": -8
+      },
+      "unlock": null,
+      "flag": "outing:library",
+      "secondary": "starsense"
+    },
+    {
+      "id": "outing.ridge",
+      "category": "outing",
+      "line": "ridge",
+      "tier": "basic",
+      "label": "성벽 등반",
+      "place": "북쪽 성벽",
+      "description": "높은 데서 도시를 내려다본다.",
+      "stat": "courage",
+      "npc_tag": "eden",
+      "cost": {
+        "gold": -10,
+        "energy": -12,
+        "stress": -9
+      },
+      "unlock": null,
+      "flag": "outing:ridge",
+      "secondary": "stamina"
+    },
+    {
+      "id": "outing.bazaar",
+      "category": "outing",
+      "line": "bazaar",
+      "tier": "basic",
+      "label": "장터 구경",
+      "place": "밤시장",
+      "description": "물건값을 눈으로 익힌다.",
+      "stat": "commerce",
+      "npc_tag": "harin",
+      "cost": {
+        "gold": -18,
+        "energy": -6,
+        "stress": -11
+      },
+      "unlock": null,
+      "flag": "outing:bazaar"
+    },
+    {
+      "id": "rest.home",
+      "category": "rest",
+      "line": "home",
+      "tier": "basic",
+      "label": "집에서 쉬기",
+      "place": "견습생 방",
+      "description": "아무것도 하지 않는다. 언제나 가능하다.",
+      "stat": null,
+      "npc_tag": null,
+      "cost": {
+        "gold": 0,
+        "energy": 0,
+        "stress": -16
+      },
+      "recovery": "stamina_scaled",
+      "unlock": null,
+      "always_available": true,
+      "flag": "rest:home"
+    },
+    {
+      "id": "rest.stars",
+      "category": "rest",
+      "line": "stars",
+      "tier": "basic",
+      "label": "별 보기",
+      "place": "지붕 위",
+      "description": "말없이 하늘을 올려다본다.",
+      "stat": null,
+      "npc_tag": null,
+      "cost": {
+        "gold": 0,
+        "energy": 0,
+        "stress": -20
+      },
+      "recovery": "stamina_scaled",
+      "unlock": null,
+      "always_available": true,
+      "flag": "rest:stars"
+    },
+    {
+      "id": "rest.spring",
+      "category": "rest",
+      "line": "spring",
+      "tier": "basic",
+      "label": "온천",
+      "place": "북쪽 온천",
+      "description": "뜨거운 물에 몸을 담근다.",
+      "stat": null,
+      "npc_tag": null,
+      "cost": {
+        "gold": -50,
+        "energy": 0,
+        "stress": -30
+      },
+      "recovery": "fixed_30",
+      "unlock": null,
+      "always_available": false,
+      "flag": "rest:spring"
+    },
+    {
+      "id": "path.star",
+      "category": "path",
+      "line": "star",
+      "tier": "arcane",
+      "label": "관측",
+      "place": "천문탑 첨탑",
+      "description": "별의 운행을 스스로 기록한다. 별의 길을 선언해야 열린다.",
+      "stat": "starsense",
+      "npc_tag": "sera",
+      "cost": {
+        "gold": -70,
+        "energy": -22,
+        "stress": 14
+      },
+      "unlock": {
+        "declared_path": "star",
+        "month_min": 7
+      },
+      "flag": "path:star",
+      "secondary": "intellect"
+    },
+    {
+      "id": "path.letters",
+      "category": "path",
+      "line": "letters",
+      "tier": "arcane",
+      "label": "편찬",
+      "place": "필사실 안쪽",
+      "description": "흩어진 기록을 하나로 엮는다. 글의 길을 선언해야 열린다.",
+      "stat": "intellect",
+      "npc_tag": "sera",
+      "cost": {
+        "gold": -70,
+        "energy": -22,
+        "stress": 14
+      },
+      "unlock": {
+        "declared_path": "letters",
+        "month_min": 7
+      },
+      "flag": "path:letters",
+      "secondary": "etiquette"
+    },
+    {
+      "id": "path.craft",
+      "category": "path",
+      "line": "craft",
+      "tier": "arcane",
+      "label": "벼림",
+      "place": "공방 안뜰",
+      "description": "직접 설계한 물건을 만든다. 손의 길을 선언해야 열린다.",
+      "stat": "craft",
+      "npc_tag": "gu",
+      "cost": {
+        "gold": -70,
+        "energy": -22,
+        "stress": 14
+      },
+      "unlock": {
+        "declared_path": "craft",
+        "month_min": 7
+      },
+      "flag": "path:craft",
+      "secondary": "stamina"
+    },
+    {
+      "id": "path.stage",
+      "category": "path",
+      "line": "stage",
+      "tier": "arcane",
+      "label": "연출",
+      "place": "극장 무대",
+      "description": "자기 이름으로 무대를 올린다. 무대의 길을 선언해야 열린다.",
+      "stat": "sensibility",
+      "npc_tag": "yun",
+      "cost": {
+        "gold": -70,
+        "energy": -22,
+        "stress": 14
+      },
+      "unlock": {
+        "declared_path": "stage",
+        "month_min": 7
+      },
+      "flag": "path:stage",
+      "secondary": "eloquence"
+    },
+    {
+      "id": "path.market",
+      "category": "path",
+      "line": "market",
+      "tier": "arcane",
+      "label": "경영",
+      "place": "상회 장부방",
+      "description": "작은 거래를 직접 트고 닫는다. 저잣거리의 길을 선언해야 열린다.",
+      "stat": "commerce",
+      "npc_tag": "harin",
+      "cost": {
+        "gold": -70,
+        "energy": -22,
+        "stress": 14
+      },
+      "unlock": {
+        "declared_path": "market",
+        "month_min": 7
+      },
+      "flag": "path:market",
+      "secondary": "eloquence"
+    },
+    {
+      "id": "path.people",
+      "category": "path",
+      "line": "people",
+      "tier": "arcane",
+      "label": "중재",
+      "place": "회의청",
+      "description": "사람 사이의 말을 조율한다. 사람의 길을 선언해야 열린다.",
+      "stat": "etiquette",
+      "npc_tag": "moran",
+      "cost": {
+        "gold": -70,
+        "energy": -22,
+        "stress": 14
+      },
+      "unlock": {
+        "declared_path": "people",
+        "month_min": 7
+      },
+      "flag": "path:people",
+      "secondary": "eloquence"
+    }
+  ],
+  "paths": [
+    {
+      "id": "star",
+      "label": "별의 길",
+      "stat": "starsense",
+      "npc": "sera"
+    },
+    {
+      "id": "letters",
+      "label": "글의 길",
+      "stat": "intellect",
+      "npc": "sera"
+    },
+    {
+      "id": "craft",
+      "label": "손의 길",
+      "stat": "craft",
+      "npc": "gu"
+    },
+    {
+      "id": "stage",
+      "label": "무대의 길",
+      "stat": "sensibility",
+      "npc": "yun"
+    },
+    {
+      "id": "market",
+      "label": "저잣거리의 길",
+      "stat": "commerce",
+      "npc": "harin"
+    },
+    {
+      "id": "people",
+      "label": "사람의 길",
+      "stat": "etiquette",
+      "npc": "moran"
+    }
+  ],
+  "gain_split": {
+    "primary": 1.0,
+    "secondary": 0.5
+  }
+}
