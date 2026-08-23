@@ -1,97 +1,49 @@
 # starlit-apprentice
 
-별빛 견습생은 한 명의 견습생을 월간 일정으로 키워 1년 뒤 다양한 미래를 여는 픽셀 육성 시뮬레이션 MVP다.
+**별빛 견습생** — 열두 달, 서른여섯 번의 선택으로 견습생의 미래가 갈리는 육성 시뮬레이션.
 
-## Stack
+## 상태
 
-- Canvas renderer + Vite + TypeScript
-- Capacitor bundled-web shell for Android/iOS
-- `packages/product-core` for pure game rules and content data
-- LocalStorage for one progress slot and ending collection
+**재작성 중.** 기존 웹 클라이언트를 Godot 4로 다시 만들고 코어 루프를 재설계하고 있다.
+설계는 [`docs/game-design/`](docs/game-design/)이 원장이고, 진행 단계는 [`docs/04-work/`](docs/04-work/)에 기록한다.
 
-## Commands
+| | |
+|---|---|
+| 엔진 | Godot `4.7.1.stable` |
+| 화면 | 세로 고정 720×1280 |
+| 출시 타깃 | Google Play · Apple App Store · AppsInToss |
+| 언어 | 한국어 (i18n 구조 선반영) |
+| 백엔드 | Firebase + GA4 (로컬 저장, 서버 권위 없음) |
 
-```bash
-pnpm install
-pnpm dev
-pnpm build
-pnpm test
-pnpm assets:generate:registration
-pnpm assets:generate:stores
-pnpm assets:sync:ios-icons
-pnpm assets:sync:android-icons
-pnpm assets:sync:native-splash
-pnpm assets:generate
-pnpm build:android:qa-apk
-pnpm build:android:aab
-pnpm build:ios:release
-pnpm build:apps-in-toss:ait
-pnpm build:apps-in-toss:candidate
-pnpm release:artifact-manifest
-pnpm release:manual-qa-packet
-pnpm release:console-packet
-pnpm release:rating-content-inventory
-pnpm release:public-pages
-pnpm release:store-submission-packet
-pnpm release:gate-dashboard
-pnpm release:approval-packet
-pnpm check:architecture
-pnpm check:assets
-pnpm check:store-config
-pnpm check:store-config:strict
-pnpm check:versioning
-pnpm check:webview-security
-pnpm check:native-bundle-sync
-pnpm check:privacy
-pnpm check:analytics-contract
-pnpm check:third-party-notices
-pnpm check:android:icons
-pnpm check:native-splash
-pnpm check:android:qa-apk
-pnpm check:play
-pnpm check:play:local-artifact
-pnpm check:play:strict
-pnpm check:app-store
-pnpm check:app-store:local-artifact
-pnpm check:app-store:strict
-pnpm check:apps-in-toss
-pnpm check:apps-in-toss:strict
-pnpm check:manual-qa
-pnpm check:manual-qa:strict
-pnpm check:release-console-packet
-pnpm check:release-console
-pnpm check:release-console:strict
-pnpm check:rating-content-inventory
-pnpm check:public-pages
-pnpm check:store-submission-packet
-pnpm check:release-gate-dashboard
-pnpm check:release-approval-packet
-pnpm check:release-approval
-pnpm check:release-approval:strict
-pnpm check:content
-pnpm check:save-contract
-pnpm check:target-guidance
-pnpm check:balance
-pnpm check:pacing
-pnpm check:runtime
-pnpm check:ui-accessibility
-pnpm check:bundle-budget
-pnpm check:package
-pnpm check:public-url-guard
-pnpm check:release-verification-commands
-pnpm check:release-manual-blockers
-pnpm check:release-artifact-manifest
-pnpm check:manual-qa-packet
-pnpm check:release-packages
-pnpm check:release:automated
-pnpm check:release
-pnpm test:e2e
-pnpm qa
-pnpm cap:sync
+## 구조
+
+```text
+packages/product-core/   순수 GDScript 도메인·유스케이스·포트 (extends RefCounted 만)
+autoload/                Godot 싱글턴. 어댑터 조립 지점
+src/                     런타임 — platform(어댑터) · ui · game · content · audio
+data/                    콘텐츠 원장 (actions · events · endings · npcs · route_plans)
+apps/ait/                AppsInToss 래퍼 (Godot Web export 패키징)
+firebase/  play-store/  app-store/  apps-in-toss/   마켓·백엔드 설정
+docs/                    실행 원장 (9폴더 + game-design 설계 팩)
+legacy/                  구 TypeScript 구현. 밸런스 원장으로만 유지하며 이식 완료 시 삭제한다
 ```
 
-## Boundaries
+`legacy/`는 Godot이 스캔하지 않도록 `.gdignore`로 제외돼 있다.
 
-- No remote game URL wrapper. Store builds must bundle the generated `dist` assets inside the native app.
-- No login, payment, server save, sensitive data collection, or production ad SDK in the MVP.
-- No direct reuse of existing IP names, characters, UI, events, or endings.
+## 검증
+
+```bash
+# 구 밸런스 원장 (GDScript 이식 완료 전까지 초록을 유지해야 한다)
+pnpm legacy:all
+
+# 설계 팩 구조
+python3 ~/.claude/skills/game-planning-production/scripts/validate_design_pack.py docs/game-design
+```
+
+Godot 골격이 생기면 `scripts/godot_quality_gate.sh`, `scripts/test_core.sh`, `scripts/test_balance.sh`가 추가된다.
+
+## 경계
+
+- 로그인·서버 세이브·인앱 결제 없음. 저장은 기기 로컬 1슬롯이다.
+- 광고는 Android/iOS 한정이며 진행을 막지 않는다. AppsInToss 웹 빌드는 광고를 싣지 않는다.
+- 기존 IP의 이름·캐릭터·UI·이벤트·엔딩을 직접 복제하지 않는다.

@@ -1,24 +1,10 @@
 packages:
-  - "apps/*"
-  - "packages/*"
+  - "legacy/product-core-ts"
+
+allowBuilds:
+  '@swc/core': set this to true or false
+  esbuild: set this to true or false
+  protobufjs: set this to true or false
+
 onlyBuiltDependencies:
   - esbuild
-allowBuilds:
-  '@sentry/cli': false
-  '@swc/core': true
-  esbuild: true
-  protobufjs: true
-minimumReleaseAgeExclude:
-  - '@apps-in-toss/analytics@2.9.1'
-  - '@apps-in-toss/bridge-core@2.9.1'
-  - '@apps-in-toss/cli@2.9.1'
-  - '@apps-in-toss/framework@2.9.1'
-  - '@apps-in-toss/native-modules@2.9.1'
-  - '@apps-in-toss/plugin-compat@2.9.1'
-  - '@apps-in-toss/plugins@2.9.1'
-  - '@apps-in-toss/types@2.9.1'
-  - '@apps-in-toss/user-scripts@2.9.1'
-  - '@apps-in-toss/web-analytics@2.9.1'
-  - '@apps-in-toss/web-bridge@2.9.1'
-  - '@apps-in-toss/web-config@2.9.1'
-  - '@apps-in-toss/web-framework@2.9.1'
