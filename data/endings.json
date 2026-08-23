@@ -1,0 +1,827 @@
+{
+  "schema": "endings-v1",
+  "note": "구 판정은 priority ?? 배열인덱스였고 priority 30 인 3종이 나머지 26종을 가렸다. 새 판정은 콘텐츠에서 유도되는 특이도 점수이며 band 가 가산된다.",
+  "bands": {
+    "0": "실패",
+    "1": "일상",
+    "2": "전문",
+    "3": "희귀",
+    "4": "전설"
+  },
+  "endings": [
+    {
+      "code": "failed-apprentice",
+      "band": 0,
+      "title": "낙제한 견습생",
+      "summary": "견습생은 결국 과정을 마치지 못했다.",
+      "shareText": "내 견습생은 끝내 과정을 마치지 못했어요.",
+      "hint": "계절 심사에 두 번 낙방하면 도달한다",
+      "requirements": [
+        {
+          "type": "condition",
+          "condition": "failed"
+        }
+      ]
+    },
+    {
+      "code": "in-debt",
+      "band": 0,
+      "title": "빚에 쫓긴 견습생",
+      "summary": "견습생은 학비를 감당하지 못한 채 일 년을 마쳤다.",
+      "shareText": "내 견습생은 빚을 안고 일 년을 마쳤어요.",
+      "hint": "수업료를 계속 감당하지 못하면 도달한다",
+      "requirements": [
+        {
+          "type": "flag",
+          "flag": "in_debt",
+          "target": 1,
+          "label": "빚"
+        }
+      ]
+    },
+    {
+      "code": "quiet-life",
+      "band": 0,
+      "title": "조용한 일상",
+      "summary": "견습생은 특별할 것 없는 하루하루로 돌아갔다.",
+      "shareText": "내 견습생은 조용한 일상을 골랐어요.",
+      "hint": "어떤 진로 조건도 채우지 못하면 도달한다",
+      "requirements": []
+    },
+    {
+      "code": "village-scribe",
+      "band": 1,
+      "title": "마을 서기",
+      "summary": "견습생은 마을의 문서를 맡아 조용히 산다.",
+      "shareText": "내 견습생은 마을 서기가 됐어요.",
+      "hint": "intellect 을 50 이상 쌓기",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "intellect",
+          "target": 50
+        }
+      ]
+    },
+    {
+      "code": "street-player",
+      "band": 1,
+      "title": "거리 악사",
+      "summary": "견습생은 광장 한켠에서 사람들을 멈춰 세운다.",
+      "shareText": "내 견습생은 거리 악사가 됐어요.",
+      "hint": "sensibility 을 50 이상 쌓기",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "sensibility",
+          "target": 50
+        }
+      ]
+    },
+    {
+      "code": "inn-keeper",
+      "band": 1,
+      "title": "여관 안주인",
+      "summary": "견습생은 오가는 사람들의 하룻밤을 돌본다.",
+      "shareText": "내 견습생은 여관 안주인가 됐어요.",
+      "hint": "etiquette 을 48 이상 쌓기",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "etiquette",
+          "target": 48
+        }
+      ]
+    },
+    {
+      "code": "hand-of-forge",
+      "band": 1,
+      "title": "대장간 일손",
+      "summary": "견습생은 불 앞에서 몸으로 배운 것을 쓴다.",
+      "shareText": "내 견습생은 대장간 일손가 됐어요.",
+      "hint": "craft 을 50 이상 쌓기",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "craft",
+          "target": 50
+        }
+      ]
+    },
+    {
+      "code": "road-guard",
+      "band": 1,
+      "title": "길잡이 호위",
+      "summary": "견습생은 오가는 짐과 사람을 지킨다.",
+      "shareText": "내 견습생은 길잡이 호위가 됐어요.",
+      "hint": "courage 을 45 이상 쌓기",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "courage",
+          "target": 45
+        }
+      ]
+    },
+    {
+      "code": "scholar",
+      "band": 2,
+      "title": "별빛 연구자",
+      "summary": "견습생은 별의 기록을 읽는 연구자가 된다.",
+      "shareText": "내 견습생은 별빛 연구자가 됐어요.",
+      "hint": "intellect 65 · starsense 60 그리고 별빛학",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "intellect",
+          "target": 65
+        },
+        {
+          "type": "stat",
+          "stat": "starsense",
+          "target": 60
+        },
+        {
+          "type": "flag",
+          "flag": "lesson:starlore",
+          "target": 4,
+          "label": "별빛학"
+        }
+      ]
+    },
+    {
+      "code": "artisan",
+      "band": 2,
+      "title": "공방 장인",
+      "summary": "견습생은 작은 공방을 책임지는 장인이 된다.",
+      "shareText": "내 견습생은 공방 장인가 됐어요.",
+      "hint": "craft 68 · stamina 55 그리고 공예",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "craft",
+          "target": 68
+        },
+        {
+          "type": "stat",
+          "stat": "stamina",
+          "target": 55
+        },
+        {
+          "type": "flag",
+          "flag": "lesson:crafts",
+          "target": 4,
+          "label": "공예"
+        }
+      ]
+    },
+    {
+      "code": "performer",
+      "band": 2,
+      "title": "무대 예술가",
+      "summary": "견습생은 도시 축제의 무대에 선다.",
+      "shareText": "내 견습생은 무대 예술가가 됐어요.",
+      "hint": "sensibility 68 · eloquence 58 그리고 음률",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "sensibility",
+          "target": 68
+        },
+        {
+          "type": "stat",
+          "stat": "eloquence",
+          "target": 58
+        },
+        {
+          "type": "flag",
+          "flag": "lesson:music",
+          "target": 4,
+          "label": "음률"
+        }
+      ]
+    },
+    {
+      "code": "merchant",
+      "band": 2,
+      "title": "도시 상인",
+      "summary": "견습생은 저잣거리에 자기 자리를 만든다.",
+      "shareText": "내 견습생은 도시 상인가 됐어요.",
+      "hint": "commerce 65 · eloquence 58 그리고 시장 경험",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "commerce",
+          "target": 65
+        },
+        {
+          "type": "stat",
+          "stat": "eloquence",
+          "target": 58
+        },
+        {
+          "type": "flag",
+          "flag": "work:market",
+          "target": 5,
+          "label": "시장 경험"
+        }
+      ]
+    },
+    {
+      "code": "bookbinder",
+      "band": 2,
+      "title": "별책 제본가",
+      "summary": "견습생은 손으로 책을 엮는 사람이 된다.",
+      "shareText": "내 견습생은 별책 제본가가 됐어요.",
+      "hint": "craft 62 · intellect 60 그리고 서기 경험",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "craft",
+          "target": 62
+        },
+        {
+          "type": "stat",
+          "stat": "intellect",
+          "target": 60
+        },
+        {
+          "type": "flag",
+          "flag": "work:scribe",
+          "target": 4,
+          "label": "서기 경험"
+        }
+      ]
+    },
+    {
+      "code": "tea-house-owner",
+      "band": 2,
+      "title": "달빛 찻집 주인",
+      "summary": "견습생은 작은 찻집을 연다.",
+      "shareText": "내 견습생은 달빛 찻집 주인가 됐어요.",
+      "hint": "etiquette 64 · commerce 58 그리고 찻집 경험",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "etiquette",
+          "target": 64
+        },
+        {
+          "type": "stat",
+          "stat": "commerce",
+          "target": 58
+        },
+        {
+          "type": "flag",
+          "flag": "work:teahouse",
+          "target": 5,
+          "label": "찻집 경험"
+        }
+      ]
+    },
+    {
+      "code": "cartographer",
+      "band": 2,
+      "title": "별길 지도사",
+      "summary": "견습생은 아무도 그리지 않은 길을 그린다.",
+      "shareText": "내 견습생은 별길 지도사가 됐어요.",
+      "hint": "intellect 62 · courage 58 그리고 답사",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "intellect",
+          "target": 62
+        },
+        {
+          "type": "stat",
+          "stat": "courage",
+          "target": 58
+        },
+        {
+          "type": "flag",
+          "flag": "outing:ridge",
+          "target": 4,
+          "label": "답사"
+        }
+      ]
+    },
+    {
+      "code": "healer",
+      "band": 2,
+      "title": "마음 치유사",
+      "summary": "견습생은 말로 사람을 붙드는 일을 한다.",
+      "shareText": "내 견습생은 마음 치유사가 됐어요.",
+      "hint": "etiquette 66 · sensibility 60 그리고 산책",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "etiquette",
+          "target": 66
+        },
+        {
+          "type": "stat",
+          "stat": "sensibility",
+          "target": 60
+        },
+        {
+          "type": "flag",
+          "flag": "outing:park",
+          "target": 4,
+          "label": "산책"
+        }
+      ]
+    },
+    {
+      "code": "night-warden",
+      "band": 2,
+      "title": "야경 대장",
+      "summary": "견습생은 도시의 밤을 맡는다.",
+      "shareText": "내 견습생은 야경 대장가 됐어요.",
+      "hint": "courage 66 · stamina 62 그리고 순찰 경험",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "courage",
+          "target": 66
+        },
+        {
+          "type": "stat",
+          "stat": "stamina",
+          "target": 62
+        },
+        {
+          "type": "flag",
+          "flag": "work:watch",
+          "target": 5,
+          "label": "순찰 경험"
+        }
+      ]
+    },
+    {
+      "code": "archivist",
+      "band": 2,
+      "title": "서고 관리인",
+      "summary": "견습생은 지하 서고의 주인이 된다.",
+      "shareText": "내 견습생은 서고 관리인가 됐어요.",
+      "hint": "intellect 68 · etiquette 56 그리고 서고 출입",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "intellect",
+          "target": 68
+        },
+        {
+          "type": "stat",
+          "stat": "etiquette",
+          "target": 56
+        },
+        {
+          "type": "flag",
+          "flag": "outing:library",
+          "target": 4,
+          "label": "서고 출입"
+        }
+      ]
+    },
+    {
+      "code": "observatory-director",
+      "band": 3,
+      "title": "천문대장",
+      "summary": "견습생은 천문대를 맡아 하늘을 기록한다.",
+      "shareText": "내 견습생은 천문대장가 됐어요.",
+      "hint": "star 선언 후 starsense 78 · intellect 72 · courage 60",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "starsense",
+          "target": 78
+        },
+        {
+          "type": "stat",
+          "stat": "intellect",
+          "target": 72
+        },
+        {
+          "type": "stat",
+          "stat": "courage",
+          "target": 60
+        },
+        {
+          "type": "resource",
+          "resource": "reputation",
+          "target": 45
+        },
+        {
+          "type": "declared",
+          "path": "star"
+        }
+      ]
+    },
+    {
+      "code": "academy-professor",
+      "band": 3,
+      "title": "아카데미 교수",
+      "summary": "견습생은 강단에 서서 다음 세대를 가르친다.",
+      "shareText": "내 견습생은 아카데미 교수가 됐어요.",
+      "hint": "letters 선언 후 intellect 80 · etiquette 70 · eloquence 62",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "intellect",
+          "target": 80
+        },
+        {
+          "type": "stat",
+          "stat": "etiquette",
+          "target": 70
+        },
+        {
+          "type": "stat",
+          "stat": "eloquence",
+          "target": 62
+        },
+        {
+          "type": "resource",
+          "resource": "reputation",
+          "target": 50
+        },
+        {
+          "type": "declared",
+          "path": "letters"
+        }
+      ]
+    },
+    {
+      "code": "workshop-founder",
+      "band": 3,
+      "title": "공방 창업가",
+      "summary": "견습생은 자기 이름을 건 공방을 연다.",
+      "shareText": "내 견습생은 공방 창업가가 됐어요.",
+      "hint": "craft 선언 후 craft 78 · commerce 70 · stamina 62",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "craft",
+          "target": 78
+        },
+        {
+          "type": "stat",
+          "stat": "commerce",
+          "target": 70
+        },
+        {
+          "type": "stat",
+          "stat": "stamina",
+          "target": 62
+        },
+        {
+          "type": "resource",
+          "resource": "reputation",
+          "target": 45
+        },
+        {
+          "type": "declared",
+          "path": "craft"
+        }
+      ]
+    },
+    {
+      "code": "theater-director",
+      "band": 3,
+      "title": "극장 연출가",
+      "summary": "견습생은 무대 전체를 자기 손으로 세운다.",
+      "shareText": "내 견습생은 극장 연출가가 됐어요.",
+      "hint": "stage 선언 후 sensibility 78 · eloquence 72 · etiquette 60",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "sensibility",
+          "target": 78
+        },
+        {
+          "type": "stat",
+          "stat": "eloquence",
+          "target": 72
+        },
+        {
+          "type": "stat",
+          "stat": "etiquette",
+          "target": 60
+        },
+        {
+          "type": "resource",
+          "resource": "reputation",
+          "target": 48
+        },
+        {
+          "type": "declared",
+          "path": "stage"
+        }
+      ]
+    },
+    {
+      "code": "guild-master",
+      "band": 3,
+      "title": "길드 마스터",
+      "summary": "견습생은 상인들의 길드를 이끈다.",
+      "shareText": "내 견습생은 길드 마스터가 됐어요.",
+      "hint": "market 선언 후 commerce 78 · eloquence 74 · courage 60",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "commerce",
+          "target": 78
+        },
+        {
+          "type": "stat",
+          "stat": "eloquence",
+          "target": 74
+        },
+        {
+          "type": "stat",
+          "stat": "courage",
+          "target": 60
+        },
+        {
+          "type": "resource",
+          "resource": "reputation",
+          "target": 52
+        },
+        {
+          "type": "declared",
+          "path": "market"
+        }
+      ]
+    },
+    {
+      "code": "city-councilor",
+      "band": 3,
+      "title": "도시 의회관",
+      "summary": "견습생은 도시의 결정에 목소리를 낸다.",
+      "shareText": "내 견습생은 도시 의회관가 됐어요.",
+      "hint": "people 선언 후 etiquette 78 · eloquence 72 · intellect 62",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "etiquette",
+          "target": 78
+        },
+        {
+          "type": "stat",
+          "stat": "eloquence",
+          "target": 72
+        },
+        {
+          "type": "stat",
+          "stat": "intellect",
+          "target": 62
+        },
+        {
+          "type": "resource",
+          "resource": "reputation",
+          "target": 55
+        },
+        {
+          "type": "declared",
+          "path": "people"
+        }
+      ]
+    },
+    {
+      "code": "eden-coauthor",
+      "band": 3,
+      "title": "공동 관측자",
+      "summary": "견습생은 라이벌과 함께 이름을 올린 기록을 남긴다.",
+      "shareText": "내 견습생은 공동 관측자가 됐어요.",
+      "hint": "star 선언 후 starsense 74 · intellect 68 · courage 62",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "starsense",
+          "target": 74
+        },
+        {
+          "type": "stat",
+          "stat": "intellect",
+          "target": 68
+        },
+        {
+          "type": "stat",
+          "stat": "courage",
+          "target": 62
+        },
+        {
+          "type": "resource",
+          "resource": "reputation",
+          "target": 42
+        },
+        {
+          "type": "declared",
+          "path": "star"
+        },
+        {
+          "type": "flag",
+          "flag": "npc.eden_ally",
+          "target": 1,
+          "label": "이든과의 동맹"
+        }
+      ]
+    },
+    {
+      "code": "solo-name",
+      "band": 3,
+      "title": "단독 명성",
+      "summary": "견습생은 혼자 힘으로 이름을 세운다.",
+      "shareText": "내 견습생은 단독 명성가 됐어요.",
+      "hint": "star 선언 후 starsense 76 · courage 70 · eloquence 60",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "starsense",
+          "target": 76
+        },
+        {
+          "type": "stat",
+          "stat": "courage",
+          "target": 70
+        },
+        {
+          "type": "stat",
+          "stat": "eloquence",
+          "target": 60
+        },
+        {
+          "type": "resource",
+          "resource": "reputation",
+          "target": 48
+        },
+        {
+          "type": "declared",
+          "path": "star"
+        },
+        {
+          "type": "flag",
+          "flag": "npc.eden_rivalry",
+          "target": 1,
+          "label": "이든과의 경쟁"
+        }
+      ]
+    },
+    {
+      "code": "star-priest",
+      "band": 4,
+      "title": "별의 사제",
+      "summary": "견습생은 별을 읽어 사람들의 밤을 지킨다.",
+      "shareText": "내 견습생은 별의 사제가 됐어요.",
+      "hint": "star 선언, sera 각별, starsense 88 · intellect 78",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "starsense",
+          "target": 88
+        },
+        {
+          "type": "stat",
+          "stat": "intellect",
+          "target": 78
+        },
+        {
+          "type": "affinity",
+          "npc": "sera",
+          "target": 80
+        },
+        {
+          "type": "declared",
+          "path": "star"
+        },
+        {
+          "type": "condition",
+          "condition": "failed",
+          "direction": "absent"
+        },
+        {
+          "type": "resource",
+          "resource": "reputation",
+          "target": 60
+        }
+      ]
+    },
+    {
+      "code": "royal-diplomat",
+      "band": 4,
+      "title": "왕국 외교관",
+      "summary": "견습생은 왕국의 말을 대신 전한다.",
+      "shareText": "내 견습생은 왕국 외교관가 됐어요.",
+      "hint": "people 선언, moran 각별, etiquette 88 · eloquence 80",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "etiquette",
+          "target": 88
+        },
+        {
+          "type": "stat",
+          "stat": "eloquence",
+          "target": 80
+        },
+        {
+          "type": "affinity",
+          "npc": "moran",
+          "target": 80
+        },
+        {
+          "type": "declared",
+          "path": "people"
+        },
+        {
+          "type": "condition",
+          "condition": "failed",
+          "direction": "absent"
+        },
+        {
+          "type": "resource",
+          "resource": "reputation",
+          "target": 60
+        }
+      ]
+    },
+    {
+      "code": "master-of-forge",
+      "band": 4,
+      "title": "벼림의 명인",
+      "summary": "견습생은 다음 세대가 배우러 오는 손이 된다.",
+      "shareText": "내 견습생은 벼림의 명인가 됐어요.",
+      "hint": "craft 선언, gu 각별, craft 88 · stamina 78",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "craft",
+          "target": 88
+        },
+        {
+          "type": "stat",
+          "stat": "stamina",
+          "target": 78
+        },
+        {
+          "type": "affinity",
+          "npc": "gu",
+          "target": 80
+        },
+        {
+          "type": "declared",
+          "path": "craft"
+        },
+        {
+          "type": "condition",
+          "condition": "failed",
+          "direction": "absent"
+        },
+        {
+          "type": "resource",
+          "resource": "reputation",
+          "target": 60
+        }
+      ]
+    },
+    {
+      "code": "wandering-sage",
+      "band": 4,
+      "title": "떠도는 현자",
+      "summary": "견습생은 한곳에 머물지 않고 배운 것을 나눈다.",
+      "shareText": "내 견습생은 떠도는 현자가 됐어요.",
+      "hint": "stage 선언, yun 각별, sensibility 86 · courage 78",
+      "requirements": [
+        {
+          "type": "stat",
+          "stat": "sensibility",
+          "target": 86
+        },
+        {
+          "type": "stat",
+          "stat": "courage",
+          "target": 78
+        },
+        {
+          "type": "affinity",
+          "npc": "yun",
+          "target": 80
+        },
+        {
+          "type": "declared",
+          "path": "stage"
+        },
+        {
+          "type": "condition",
+          "condition": "failed",
+          "direction": "absent"
+        },
+        {
+          "type": "resource",
+          "resource": "reputation",
+          "target": 60
+        }
+      ]
+    }
+  ]
+}
