@@ -256,6 +256,44 @@ def check_requirement_types(events: dict, endings: dict) -> None:
         scan(e.get("requirements"), f"엔딩 '{e.get('code')}'", ENDING_REQ_TYPES)
 
 
+def check_event_escape(events: dict) -> None:
+    """모든 이벤트에 언제나 고를 수 있는 선택지가 하나는 있어야 한다.
+
+    요건도 비용도 없는 선택지가 없으면 자원이 바닥난 상태에서 그 이벤트가
+    뜨는 순간 진행이 막힌다. 시뮬레이션이 npc.gu.03 에서 실제로 걸렸다.
+    """
+    for e in (events.get("events") or []):
+        escapes = 0
+        for c in (e.get("choices") or []):
+            if c.get("requirements"):
+                continue
+            cost = c.get("cost") or {}
+            if int(cost.get("gold", 0)) < 0 or int(cost.get("energy", 0)) < 0:
+                continue
+            escapes += 1
+        if escapes == 0:
+            err(f"이벤트 '{e.get('id')}': 언제나 고를 수 있는 선택지가 없다 — 자원이 바닥나면 막힌다")
+
+
+def check_event_art(root: Path, events: dict, npcs: dict) -> None:
+    """UI 가 빈 그림을 그리는 상황을 데이터에서 막는다. 액션 아이콘과 같은 규칙."""
+    art_dir = root / "assets" / "art"
+    have = {p.stem for p in art_dir.glob("*.webp")} | {p.stem for p in art_dir.glob("*.png")}
+    if not have:
+        err("assets/art 에 아트가 없다")
+        return
+    for e in (events.get("events") or []):
+        key = str(e.get("art_key") or "")
+        if not key:
+            err(f"이벤트 '{e.get('id')}' 에 art_key 가 없다")
+        elif key not in have:
+            err(f"이벤트 '{e.get('id')}': 없는 아트 '{key}'")
+    for n in (npcs.get("npcs") or []):
+        key = str(n.get("art_key") or "")
+        if key and key not in have:
+            err(f"NPC '{n.get('id')}': 없는 아트 '{key}'")
+
+
 def check_npcs(doc: dict, actions: dict, events: dict, endings: dict) -> set[str]:
     """NPC 원장을 검사하고, 참조 검사에 쓸 id 집합을 돌려준다."""
     npcs = doc.get("npcs") or []
@@ -338,10 +376,12 @@ def main() -> int:
     npcs_path = root / "data" / "npcs.json"
     if npcs_path.exists():
         events_doc = json.loads(events_path.read_text(encoding="utf-8")) if events_path.exists() else {}
-        check_npcs(json.loads(npcs_path.read_text(encoding="utf-8")),
-                   actions or {}, events_doc, endings_doc)
+        npcs_doc = json.loads(npcs_path.read_text(encoding="utf-8"))
+        check_npcs(npcs_doc, actions or {}, events_doc, endings_doc)
+        check_event_art(root, events_doc, npcs_doc)
     else:
         err("data/npcs.json 이 없다")
+    check_event_escape(events_for_types)
 
     if problems:
         for p in problems:

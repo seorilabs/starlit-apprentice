@@ -195,6 +195,434 @@
    ]
   },
   {
+   "id": "fin.awaken",
+   "category": "finale",
+   "weight": 100,
+   "once_per_run": true,
+   "title": "열린 것",
+   "art_key": "bg_tower",
+   "body": "마지막 관측. 접안부에 눈을 대는 순간, 열두 달 동안 따로 놀던 것들이 한꺼번에 자리를 찾는다. 계산과 감각이 같은 답을 가리킨다. 이런 밤은 자주 오지 않는다는 걸 견습생은 안다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 34,
+     "to": 36
+    },
+    {
+     "type": "stat",
+     "stat": "starsense",
+     "target": 80
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "기록으로 남긴다",
+     "requirements": [],
+     "cost": {
+      "energy": -12
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "새벽까지 열한 장을 썼다. 나중에 그 기록은 아카데미 서고 삼층, 자물쇠가 걸린 서가에 들어갔다. 검증되지 않은 관측을 넣는 그 칸이었다.",
+       "effects": {
+        "stats": {
+         "starsense": 14,
+         "intellect": 8
+        },
+        "reputation": 14,
+        "flags": {
+         "fin.awakened": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "아무에게도 말하지 않는다",
+     "requirements": [],
+     "cost": {
+      "stress": -14
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "접안부에서 눈을 떼고 망원경 뚜껑을 덮었다. 그 밤에 본 것은 끝까지 견습생만 알았고, 그래서 한 번도 틀렸다는 말을 듣지 않았다.",
+       "effects": {
+        "stats": {
+         "starsense": 10,
+         "sensibility": 10
+        },
+        "flags": {
+         "fin.awakened": 1,
+         "fin.kept_secret": 1
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "fin.bond",
+   "category": "finale",
+   "weight": 95,
+   "once_per_run": true,
+   "title": "마지막 밤의 사람들",
+   "art_key": "bg_plaza",
+   "body": "수료 전날 밤, 안뜰에 누군가 기다리고 있다. 열두 달 동안 가장 많이 마주친 얼굴이다. \"내일이면 끝이네.\" 말은 그렇게 하는데 갈 기색이 없다. 안뜰 등불이 하나씩 꺼진다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 35,
+     "to": 36
+    },
+    {
+     "type": "affinity",
+     "npc": "sera",
+     "target": 60
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "열두 달 이야기를 처음부터 한다",
+     "requirements": [],
+     "cost": {
+      "energy": -10,
+      "stress": -12
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "등불이 다 꺼지고 나서도 이야기가 끝나지 않았다. 새벽에 문지기가 지나가며 못 본 척해 주었다. 그날 나눈 말 중 절반은 다음 날 기억나지 않았고 나머지 절반은 오래 남았다.",
+       "effects": {
+        "stats": {
+         "sensibility": 12,
+         "eloquence": 6
+        },
+        "stress": -10,
+        "flags": {
+         "fin.long_night": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"끝이 아니라 다음이야\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "상대는 그 말을 두 번 되뇌더니 고개를 끄덕였다. 다음 날 수료식에서 두 사람은 서로를 찾지 않았다. 이미 할 말을 다 했기 때문이었다.",
+       "effects": {
+        "stats": {
+         "eloquence": 10,
+         "courage": 6
+        },
+        "reputation": 6
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "fin.failed",
+   "category": "finale",
+   "weight": 100,
+   "once_per_run": true,
+   "title": "돌려받은 명부",
+   "art_key": "bg_plaza",
+   "body": "졸업 명부에서 견습생의 이름이 지워져 있다. 심사를 두 번 넘기지 못한 사람은 수료하지 못한다는 조항이 있었고, 아무도 그걸 미리 말해 주지 않았다. 정문 문지기가 짐을 들어 준다. \"올해는 여기까지구나.\"",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 36,
+     "to": 36
+    },
+    {
+     "type": "condition",
+     "condition": "failed"
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"내년에 다시 오겠습니다\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "문지기는 명부를 덮지 않고 그대로 두었다. \"이름 지운 자리는 일 년 비워 둔다. 규정이야.\" 그건 규정이 아니었지만 견습생은 묻지 않았다.",
+       "effects": {
+        "stats": {
+         "courage": 8
+        },
+        "flags": {
+         "fin.return_vow": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "아무 말 없이 문을 나선다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "성문 밖 언덕에서 아카데미 쪽을 한 번 돌아봤다. 삼층 끝방 창에 벌써 다른 불이 켜져 있었다.",
+       "effects": {
+        "stats": {
+         "sensibility": 8
+        },
+        "stress": 10
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "fin.quiet",
+   "category": "finale",
+   "weight": 80,
+   "once_per_run": true,
+   "title": "짐을 싸는 오후",
+   "art_key": "bg_room",
+   "body": "삼층 끝방. 짐은 들어올 때보다 조금 늘었다. 창틀의 별자리는 그대로 있고, 이번엔 견습생이 절반쯤 새기다 만 것이 하나 더 늘었다. 다음 사람 몫이다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 36,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "새기다 만 것을 그대로 두고 나온다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "문을 닫기 전에 한 번 돌아봤다. 두 개의 미완성 별자리가 창틀에 나란히 있었다. 하나는 누군지 모르는 사람의 것이고 하나는 견습생의 것이었다.",
+       "effects": {
+        "stats": {
+         "sensibility": 8
+        },
+        "stress": -10,
+        "flags": {
+         "fin.left_mark": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "쪽지를 하나 남긴다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "서랍 안쪽에 쪽지를 붙였다. \"3층은 겨울에 춥다. 창틀 틈에 종이를 끼워라.\" 전 주인이 남긴 문장과 똑같이 적었다.",
+       "effects": {
+        "stats": {
+         "sensibility": 6,
+         "etiquette": 6
+        },
+        "stress": -8,
+        "flags": {
+         "fin.note_left": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "짐만 들고 바로 나선다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "계단을 내려오는 데 삼십 초가 걸렸다. 들어올 때는 같은 계단이 훨씬 길었다.",
+       "effects": {
+        "stats": {
+         "stamina": 4
+        },
+        "stress": -6
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "fin.renown",
+   "category": "finale",
+   "weight": 95,
+   "once_per_run": true,
+   "title": "이름이 불리는 순서",
+   "art_key": "bg_plaza",
+   "body": "수료식장. 호명 순서가 붙었는데 견습생의 이름이 앞쪽에 있다. 아카데미는 성적순이 아니라 평판순으로 부른다. 옆자리 학생이 순서표를 두 번 확인한다. \"너 맞아?\"",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 36,
+     "to": 36
+    },
+    {
+     "type": "resource",
+     "resource": "reputation",
+     "target": 45
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "앞자리로 나간다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "이름이 불렸을 때 뒤쪽에서 박수가 먼저 났다. 열두 달 동안 마주쳤던 사람들이 거기 있었다. 단상에서 내려오며 견습생은 그쪽을 한 번 봤다.",
+       "effects": {
+        "stats": {
+         "etiquette": 10
+        },
+        "reputation": 12,
+        "flags": {
+         "fin.called_early": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "순서를 뒤로 바꿔 달라고 한다",
+     "requirements": [],
+     "cost": {
+      "stress": 4
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "진행 담당이 난색을 표하다 결국 바꿔 주었다. 마지막에 불린 이름에 가장 긴 박수가 나왔다. 그건 계산한 게 아니었다.",
+       "effects": {
+        "stats": {
+         "sensibility": 8,
+         "etiquette": 6
+        },
+        "reputation": 8,
+        "flags": {
+         "fin.called_last": 1
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "fin.undeclared",
+   "category": "finale",
+   "weight": 90,
+   "once_per_run": true,
+   "title": "빈 진로란",
+   "art_key": "npc_sera",
+   "body": "수료 서류의 진로란이 비어 있다. 세라가 펜을 들고 기다린다. \"적지 않으면 그냥 수료생이다. 그것도 나쁘지 않아.\" 창밖에서 마지막 눈이 녹고 있다. \"다만 열두 달을 뭘로 부를지는 정하고 가는 게 낫다.\"",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 36,
+     "to": 36
+    }
+   ],
+   "exclusions": [
+    {
+     "type": "flag",
+     "flag": "path.declared",
+     "target": 1
+    }
+   ],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"그냥 수료생으로 두겠습니다\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "세라는 펜을 내려놓았다. \"빈칸도 답이다.\" 서류에는 이름과 기간만 남았고, 견습생은 그게 정확하다고 생각했다.",
+       "effects": {
+        "stats": {
+         "sensibility": 6
+        },
+        "stress": -8
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"열두 달을 배웠다고 적어 주십시오\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "세라가 그대로 적었다. 진로란에 직함이 아니라 문장이 들어간 서류는 아카데미 역사상 두 번째였다. 첫 번째가 누구였는지는 알려 주지 않았다.",
+       "effects": {
+        "stats": {
+         "sensibility": 10,
+         "eloquence": 6
+        },
+        "reputation": 6,
+        "affinity": {
+         "sera": 10
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "id": "milestone.s1",
    "category": "milestone",
    "weight": 100,
@@ -841,6 +1269,28 @@
       }
      ],
      "locked_reason": "손재주 45 이상이어야 한다"
+    },
+    {
+     "id": "d",
+     "label": "\"오늘은 여기까지 하시죠\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "노인은 순순히 앞치마를 벗었다. 그게 더 이상했다. 공방 불을 끄고 나오며 노인이 말했다. \"내일 눈이 더 나쁠 수도 있고 나을 수도 있어. 그건 내가 정하는 게 아니라서.\"",
+       "effects": {
+        "stats": {
+         "sensibility": 5
+        },
+        "affinity": {
+         "gu": 4
+        },
+        "stress": -4
+       }
+      }
+     ]
     }
    ]
   },
@@ -1065,6 +1515,27 @@
         },
         "flags": {
          "gu.workshop_heir": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "\"제가 정할 일이 아닙니다\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "노인은 끌을 도로 챙기고 지워진 문패를 그대로 걸었다. \"그럼 지워진 채로 두지.\" 몇 해 뒤 그 문패를 보고 사람들은 공방 이름을 저마다 다르게 불렀다.",
+       "effects": {
+        "stats": {
+         "etiquette": 5
+        },
+        "affinity": {
+         "gu": 2
         }
        }
       }
@@ -3282,6 +3753,28 @@
        }
       }
      ]
+    },
+    {
+     "id": "c",
+     "label": "\"오늘은 자야겠어\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "이든은 붙잡지 않았다. \"그래, 내일이 본 시험이지.\" 계단을 내려오다 돌아보니 망원경 두 대가 그대로 나란히 서 있었다. 이든은 한 대만 쓰고 있었다.",
+       "effects": {
+        "stress": -10,
+        "stats": {
+         "stamina": 4
+        },
+        "affinity": {
+         "eden": -4
+        }
+       }
+      }
+     ]
     }
    ]
   },
@@ -3852,6 +4345,282 @@
       }
      ],
      "locked_reason": "담력 60 이상이어야 한다"
+    }
+   ]
+  },
+  {
+   "id": "open.first-lesson",
+   "category": "opening",
+   "weight": 100,
+   "once_per_run": true,
+   "title": "첫 수업",
+   "art_key": "npc_sera",
+   "body": "세라가 칠판에 점 아홉 개를 찍는다. \"이게 너희다. 열두 달 뒤에 이 중 몇 개가 이어져 있을지는 너희가 정한다.\" 분필을 내려놓고 교실을 훑는다. \"묻겠다. 왜 왔지.\"",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 3,
+     "to": 4
+    }
+   ],
+   "exclusions": [
+    {
+     "type": "flag",
+     "flag": "open.lesson_done",
+     "target": 1
+    }
+   ],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"별을 읽고 싶어서 왔습니다\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "\"읽는다는 말을 쓰는군.\" 세라는 명부에 무언가 적었다. \"보는 것과 읽는 것은 다르다. 그 차이를 아는 데 대개 반년이 걸린다.\"",
+       "effects": {
+        "stats": {
+         "starsense": 5,
+         "intellect": 3
+        },
+        "affinity": {
+         "sera": 8
+        },
+        "flags": {
+         "open.lesson_done": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"먹고살려고 왔습니다\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "교실이 조용해졌다. 세라만 표정이 변하지 않았다. \"정직하군. 그게 제일 오래간다.\" 뒷자리에서 안경 쓴 학생이 소리 없이 웃었다.",
+       "effects": {
+        "stats": {
+         "commerce": 5,
+         "courage": 4
+        },
+        "affinity": {
+         "sera": 6,
+         "harin": 6
+        },
+        "flags": {
+         "open.lesson_done": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "\"아직 모르겠습니다\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "세라가 분필을 다시 들었다. \"그럼 찾으러 온 거다. 그것도 이유다.\" 그러고는 아홉 개 점 아래에 물음표를 하나 그렸다.",
+       "effects": {
+        "stats": {
+         "sensibility": 6
+        },
+        "affinity": {
+         "sera": 10
+        },
+        "stress": -4,
+        "flags": {
+         "open.lesson_done": 1
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "open.gate",
+   "category": "opening",
+   "weight": 100,
+   "once_per_run": true,
+   "title": "정문에서",
+   "art_key": "bg_plaza",
+   "body": "별빛 아카데미 정문. 문지기가 명부를 훑더니 이름을 찾아 표시한다. \"열두 달이다. 겨울이 두 번 오면 나가는 거고.\" 안쪽에서 종이 울린다. 짐은 등에 진 것이 전부다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 1,
+     "to": 1
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "명부에 이름을 또박또박 적는다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "글씨가 칸을 넘지 않게 쓰는 데 시간이 좀 걸렸다. 문지기가 그걸 보더니 말했다. \"오래 버티는 애들이 그렇게 쓰더라.\"",
+       "effects": {
+        "stats": {
+         "etiquette": 4,
+         "intellect": 2
+        },
+        "stress": -4
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "먼저 하늘을 올려다본다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "아직 낮인데도 서쪽에 별 하나가 희미하게 남아 있었다. 문지기가 따라 올려다보더니 웃었다. \"저건 별 아니고 금성이야. 첫 수업에서 배울 거다.\"",
+       "effects": {
+        "stats": {
+         "starsense": 5
+        },
+        "stress": -2
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "\"열두 달이면 충분합니까\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "문지기는 대답 대신 명부를 덮었다. \"충분했던 애도 있고 아닌 애도 있고.\" 그러고는 문을 열어 주었다. \"묻는 애는 대체로 전자였다.\"",
+       "effects": {
+        "stats": {
+         "courage": 5
+        },
+        "reputation": 2
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "open.room",
+   "category": "opening",
+   "weight": 100,
+   "once_per_run": true,
+   "title": "견습생 방",
+   "art_key": "bg_room",
+   "body": "삼층 끝방. 책상 하나, 침대 하나, 서쪽으로 난 창 하나. 전에 쓰던 사람이 창틀에 별자리를 새겨 두고 갔다. 절반쯤 새기다 만 것이다. 짐을 내려놓자 방이 갑자기 좁아 보인다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 2,
+     "to": 3
+    }
+   ],
+   "exclusions": [
+    {
+     "type": "flag",
+     "flag": "open.room_done",
+     "target": 1
+    }
+   ],
+   "choices": [
+    {
+     "id": "a",
+     "label": "새기다 만 별자리를 마저 새긴다",
+     "requirements": [],
+     "cost": {
+      "energy": -6
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "어느 별자리인지 알아내는 데 한 시간, 마저 새기는 데 두 시간이 걸렸다. 완성하고 보니 창밖 하늘의 그 자리와 정확히 겹쳤다.",
+       "effects": {
+        "stats": {
+         "starsense": 6,
+         "craft": 4
+        },
+        "stress": -5,
+        "flags": {
+         "open.room_done": 1,
+         "room.constellation": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "책상부터 정리한다",
+     "requirements": [],
+     "cost": {
+      "energy": -4
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "서랍 안쪽에서 전 주인의 쪽지가 나왔다. \"3층은 겨울에 춥다. 창틀 틈에 종이를 끼워라.\" 그 말대로 했더니 정말 덜 추웠다.",
+       "effects": {
+        "stats": {
+         "intellect": 4,
+         "stamina": 3
+        },
+        "stress": -6,
+        "flags": {
+         "open.room_done": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "그냥 눕는다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "천장을 보고 누워 있으니 아래층에서 누군가 주판 튕기는 소리가 났다. 그 소리를 듣다 잠들었고, 다음 날 아침 목이 뻐근했다.",
+       "effects": {
+        "stress": -10,
+        "stats": {
+         "stamina": -2
+        },
+        "flags": {
+         "open.room_done": 1
+        }
+       }
+      }
+     ]
     }
    ]
   },

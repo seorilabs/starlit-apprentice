@@ -112,14 +112,14 @@ func _show_resolution(action: Dictionary, result: Dictionary) -> void:
 			SaUiKit.FONT_SMALL, SaUiKit.INK_DIM))
 
 	col.add_child(_next_button("계속", func():
-		if not _run.pending_event.is_empty():
+		if not _run.pending_events.is_empty():
 			_show_event()
 		else:
 			_show_turn()))
 
 # ── 이벤트 ─────────────────────────────────────────────────────────
 func _show_event() -> void:
-	var ev := _run.pending_event
+	var ev: Dictionary = _run.pending_events[0]
 	var card := _panel_overlay()
 	var col := card.get_child(0) as VBoxContainer
 	col.add_child(SaUiKit.heading(String(ev.get("title", ""))))
@@ -130,7 +130,7 @@ func _show_event() -> void:
 
 	for c in (ev.get("choices", []) as Array):
 		var choice: Dictionary = c
-		var avail := SaEventResolution.choice_availability(_run.state, choice)
+		var avail := SaEventResolution.choice_availability(_run.beat, choice)
 		var btn := Button.new()
 		btn.custom_minimum_size = Vector2(600, SaUiKit.TOUCH_MIN)
 		btn.add_theme_font_size_override("font_size", SaUiKit.FONT_BODY)
@@ -151,7 +151,11 @@ func _on_event_choice(choice: Dictionary) -> void:
 	text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	text.custom_minimum_size = Vector2(600, 0)
 	col.add_child(text)
-	col.add_child(_next_button("계속", _show_turn))
+	col.add_child(_next_button("계속", func():
+		if not _run.pending_events.is_empty():
+			_show_event()
+		else:
+			_show_turn()))
 
 # ── 별자리 (스탯 시트) ──────────────────────────────────────────────
 func _show_constellation() -> void:
@@ -210,17 +214,20 @@ func _panel_overlay() -> PanelContainer:
 	add_child(scrim)
 	_overlay = scrim
 
+	# 카드 높이는 내용이 정한다. 앵커로 높이를 고정하면 짧은 결과문 하나에도
+	# 화면 절반이 빈 채로 남는다.
+	var center := CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.add_theme_constant_override("margin_left", 24)
+	scrim.add_child(center)
+
 	var card := PanelContainer.new()
 	card.add_theme_stylebox_override("panel", SaUiKit.panel())
-	card.set_anchors_preset(Control.PRESET_CENTER)
-	card.anchor_left = 0.05
-	card.anchor_right = 0.95
-	card.anchor_top = 0.18
-	card.anchor_bottom = 0.82
+	card.custom_minimum_size = Vector2(624, 0)
 	var col := VBoxContainer.new()
 	col.add_theme_constant_override("separation", 14)
 	card.add_child(col)
-	scrim.add_child(card)
+	center.add_child(card)
 	return card
 
 func _next_button(text: String, action: Callable) -> Control:

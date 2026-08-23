@@ -13,7 +13,11 @@ var endings: Array
 var npcs: Array
 
 var last_result: Dictionary = {}
-var pending_event: Dictionary = {}
+## 한 턴에 뜰 이벤트 큐. 마지막 턴은 계절 심사와 종막이 함께 온다 —
+## 하나만 재생하면 둘 중 하나가 영영 뜨지 않는다.
+var pending_events: Array = []
+## 이벤트 판정용 상태. state 는 이미 다음 턴을 가리킨다.
+var beat: Dictionary = {}
 
 func start(seed_value: int, content: Dictionary) -> void:
 	rng = SaRng.new(seed_value)
@@ -83,31 +87,50 @@ func together_candidate(action: Dictionary) -> String:
 func resolve(action: Dictionary, together: String = "") -> Dictionary:
 	last_result = SaTurn.resolve(state, action, aptitude, rng, together)
 	state = last_result["state"]
-	pending_event = _draw_event()
+	# 이벤트는 방금 플레이한 턴의 비트다. state.turn 으로 판정하면 개막과
+	# 종막이 창 밖으로 밀려 영영 뜨지 않는다.
+	beat = SaEventResolution.beat_state(state, int(last_result["played_turn"]))
+	pending_events = _draw_events()
 	return last_result
 
-func _draw_event() -> Dictionary:
-	if events.is_empty() or is_over():
-		return {}
+## 예정 비트를 최대 2개까지, 카테고리가 겹치지 않게 낸다. 전부 내면
+## NPC 이벤트가 한 턴에 몰려 페이싱이 무너진다.
+const MAX_BEATS_PER_TURN := 2
+
+func _draw_events() -> Array:
+	if events.is_empty():
+		return []
 	var scheduled: Array = []
 	var pool: Array = []
 	for e in events:
-		var cat := String((e as Dictionary).get("category", ""))
-		if cat == "milestone" or cat == "path" or cat == "condition" or cat == "npc":
+		if SaEventResolution.is_scheduled(e):
 			scheduled.append(e)
 		else:
 			pool.append(e)
-	var due := SaEventResolution.eligible(state, scheduled)
+	var due := SaEventResolution.eligible(beat, scheduled)
 	if not due.is_empty():
-		return due[0]
-	if turn() % 3 == 0:
-		return SaEventResolution.pick(state, pool, rng)
-	return {}
+		var out: Array = []
+		var cats := {}
+		for e in due:
+			var cat := String((e as Dictionary).get("category", ""))
+			if cats.has(cat):
+				continue
+			cats[cat] = true
+			out.append(e)
+			if out.size() >= MAX_BEATS_PER_TURN:
+				break
+		return out
+	if int(beat.get("turn", 1)) % 3 == 0:
+		var drawn := SaEventResolution.pick(beat, pool, rng)
+		return [] if drawn.is_empty() else [drawn]
+	return []
 
 func apply_event_choice(choice: Dictionary) -> Dictionary:
-	var outcome := SaEventResolution.apply(state, pending_event, choice, rng)
+	var ev: Dictionary = pending_events.pop_front() if not pending_events.is_empty() else {}
+	var outcome := SaEventResolution.apply(state, ev, choice, rng)
 	state = outcome["state"]
-	pending_event = {}
+	# 결과는 실제 상태에 적용하되, 남은 비트의 판정은 같은 턴에 머문다.
+	beat = SaEventResolution.beat_state(state, int(beat.get("turn", 1)))
 	return outcome
 
 func judge() -> Dictionary:

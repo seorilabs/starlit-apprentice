@@ -6,10 +6,25 @@ extends RefCounted
 ## 통보였고 12번 중 4번만 발동했으며 전부 성공했다.
 ## docs/game-design/02-gdd.md 콘텐츠
 
+## 추첨이 아니라 자격이 되면 반드시 뜨는 비트. UI 와 시뮬레이션이 각자 목록을
+## 들고 있다가 어긋난 적이 있어 코어에 하나로 둔다.
+const SCHEDULED_CATEGORIES := ["opening", "milestone", "path", "condition", "npc", "finale"]
+
+static func is_scheduled(event: Dictionary) -> bool:
+	return SCHEDULED_CATEGORIES.has(String(event.get("category", "")))
+
+
 static func _text(value: Variant) -> String:
 	return "" if value == null else String(value)
 
 ## 지금 발동 가능한 이벤트 후보. 요건·제외·쿨다운·1회성을 본다.
+## 이벤트 비트는 "방금 플레이한 턴"에 속한다. SaTurn.resolve 가 돌려준
+## played_turn 을 넣어 판정 상태를 만든다.
+static func beat_state(state: Dictionary, played_turn: int) -> Dictionary:
+	var s := state.duplicate(true)
+	s["turn"] = played_turn
+	return s
+
 static func eligible(state: Dictionary, events: Array) -> Array:
 	var seen: Dictionary = state.get("seen_events", {})
 	var out: Array = []
@@ -27,7 +42,28 @@ static func eligible(state: Dictionary, events: Array) -> Array:
 		if SaEventRequirements.any_satisfied(state, ev.get("exclusions", [])):
 			continue
 		out.append(ev)
+	# 특이도 높은 것이 먼저 온다. 호출자는 due[0] 하나만 재생하므로 정렬이
+	# 곧 판정이다. 배열 순서에 맡기면 조건이 가장 느슨한 비트가 늘 이기고
+	# 공들여 조건을 붙인 종막·개막이 영영 뜨지 않는다 — 실제로 그랬다.
+	out.sort_custom(_more_specific)
 	return out
+
+## 요건이 많을수록, 같으면 weight 가 클수록, 그래도 같으면 id 순.
+## 마지막 타이브레이크를 id 로 두어 시드와 배열 위치에 흔들리지 않게 한다.
+static func specificity(event: Dictionary) -> int:
+	return (event.get("requirements", []) as Array).size() \
+		+ (event.get("exclusions", []) as Array).size()
+
+static func _more_specific(a: Dictionary, b: Dictionary) -> bool:
+	var sa := specificity(a)
+	var sb := specificity(b)
+	if sa != sb:
+		return sa > sb
+	var wa := int(a.get("weight", 1))
+	var wb := int(b.get("weight", 1))
+	if wa != wb:
+		return wa > wb
+	return _text(a.get("id", "")) < _text(b.get("id", ""))
 
 ## 가중 추첨. rng 는 호출자가 들고 다닌다.
 static func pick(state: Dictionary, events: Array, rng: SaRng) -> Dictionary:

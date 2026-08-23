@@ -145,6 +145,9 @@ static func resolve(
 
 	return {
 		"state": out,
+		# 방금 플레이한 턴. state.turn 은 이미 다음 턴을 가리키므로, 이벤트 비트를
+		# state.turn 으로 판정하면 첫 턴과 마지막 턴의 비트가 통째로 잘린다.
+		"played_turn": turn,
 		"outcome": outcome,
 		"gains": gains,
 		"entered_conditions": entered,
@@ -196,7 +199,7 @@ static func _resolve_burnout(out: Dictionary) -> Dictionary:
 	out["turn"] = turn + 2  # 강제로 2턴을 소모한다
 	out = SaResources.clamp_state(out)
 	return {
-		"state": out, "outcome": SaRisk.OUTCOME_FAIL, "gains": {},
+		"state": out, "played_turn": turn, "outcome": SaRisk.OUTCOME_FAIL, "gains": {},
 		"entered_conditions": [], "tuition_charged": false, "promoted_talent": false,
 		"burnout_skipped": true,
 	}

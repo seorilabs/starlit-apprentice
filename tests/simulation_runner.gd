@@ -62,44 +62,53 @@ func _initialize() -> void:
 			# 마일스톤·진로는 추첨이 아니라 예정된 비트다. 매 턴 자격을 확인한다.
 			var scheduled: Array = []
 			for e in events:
-				var cat := String((e as Dictionary).get("category", ""))
-				if cat == "milestone" or cat == "path" or cat == "condition" or cat == "npc":
+				if SaEventResolution.is_scheduled(e as Dictionary):
 					scheduled.append(e)
-			var due := SaEventResolution.eligible(state, scheduled)
-			# 3턴 중 1턴은 나머지 풀에서 가중 추첨한다.
-			var drawn := {}
-			if due.is_empty() and int(state["turn"]) % 3 == 0:
+			var beat := SaEventResolution.beat_state(state, int(result["played_turn"]))
+			var due := SaEventResolution.eligible(beat, scheduled)
+			var queue: Array = []
+			var cats := {}
+			for e in due:
+				var cat3 := String((e as Dictionary).get("category", ""))
+				if cats.has(cat3):
+					continue
+				cats[cat3] = true
+				queue.append(e)
+				if queue.size() >= 2:
+					break
+			if queue.is_empty() and int(result["played_turn"]) % 3 == 0:
 				var pool: Array = []
 				for e in events:
-					var cat2 := String((e as Dictionary).get("category", ""))
-					if cat2 != "milestone" and cat2 != "path" and cat2 != "condition" and cat2 != "npc":
+					if not SaEventResolution.is_scheduled(e as Dictionary):
 						pool.append(e)
-				drawn = SaEventResolution.pick(state, pool, rng)
-			var ev: Dictionary = due[0] if not due.is_empty() else drawn
-			if true:
-				if not ev.is_empty():
-					var choices: Array = ev.get("choices", [])
-					var open_choices: Array = []
-					for c in choices:
-						var av := SaEventResolution.choice_availability(state, c as Dictionary)
-						if bool(av["ok"]):
-							open_choices.append(c)
-						else:
-							locked_choices_seen += 1
-							if String(av["reason"]) == "":
-								failures.append("%s: 잠긴 선택지에 사유가 없다" % str(ev.get("id")))
-					if open_choices.is_empty():
-						failures.append("%s: 고를 수 있는 선택지가 없다" % str(ev.get("id")))
+				var drawn := SaEventResolution.pick(beat, pool, rng)
+				if not drawn.is_empty():
+					queue.append(drawn)
+			for q in queue:
+				var ev: Dictionary = q
+				var choices: Array = ev.get("choices", [])
+				var open_choices: Array = []
+				for c in choices:
+					var av := SaEventResolution.choice_availability(beat, c as Dictionary)
+					if bool(av["ok"]):
+						open_choices.append(c)
 					else:
-						var chosen: Dictionary = open_choices[rng.next_int_range(0, open_choices.size() - 1)]
-						var outcome := SaEventResolution.apply(state, ev, chosen, rng)
-						if String(outcome.get("result_text", "")) == "":
-							failures.append("%s:%s 결과문이 비었다" % [str(ev.get("id")), str(chosen.get("id"))])
-						state = outcome["state"]
-						events_fired += 1
-						distinct_events[str(ev.get("id"))] = true
-						if String(ev.get("category", "")) == "npc":
-							npc_events += 1
+						locked_choices_seen += 1
+						if String(av["reason"]) == "":
+							failures.append("%s: 잠긴 선택지에 사유가 없다" % str(ev.get("id")))
+				if open_choices.is_empty():
+					failures.append("%s: 고를 수 있는 선택지가 없다" % str(ev.get("id")))
+					continue
+				var chosen: Dictionary = open_choices[rng.next_int_range(0, open_choices.size() - 1)]
+				var outcome := SaEventResolution.apply(state, ev, chosen, rng)
+				if String(outcome.get("result_text", "")) == "":
+					failures.append("%s:%s 결과문이 비었다" % [str(ev.get("id")), str(chosen.get("id"))])
+				state = outcome["state"]
+				beat = SaEventResolution.beat_state(state, int(result["played_turn"]))
+				events_fired += 1
+				distinct_events[str(ev.get("id"))] = true
+				if String(ev.get("category", "")) == "npc":
+					npc_events += 1
 
 			min_gold = mini(min_gold, int(state["gold"]))
 			min_energy = mini(min_energy, int(state["energy"]))
