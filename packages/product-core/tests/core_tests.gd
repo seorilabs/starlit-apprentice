@@ -23,6 +23,7 @@ func run_all() -> Array[String]:
 	_test_mastery_bank_on_ceiling()
 	_test_event_choice_gating()
 	_test_event_check_branches()
+	_test_every_condition_has_exit()
 	# 빈 스위트가 초록으로 통과하지 않게 한다.
 	if _executed == 0:
 		_failures.append("실행된 검사가 0개다. 스위트가 비었거나 러너가 깨졌다.")
@@ -228,6 +229,56 @@ func _test_event_check_branches() -> void:
 	var once := [{"id":"e1","once_per_run":true,"requirements":[],"exclusions":[],"weight":1,"choices":[]}]
 	_check(SaEventResolution.eligible(r["state"], once).is_empty(),
 		"once_per_run 이벤트는 재발동하지 않아야 한다.")
+
+## 모든 상태이상에 도달 가능한 탈출 경로가 있어야 한다.
+## 구현 누락으로 부진이 영구 지속돼 슬럼프를 반복 유발한 적이 있다.
+## (7시드 시뮬레이션에서 슬럼프 진입 23회 → 탈출 구현 후 9회)
+func _test_every_condition_has_exit() -> void:
+	# 부진: 휴식 2턴 연속으로 탈출
+	var s := SaResources.new_state(1)
+	(s["conditions"] as Array).append(SaRisk.COND_SLUMP_LIGHT)
+	s["consecutive_rests"] = 2
+	_check(SaRisk.exiting_conditions(s, true, SaRisk.OUTCOME_OK).has(SaRisk.COND_SLUMP_LIGHT),
+		"부진은 휴식 2턴으로 탈출해야 한다.")
+
+	# 부진: 대성공으로도 탈출
+	var s2 := SaResources.new_state(1)
+	(s2["conditions"] as Array).append(SaRisk.COND_SLUMP_LIGHT)
+	_check(SaRisk.exiting_conditions(s2, false, SaRisk.OUTCOME_CRIT).has(SaRisk.COND_SLUMP_LIGHT),
+		"부진은 대성공으로도 탈출해야 한다.")
+
+	# 슬럼프: 휴식 3턴 연속
+	var s3 := SaResources.new_state(1)
+	(s3["conditions"] as Array).append(SaRisk.COND_SLUMP)
+	s3["consecutive_rests"] = 3
+	_check(SaRisk.exiting_conditions(s3, true, SaRisk.OUTCOME_OK).has(SaRisk.COND_SLUMP),
+		"슬럼프는 휴식 3턴으로 탈출해야 한다.")
+
+	# 부상: 3턴 경과
+	var s4 := SaResources.new_state(1)
+	(s4["conditions"] as Array).append(SaRisk.COND_INJURY)
+	s4["injury_turns"] = 3
+	_check(SaRisk.exiting_conditions(s4, false, SaRisk.OUTCOME_OK).has(SaRisk.COND_INJURY),
+		"부상은 3턴 경과로 탈출해야 한다.")
+
+	# 평판 추락: 평판 15 회복
+	var s5 := SaResources.new_state(1)
+	(s5["conditions"] as Array).append(SaRisk.COND_DISGRACE)
+	s5["reputation"] = 15
+	_check(SaRisk.exiting_conditions(s5, false, SaRisk.OUTCOME_OK).has(SaRisk.COND_DISGRACE),
+		"평판 추락은 평판 15 회복으로 탈출해야 한다.")
+
+	# 번아웃은 강제 소모 후 자동 해제된다(turn.gd 의 _resolve_burnout).
+	# 낙제는 의도적으로 탈출이 없다 — 이번 런의 band 4 를 영구 잠근다.
+	_check(not SaRisk.exiting_conditions(SaResources.new_state(1), true, SaRisk.OUTCOME_OK).has(SaRisk.COND_FAILED),
+		"낙제는 탈출 경로가 없어야 한다(설계상 의도).")
+
+	# 탈출 조건 미충족 시에는 나가지 않아야 한다
+	var s6 := SaResources.new_state(1)
+	(s6["conditions"] as Array).append(SaRisk.COND_SLUMP_LIGHT)
+	s6["consecutive_rests"] = 1
+	_check(SaRisk.exiting_conditions(s6, true, SaRisk.OUTCOME_OK).is_empty(),
+		"휴식 1턴만으로는 부진에서 나가면 안 된다.")
 
 ## 설계의 핵심 주장: 어떤 스탯도 턴 29 이전에 100 에 도달할 수 없다.
 ## 최대 집중 플레이어(재능 B, 전부 성공, 보통 컨디션, 비전 최단 해금)를 시뮬레이션한다.
