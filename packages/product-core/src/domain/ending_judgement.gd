@@ -46,6 +46,12 @@ static func requirement_weight(req: Dictionary) -> float:
 			return target * 1.2
 		SaEndingRequirements.TYPE_AVERAGE:
 			return maxf(0.0, target - 10.0) / 10.0
+		SaEndingRequirements.TYPE_AFFINITY:
+			return target / 8.0
+		SaEndingRequirements.TYPE_CONDITION:
+			return 4.0
+		SaEndingRequirements.TYPE_DECLARED:
+			return 6.0
 		_:
 			return 0.0
 
@@ -65,7 +71,7 @@ static func margin(state: Dictionary, ending: Dictionary) -> float:
 	return total
 
 static func score(state: Dictionary, ending: Dictionary, declared_path_ending: String) -> float:
-	var bonus := 12.0 if String(ending.get("code", "")) == declared_path_ending else 0.0
+	var bonus := 12.0 if declared_path_ending != "" and String(ending.get("code", "")) == declared_path_ending else 0.0
 	return specificity(ending) + margin(state, ending) * 2.0 + bonus
 
 ## 정렬: score desc → specificity desc → band desc → code asc

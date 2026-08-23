@@ -10,6 +10,10 @@ const TYPE_RESOURCE := "resource"
 const TYPE_FLAG := "flag"
 const TYPE_FLAG_SUM := "flag-sum"
 const TYPE_AVERAGE := "average"
+## 재설계로 추가된 타입. band >= 3 엔딩은 declared 를 하드 요건으로 갖는다.
+const TYPE_AFFINITY := "affinity"
+const TYPE_CONDITION := "condition"
+const TYPE_DECLARED := "declared"
 
 const DIRECTION_AT_MOST := "at-most"
 
@@ -38,10 +42,24 @@ static func current_value(state: Dictionary, req: Dictionary) -> float:
 			for k in keys:
 				total += float(stats2.get(String(k), 0))
 			return total / float(keys.size())
+		TYPE_AFFINITY:
+			var aff: Dictionary = state.get("affinity", {})
+			return float(aff.get(String(req.get("npc", "")), 0))
 		_:
 			return 0.0
 
 static func is_satisfied(state: Dictionary, req: Dictionary) -> bool:
+	var kind := String(req.get("type", ""))
+
+	# 상태이상 요건. direction=absent 이면 "그 상태가 아니어야 한다".
+	if kind == TYPE_CONDITION:
+		var has := (state.get("conditions", []) as Array).has(String(req.get("condition", "")))
+		return not has if String(req.get("direction", "")) == "absent" else has
+
+	# 진로 선언 요건. 이것이 희귀·전설 엔딩을 선언 없이 도달 불가능하게 만든다.
+	if kind == TYPE_DECLARED:
+		return String(state.get("declared_path", "")) == String(req.get("path", ""))
+
 	var target := float(req.get("target", 0))
 	var value := current_value(state, req)
 	if String(req.get("direction", "")) == DIRECTION_AT_MOST:
