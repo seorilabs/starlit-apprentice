@@ -1,0 +1,47 @@
+; 별빛 견습생 (starlit-apprentice)
+;
+; 주의: 기본 폰트를 여기에 지정하지 않는다.
+; 부팅 시점 폰트 로드가 첫 import 보다 앞서서 clean 체크아웃마다
+; "Cannot open file 'res://.godot/imported/....fontdata'" ERROR 를 남기고,
+; CI 로그 게이트가 이를 실패로 처리해 required check 가 영구히 red 가 된다.
+; autoload/ui.gd 가 import 이후에 부착한다. docs/02-decisions/0003 을 읽어라.
+
+config_version=5
+
+[application]
+
+config/name="별빛 견습생"
+config/description="열두 달 동안 매주 하루를 골라 견습생을 길러 내는 한국어 육성 시뮬레이션"
+config/version="0.1.0"
+run/main_scene="res://scenes/main.tscn"
+config/features=PackedStringArray("4.7", "Mobile")
+config/icon="res://icon.svg"
+boot_splash/bg_color=Color(0.086, 0.098, 0.176, 1)
+boot_splash/show_image=false
+
+[autoload]
+
+Events="*res://autoload/events.gd"
+Ui="*res://autoload/ui.gd"
+GameData="*res://autoload/game_data.gd"
+Platform="*res://autoload/platform.gd"
+Profile="*res://autoload/profile.gd"
+Audio="*res://autoload/audio.gd"
+
+[display]
+
+window/size/viewport_width=720
+window/size/viewport_height=1280
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation=1
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
+
+[rendering]
+
+renderer/rendering_method="mobile"
+textures/vram_compression/import_etc2_astc=true
+environment/defaults/default_clear_color=Color(0.086, 0.098, 0.176, 1)

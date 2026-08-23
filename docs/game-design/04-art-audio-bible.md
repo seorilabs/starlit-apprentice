@@ -99,13 +99,30 @@
 
 ## 오디오와 햅틱
 
-**BGM 3종 (seamless loop, `.ogg`)**
+### 오디오 용량 예산 (P3 실측으로 확정)
+
+빈 프로젝트 + 폰트만으로 Web export 를 뽑은 결과 **pck gzip 1.45 MB 중 폰트가 1.11 MB(77%)** 였다.
+아트 152종 · 오디오 · 콘텐츠 JSON 전부가 남은 **4.55 MB gzip** 을 나눠 쓴다.
+
+| 항목 | 예산 | 근거 |
+|---|---:|---|
+| BGM 3종 합계 | **≤ 1.6 MB** | 각 ≤ 550 KB. 90초 모노 `.ogg` ~72 kbps 기준 |
+| 스팅어 4종 합계 | ≤ 120 KB | 각 ≤ 30 KB, 2~4초 |
+| SFX 전체 | ≤ 180 KB | Kenney CC0 / jsfxr, 짧고 모노 |
+| **오디오 소계** | **≤ 1.9 MB** | 남은 여유의 42% |
+| 아트 152종 + 콘텐츠 | ≤ 2.65 MB | 나머지 |
+
+**BGM 은 모노로 만든다.** 스테레오 90초 `.ogg` 는 1 MB 를 넘겨 3종이면 예산을 초과한다.
+`.mp3` 를 쓰지 않는다 — 인코더 지연이 루프 시작에 공백을 만든다.
+생성 후 `bash scripts/check_web_budget.sh .` 로 실측하고, 초과하면 길이를 먼저 줄인다.
+
+**BGM 3종 (seamless loop, `.ogg`, 모노)**
 
 | 이름 | 길이 | 프롬프트 방향 |
 |---|---:|---|
-| `bgm_main` | 90초 | 고요하고 따뜻한 육성 시뮬 배경음, 하프와 첼레스타, 부드러운 현 패드, 잔잔한 별빛 무드 |
-| `bgm_event` | 60초 | 이벤트 장면용, 목관과 피치카토 현, 호기심 어린 중간 템포 |
-| `bgm_milestone` | 60초 | 시험 장면용, 낮은 현과 팀파니, 긴장되지만 과하지 않은 |
+| `bgm_main` | 90초 (≤550 KB) | 고요하고 따뜻한 육성 시뮬 배경음, 하프와 첼레스타, 부드러운 현 패드, 잔잔한 별빛 무드 |
+| `bgm_event` | 60초 (≤400 KB) | 이벤트 장면용, 목관과 피치카토 현, 호기심 어린 중간 템포 |
+| `bgm_milestone` | 60초 (≤400 KB) | 시험 장면용, 낮은 현과 팀파니, 긴장되지만 과하지 않은 |
 
 **스팅어 4종 (oneshot, `.wav`)**: `sting_success`, `sting_fail`, `sting_awaken`, `sting_ending`.
 
@@ -121,7 +138,7 @@
 |---|---|
 | 이미지 | `game-asset-pipeline` (스타일 앵커 + 배치 생성 + 투명 후처리 + 콘택트시트 QA) |
 | 오디오 | `game-sound-pipeline` (BGM 루프 + 스팅어), SFX는 Kenney CC0 / jsfxr |
-| 폰트 | **미정** — Pretendard Variable 또는 NotoSansKR 검토 중. 확정 시 라이선스 원문을 `docs/09-knowledge/third-party-notices.md`에 기재 |
+| 폰트 | **Pretendard 1.3.9 정적 Regular** (SIL OFL 1.1). 볼드는 `FontVariation` 합성. P7 에서 사용 글리프로 서브셋. 근거는 `docs/02-decisions/0007-font-budget.md` |
 | 추적 | 에셋마다 출처·모델·프롬프트/레퍼런스·라이선스·수정 이력·마켓 사용 가능 여부를 매니페스트에 남긴다 |
 
 원본 생성물(`raw/`)은 저장소에 유지한다. 재처리는 무료지만 재생성은 비용이 든다.

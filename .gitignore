@@ -6,7 +6,6 @@ legacy/**/coverage/
 # Godot
 .godot/
 /build/
-export_presets.cfg
 *.translation
 
 # 빌드 산출물 — CI 아티팩트로만 다룬다. 저장소에 커밋하지 않는다.
