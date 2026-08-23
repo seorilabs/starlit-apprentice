@@ -19,8 +19,10 @@ const SEEDS := [1, 7, 13, 101, 4242, 65537, 999983]
 ## 공급이 얇고 시드 편차가 크다. 저작이 채워지면 기준을 올린다.
 ## 이 게이트의 목적은 "band 3~4 가 완성됐다" 가 아니라 **현재 수준에서 퇴행하지 않는 것**이다.
 ## 이벤트 저작이 진행되면 이 값과 엔딩의 평판 목표를 함께 올린다.
-const REQUIRED := {0: 0, 1: 7, 2: 6, 3: 1, 4: 1}
-const PROVISIONAL_BANDS := [3, 4]
+## 도달 요구 시드 수. 설계 불변식 7 — band <= 3 은 7/7, band 4 는 6/7.
+## band 0 은 성공을 노리는 계획기가 만들 수 없어 방치 플레이로 따로 검증한다.
+const REQUIRED := {0: 0, 1: 7, 2: 7, 3: 7, 4: 6}
+const PROVISIONAL_BANDS := []   ## 잠정 기준 없음. 전 band 가 설계 기준을 충족한다.
 
 func _initialize() -> void:
 	var failures: Array[String] = []
@@ -99,8 +101,16 @@ func _initialize() -> void:
 		print(line)
 	print("도달: %d/%d 엔딩 (시드 %d개, 총 %d 시뮬레이션)"
 		% [reached_total, attempted, SEEDS.size(), attempted * SEEDS.size()])
-	print("band 3~4 는 잠정 기준이다. 평판이 이벤트 의존이고 이벤트가 %d/%d 라 공급이 얇다."
-		% [events.size(), EVENT_TARGET])
+	print("이벤트 %d/%d · 전 band 가 설계 불변식 7 을 충족한다." % [events.size(), EVENT_TARGET])
+
+	# band 0 은 성공을 노리는 계획기가 결코 만들지 않는다. 방치 플레이를
+	# 따로 돌려야 실패 엔딩 3종이 죽은 콘텐츠가 아님을 증명할 수 있다.
+	var neglect := _neglect_run(actions, events)
+	print("방치 플레이: %s" % str(neglect))
+	if not bool(neglect.get("failed", false)):
+		failures.append("방치 플레이가 낙제하지 않는다. 실패 상태가 실제로 작동하지 않는다")
+	if not bool(neglect.get("in_debt", false)):
+		failures.append("방치 플레이가 빚을 지지 않는다. 수업료 압박이 작동하지 않는다")
 
 	if failures.is_empty():
 		print("BALANCE PASS")
@@ -118,6 +128,48 @@ func _path_lookup(endings: Array) -> Dictionary:
 			if String((r as Dictionary).get("type", "")) == SaEndingRequirements.TYPE_DECLARED:
 				out[String((e as Dictionary).get("code", ""))] = String((r as Dictionary).get("path", ""))
 	return out
+
+## 아무것도 하지 않는 플레이. 공짜 휴식만 고르고 이벤트는 가장 소극적인
+## 선택지를 잡는다. band 0 엔딩이 실제로 나오는지 확인한다.
+func _neglect_run(actions: Array, events: Array) -> Dictionary:
+	var rng := SaRng.new(20260823)
+	var apt := SaAptitude.assign(SaRng.new(99991))
+	var state := SaResources.new_state(20260823)
+	var guard := 0
+	while int(state.get("turn", 1)) <= SaGrowthCurve.TURNS_TOTAL and guard < 200:
+		guard += 1
+		var pool := SaResources.selectable(state, actions)
+		if pool.is_empty():
+			return {"softlock": true, "turn": state.get("turn", 0)}
+		var pick: Dictionary = pool[0]
+		for a in pool:
+			var ad: Dictionary = a
+			# 공짜 휴식이 있으면 그것만 고른다
+			if String(ad.get("category", "")) == "rest" \
+				and int((ad.get("cost", {}) as Dictionary).get("gold", 0)) == 0:
+				pick = ad
+				break
+		var result := SaTurn.resolve(state, pick, apt, rng)
+		state = result["state"]
+		var beat := SaEventResolution.beat_state(state, int(result["played_turn"]))
+		var scheduled: Array = []
+		for e in events:
+			if SaEventResolution.is_scheduled(e as Dictionary):
+				scheduled.append(e)
+		for ev in SaEventResolution.eligible(beat, scheduled):
+			var evd: Dictionary = ev
+			for c in (evd.get("choices", []) as Array):
+				var cd: Dictionary = c
+				if bool(SaEventResolution.choice_availability(beat, cd).get("ok", false)):
+					state = (SaEventResolution.apply(state, evd, cd, rng))["state"]
+					break
+			break
+	return {
+		"failed": (state.get("conditions", []) as Array).has(SaRisk.COND_FAILED),
+		"in_debt": bool(state.get("in_debt", false)),
+		"gold": state.get("gold", 0),
+		"softlock": false,
+	}
 
 func _load(path: String) -> Dictionary:
 	if not FileAccess.file_exists(path):

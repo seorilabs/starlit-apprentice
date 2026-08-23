@@ -20,6 +20,41 @@ static func _text(value: Variant) -> String:
 ## 지금 발동 가능한 이벤트 후보. 요건·제외·쿨다운·1회성을 본다.
 ## 이벤트 비트는 "방금 플레이한 턴"에 속한다. SaTurn.resolve 가 돌려준
 ## played_turn 을 넣어 판정 상태를 만든다.
+## 이번 턴에 재생할 비트 목록. 예정 비트를 카테고리당 하나씩 최대 MAX 개까지
+## 채우고, 자리가 남고 추첨 턴이면 기회·세계 풀에서 하나를 더 뽑는다.
+##
+## 규칙을 여기 두는 이유: UI·시뮬레이션·경로계획기가 각자 구현하다 네 번
+## 어긋났다. 예정 비트로 큐가 꽉 차면 기회 이벤트가 영영 안 뜨는 것도
+## 그렇게 놓쳤다.
+const MAX_BEATS_PER_TURN := 2
+const LOTTERY_EVERY := 3
+
+static func draw_beats(beat: Dictionary, events: Array, rng: SaRng) -> Array:
+	var scheduled: Array = []
+	var lottery: Array = []
+	for e in events:
+		if is_scheduled(e as Dictionary):
+			scheduled.append(e)
+		else:
+			lottery.append(e)
+
+	var out: Array = []
+	var cats := {}
+	for e in eligible(beat, scheduled):
+		var cat := String((e as Dictionary).get("category", ""))
+		if cats.has(cat):
+			continue
+		cats[cat] = true
+		out.append(e)
+		if out.size() >= MAX_BEATS_PER_TURN:
+			break
+
+	if out.size() < MAX_BEATS_PER_TURN and int(beat.get("turn", 1)) % LOTTERY_EVERY == 0:
+		var drawn := pick(beat, lottery, rng)
+		if not drawn.is_empty():
+			out.append(drawn)
+	return out
+
 static func beat_state(state: Dictionary, played_turn: int) -> Dictionary:
 	var s := state.duplicate(true)
 	s["turn"] = played_turn
@@ -101,6 +136,10 @@ static func choice_availability(state: Dictionary, choice: Dictionary) -> Dictio
 ## check.stat 이 "*best" 면 현재 최고 스탯을 쓴다.
 ## 계절 심사는 "대표 계열 스탯" 으로 판정한다 — 특정 스탯을 하드코딩하면
 ## 그 스탯을 안 키운 빌드가 심사를 통째로 놓치고 평판이 막힌다.
+## 계절 심사 합산 점수의 항. 설계 팩 02-gdd 의 판정식이 원본이다.
+const MILESTONE_PATH_BONUS := 10.0
+const MILESTONE_NPC_WEIGHT := 0.2
+
 static func best_stat_value(state: Dictionary) -> float:
 	var stats: Dictionary = state.get("stats", {})
 	var best := 0.0
@@ -119,6 +158,20 @@ static func success_chance(state: Dictionary, check: Dictionary) -> float:
 	var npc := _text(check.get("npc_id", ""))
 	if npc != "":
 		aff = float((state.get("affinity", {}) as Dictionary).get(npc, 0))
+	# 계절 심사는 판정 모형 자체가 다르다.
+	#   score = 대표스탯 + 평판x0.5 + 진로일치 + NPC지원, 난이도와 직접 비교하고
+	#   d20 이 ±10 만 흔든다. 즉 실력이 정하고 운은 가장자리만 건드린다.
+	# 일반 선택지 공식(0.15 + (값-난이도)/100)은 50% 통과에 난이도+35 를 요구해
+	# 어떤 빌드도 심사를 못 넘고 전원 낙제한다 — 실제로 그랬다.
+	if _text(check.get("kind", "")) == "milestone":
+		var score := value + float(state.get("reputation", 0)) * 0.5
+		if _text(state.get("declared_path", "")) != "":
+			score += MILESTONE_PATH_BONUS
+		var support := 0.0
+		for v in (state.get("affinity", {}) as Dictionary).values():
+			support = maxf(support, float(v))
+		score += support * MILESTONE_NPC_WEIGHT
+		return clampf((score - difficulty + 10.5) / 20.0, 0.05, 0.95)
 	return clampf(0.15 + (value - difficulty) / 100.0 + aff / 300.0, 0.05, 0.95)
 
 ## 선택지를 적용한다. 새 상태와 표시할 결과문을 돌려준다.
@@ -140,6 +193,10 @@ static func apply(state: Dictionary, event: Dictionary, choice: Dictionary, rng:
 
 	var effects: Dictionary = outcome.get("effects", {}) if not outcome.is_empty() else {}
 	_apply_effects(out, effects)
+
+	# 심사 플래그는 이벤트만 남긴다. 낙제 판정도 여기서 한다.
+	if SaRisk.should_fail_out(out):
+		(out["conditions"] as Array).append(SaRisk.COND_FAILED)
 
 	var seen: Dictionary = out.get("seen_events", {})
 	seen[_text(event.get("id", ""))] = int(out.get("turn", 1))

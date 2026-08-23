@@ -62,31 +62,8 @@ func _initialize() -> void:
 				break
 			for c in (result["entered_conditions"] as Array):
 				condition_hits[c] = int(condition_hits.get(c, 0)) + 1
-			# 마일스톤·진로는 추첨이 아니라 예정된 비트다. 매 턴 자격을 확인한다.
-			var scheduled: Array = []
-			for e in events:
-				if SaEventResolution.is_scheduled(e as Dictionary):
-					scheduled.append(e)
 			var beat := SaEventResolution.beat_state(state, int(result["played_turn"]))
-			var due := SaEventResolution.eligible(beat, scheduled)
-			var queue: Array = []
-			var cats := {}
-			for e in due:
-				var cat3 := String((e as Dictionary).get("category", ""))
-				if cats.has(cat3):
-					continue
-				cats[cat3] = true
-				queue.append(e)
-				if queue.size() >= 2:
-					break
-			if queue.is_empty() and int(result["played_turn"]) % 3 == 0:
-				var pool: Array = []
-				for e in events:
-					if not SaEventResolution.is_scheduled(e as Dictionary):
-						pool.append(e)
-				var drawn := SaEventResolution.pick(beat, pool, rng)
-				if not drawn.is_empty():
-					queue.append(drawn)
+			var queue: Array = SaEventResolution.draw_beats(beat, events, rng)
 			for q in queue:
 				var ev: Dictionary = q
 				var choices: Array = ev.get("choices", [])

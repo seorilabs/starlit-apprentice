@@ -306,6 +306,51 @@ def check_effect_keys(events: dict, vocab: dict) -> None:
                         err(f"{where}: 모르는 스탯 '{s}'")
 
 
+# 낙제는 설계상 해제가 없다. 번아웃은 코어가 강제 2턴 소모 뒤 자동 해제한다.
+PERMANENT_CONDITIONS = {"failed"}
+AUTO_CLEARED_CONDITIONS = {"burnout"}
+
+
+def check_conditions(root: Path, events: dict) -> None:
+    """상태이상마다 진입과 탈출이 실제로 존재하는지 본다.
+
+    탈출이 없는 상태이상은 런을 조용히 망가뜨리고, 관련 이벤트가 없는
+    상태이상은 플레이어에게 아무 서사도 남기지 않는다.
+    """
+    risk = _core_text("rules/risk.gd", root)
+    if not risk:
+        return
+    conds = re.findall(r'const COND_\w+ := "(\w+)"', risk)
+    if not conds:
+        err("risk.gd 에서 상태이상 목록을 추출하지 못했다")
+        return
+    # exiting_conditions 함수 본문만 본다. 다음 함수까지 긁으면 탈출과 무관한
+    # current_condition_key 의 참조가 탈출 경로로 오인된다.
+    m = re.search(r"static func exiting_conditions.*?(?=\nstatic func |\Z)", risk, re.S)
+    exiting = m.group(0) if m else ""
+    if not exiting:
+        err("risk.gd 에서 exiting_conditions 함수를 찾지 못했다")
+    turn_src = _core_text("rules/turn.gd", root)
+
+    evs = events.get("events") or []
+    for c in conds:
+        gated = sum(1 for e in evs
+                    if any(r.get("type") == "condition" and r.get("condition") == c
+                           for r in (e.get("requirements") or [])))
+        event_exits = sum(1 for e in evs for ch in (e.get("choices") or [])
+                          for o in (ch.get("outcomes") or [])
+                          if (o.get("effects") or {}).get("clear_condition") == c)
+        # 단어 경계로 본다. COND_SLUMP 는 COND_SLUMP_LIGHT 에 부분 일치한다.
+        token = re.compile(rf"\bCOND_{c.upper()}\b")
+        rule_exit = bool(token.search(exiting))
+        auto_exit = c in AUTO_CLEARED_CONDITIONS and bool(token.search(turn_src))
+
+        if c not in PERMANENT_CONDITIONS and not (rule_exit or auto_exit or event_exits):
+            err(f"상태이상 '{c}' 에 탈출 경로가 없다 — 걸리면 런이 끝날 때까지 풀리지 않는다")
+        if c not in AUTO_CLEARED_CONDITIONS and gated == 0:
+            err(f"상태이상 '{c}' 를 다루는 이벤트가 하나도 없다")
+
+
 def check_decks(events: dict) -> None:
     """기회 이벤트는 회차마다 다른 덱이 열린다. 덱이 비거나 기울면
     어떤 회차는 기회 이벤트가 거의 없는 채로 끝난다."""
@@ -453,6 +498,7 @@ def main() -> int:
         check_event_art(root, events_doc, npcs_doc)
     else:
         err("data/npcs.json 이 없다")
+    check_conditions(root, events_for_types)
     check_decks(events_for_types)
     check_event_escape(events_for_types)
     check_effect_keys(events_for_types, vocab)

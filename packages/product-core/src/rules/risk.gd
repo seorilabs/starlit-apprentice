@@ -29,6 +29,9 @@ const COND_BURNOUT := "burnout"           ## 번아웃
 const COND_DISGRACE := "disgrace"         ## 평판 추락
 const COND_FAILED := "failed"             ## 낙제
 
+## 계절 심사 낙방·기권이 이만큼이면 낙제한다.
+const MILESTONE_FAIL_LIMIT := 2
+
 const CONDITION_MULTIPLIER := {
 	"good": 1.15, "normal": 1.00, COND_SLUMP_LIGHT: 0.75, COND_SLUMP: 0.45,
 }
@@ -126,6 +129,21 @@ static func exiting_conditions(state: Dictionary, was_rest: bool, outcome: Strin
 		out.append(COND_DISGRACE)
 
 	return out
+
+## 심사에서 떨어지거나 기권한 횟수. 이걸 낙제로 연결하지 않으면 계절 심사가
+## 아무것도 걸지 않는 서사가 되고 band 0 실패 엔딩 3종이 도달 불가가 된다.
+static func milestone_failures(state: Dictionary) -> int:
+	var n := 0
+	for key in (state.get("flags", {}) as Dictionary).keys():
+		var k := String(key)
+		if k.begins_with("milestone:") and (k.ends_with(":fail") or k.ends_with(":skip")):
+			n += 1
+	return n
+
+static func should_fail_out(state: Dictionary) -> bool:
+	if (state.get("conditions", []) as Array).has(COND_FAILED):
+		return false
+	return milestone_failures(state) >= MILESTONE_FAIL_LIMIT
 
 static func current_condition_key(conditions: Array) -> String:
 	if conditions.has(COND_SLUMP):

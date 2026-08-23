@@ -93,37 +93,10 @@ func resolve(action: Dictionary, together: String = "") -> Dictionary:
 	pending_events = _draw_events()
 	return last_result
 
-## 예정 비트를 최대 2개까지, 카테고리가 겹치지 않게 낸다. 전부 내면
-## NPC 이벤트가 한 턴에 몰려 페이싱이 무너진다.
-const MAX_BEATS_PER_TURN := 2
-
 func _draw_events() -> Array:
 	if events.is_empty():
 		return []
-	var scheduled: Array = []
-	var pool: Array = []
-	for e in events:
-		if SaEventResolution.is_scheduled(e):
-			scheduled.append(e)
-		else:
-			pool.append(e)
-	var due := SaEventResolution.eligible(beat, scheduled)
-	if not due.is_empty():
-		var out: Array = []
-		var cats := {}
-		for e in due:
-			var cat := String((e as Dictionary).get("category", ""))
-			if cats.has(cat):
-				continue
-			cats[cat] = true
-			out.append(e)
-			if out.size() >= MAX_BEATS_PER_TURN:
-				break
-		return out
-	if int(beat.get("turn", 1)) % 3 == 0:
-		var drawn := SaEventResolution.pick(beat, pool, rng)
-		return [] if drawn.is_empty() else [drawn]
-	return []
+	return SaEventResolution.draw_beats(beat, events, rng)
 
 func apply_event_choice(choice: Dictionary) -> Dictionary:
 	var ev: Dictionary = pending_events.pop_front() if not pending_events.is_empty() else {}

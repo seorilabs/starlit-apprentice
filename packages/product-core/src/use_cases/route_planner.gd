@@ -95,10 +95,11 @@ static func _score(state: Dictionary, action: Dictionary, reqs: Array, aptitude:
 		score += 10.0 + float((action.get("cost", {}) as Dictionary).get("gold", 0)) * 0.35
 	# 종료 가드레일: 마지막 3턴은 기력 20 · 마음 80 을 맞춰 끝낸다.
 	# 이걸 안 하면 요건을 채우고도 자원 가드레일에서 떨어진다.
-	if turn >= SaGrowthCurve.TURNS_TOTAL - 2:
-		if int(state.get("energy", 0)) < 30 and cat == "rest":
+	# 마지막 5턴. 이벤트가 이 구간에도 뜨므로 가드레일(20/80)보다 여유를 둔다.
+	if turn >= SaGrowthCurve.TURNS_TOTAL - 4:
+		if int(state.get("energy", 0)) < 45 and cat == "rest":
 			score += 120.0
-		if int(state.get("stress", 0)) > 70 and cat == "rest":
+		if int(state.get("stress", 0)) > 55 and cat == "rest":
 			score += 120.0
 
 	# 슬럼프면 회복이 최우선이다. 심화·비전이 잠겨 성장이 막힌다.
@@ -111,27 +112,48 @@ static func _score(state: Dictionary, action: Dictionary, reqs: Array, aptitude:
 static func _best_choice(state: Dictionary, event: Dictionary, reqs: Array) -> Dictionary:
 	var best: Dictionary = {}
 	var best_score := -1e9
+	# 끝이 가까울수록 자원 소모에 민감해진다.
+	var end_weight := 3.0 if int(state.get("turn", 1)) >= SaGrowthCurve.TURNS_TOTAL - 4 else 1.0
 	for c in (event.get("choices", []) as Array):
 		var cd: Dictionary = c
 		if not bool(SaEventResolution.choice_availability(state, cd).get("ok", false)):
 			continue
 		var s := 0.0
+		# 결과를 확률로 가중한다. 균등하게 더하면 실패 분기의 비용이 과대평가돼
+		# 계획기가 판정을 피하고, 심사를 기권해 낙제한다 — 실제로 그랬다.
+		var chance := SaEventResolution.success_chance(
+			state, cd.get("check", {}) if cd.get("check") != null else {})
 		for o in (cd.get("outcomes", []) as Array):
-			var eff: Dictionary = (o as Dictionary).get("effects", {})
+			var od: Dictionary = o
+			var eff: Dictionary = od.get("effects", {})
+			var w := 1.0
+			match _text(od.get("kind", "only")):
+				"success": w = chance
+				"failure": w = 1.0 - chance
 			for r in reqs:
 				var req: Dictionary = r
 				if SaEndingRequirements.is_satisfied(state, req):
 					continue
 				match _text(req.get("type", "")):
 					SaEndingRequirements.TYPE_RESOURCE:
-						s += float(eff.get(_text(req.get("resource", "")), 0)) * 1.2
+						s += float(eff.get(_text(req.get("resource", "")), 0)) * 1.2 * w
 					SaEndingRequirements.TYPE_AFFINITY:
-						s += float((eff.get("affinity", {}) as Dictionary).get(_text(req.get("npc", "")), 0)) * 1.5
+						s += float((eff.get("affinity", {}) as Dictionary).get(_text(req.get("npc", "")), 0)) * 1.5 * w
 					SaEndingRequirements.TYPE_STAT:
-						s += float((eff.get("stats", {}) as Dictionary).get(_text(req.get("stat", "")), 0))
+						s += float((eff.get("stats", {}) as Dictionary).get(_text(req.get("stat", "")), 0)) * w
 					SaEndingRequirements.TYPE_FLAG:
 						if (eff.get("flags", {}) as Dictionary).has(_text(req.get("flag", ""))):
-							s += 14.0
+							s += 14.0 * w
+			# 심사 기권·낙방은 낙제로 이어져 band >= 4 엔딩을 영구히 닫는다.
+			# 요건 점수만으로는 이 비용이 전혀 보이지 않는다.
+			for f in (eff.get("flags", {}) as Dictionary).keys():
+				var fk := _text(f)
+				if fk.begins_with("milestone:") and (fk.ends_with(":skip") or fk.ends_with(":fail")):
+					s -= 80.0 * w
+			# 결과가 자원을 얼마나 축내는지도 본다. 요건만 보고 고르면 후반
+			# 이벤트가 종료 가드레일(기력 20 · 마음 80)을 깨뜨린다.
+			s -= maxf(0.0, float(eff.get("stress", 0))) * 0.6 * end_weight * w
+			s += minf(0.0, float(eff.get("energy", 0))) * 0.4 * end_weight * w
 		# 자원이 급하면 소모가 큰 선택지를 피한다
 		var cost: Dictionary = cd.get("cost", {})
 		s += float(cost.get("energy", 0)) * 0.2 + float(cost.get("gold", 0)) * 0.02
@@ -194,25 +216,17 @@ static func run(
 
 		# 이벤트를 발동시킨다. 평판·NPC 호감은 주로 여기서 온다.
 		# 이걸 빼면 band 3/4 요건이 구조적으로 도달 불가능해진다.
+		# 이벤트를 발동시킨다. 평판·NPC 호감은 주로 여기서 온다.
+		# 큐 구성 규칙은 코어에 하나만 둔다 — 네 곳이 각자 구현하다 어긋났다.
 		if not events.is_empty():
-			var scheduled: Array = []
-			var pool_e: Array = []
-			for e in events:
-				var cat := _text((e as Dictionary).get("category", ""))
-				if cat == "milestone" or cat == "path" or cat == "condition" or cat == "npc":
-					scheduled.append(e)
-				else:
-					pool_e.append(e)
-			var due := SaEventResolution.eligible(state, scheduled)
-			var ev: Dictionary = {}
-			if not due.is_empty():
-				ev = due[0]
-			elif int(state.get("turn", 1)) % 3 == 0:
-				ev = SaEventResolution.pick(state, pool_e, rng)
-			if not ev.is_empty():
-				var choice := _best_choice(state, ev, reqs)
-				if not choice.is_empty():
-					state = (SaEventResolution.apply(state, ev, choice, rng))["state"]
+			var beat := SaEventResolution.beat_state(state, int(result["played_turn"]))
+			for q in SaEventResolution.draw_beats(beat, events, rng):
+				var ev: Dictionary = q
+				var choice := _best_choice(beat, ev, reqs)
+				if choice.is_empty():
+					continue
+				state = (SaEventResolution.apply(state, ev, choice, rng))["state"]
+				beat = SaEventResolution.beat_state(state, int(result["played_turn"]))
 
 	return {"ok": true, "reason": "", "state": state, "picks": picks,
 		"remaining_gap": _total_gap(state, reqs)}
