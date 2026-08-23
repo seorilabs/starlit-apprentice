@@ -114,6 +114,71 @@ def check_actions(data: dict) -> None:
         err(f"진로가 {len(path_ids)}개다. 월 7 선언에 최소 3개 선택지가 필요하다")
 
 
+def check_events(data: dict) -> None:
+    events = data.get("events") or []
+    if not events:
+        err("events 가 비었다")
+        return
+
+    ids = Counter(e.get("id") for e in events)
+    for eid, n in ids.items():
+        if n > 1:
+            err(f"이벤트 id 중복: {eid} ({n}회)")
+
+    # 결과문은 전 코퍼스에서 유일해야 한다. 같은 이벤트 안에서 성공/실패가 같은 문장을
+    # 쓰면 분기가 분기처럼 읽히지 않는다.
+    seen_result_text: dict[str, str] = {}
+    for e in events:
+        eid = e.get("id", "?")
+        for field in ("title", "body"):
+            text = str(e.get(field) or "").strip()
+            if not text:
+                err(f"{eid}: {field} 가 비었다")
+        choices = e.get("choices") or []
+        # 선택지가 1개면 선택이 아니다. 구 구현의 자동 적용 통보로 되돌아간다.
+        if len(choices) < 1:
+            err(f"{eid}: 선택지가 없다")
+        if e.get("category") != "world" and len(choices) < 2:
+            err(f"{eid}: 선택지가 {len(choices)}개다. world 외에는 2개 이상이어야 한다")
+
+        cids = Counter(c.get("id") for c in choices)
+        for cid, n in cids.items():
+            if n > 1:
+                err(f"{eid}: 선택지 id 중복 {cid}")
+
+        for c in choices:
+            cid = f"{eid}:{c.get('id','?')}"
+            if not str(c.get("label") or "").strip():
+                err(f"{cid}: label 이 비었다")
+            if c.get("requirements") and not str(c.get("locked_reason") or "").strip():
+                err(f"{cid}: 요건이 있는데 locked_reason 이 없다. "
+                    f"미충족 선택지는 숨기지 않고 사유와 함께 노출해야 한다")
+            outcomes = c.get("outcomes") or []
+            if not outcomes:
+                err(f"{cid}: outcomes 가 없다")
+            kinds = [o.get("kind") for o in outcomes]
+            if c.get("check"):
+                if sorted(k for k in kinds if k) != ["failure", "success"]:
+                    err(f"{cid}: 판정이 있으면 success/failure 결과가 둘 다 있어야 한다. 실제 {kinds}")
+            else:
+                if kinds != ["only"]:
+                    err(f"{cid}: 판정이 없으면 only 결과 하나여야 한다. 실제 {kinds}")
+            for o in outcomes:
+                text = str(o.get("result_text") or "").strip()
+                if not text:
+                    err(f"{cid}: result_text 가 비었다")
+                    continue
+                # 같은 문장을 재사용하면 분기가 분기처럼 읽히지 않는다.
+                if text == str(e.get("body") or "").strip():
+                    err(f"{cid}: result_text 가 본문과 같다. "
+                        f"본문은 상황을, 결과문은 무엇이 일어났는지를 말해야 한다")
+                if text in seen_result_text:
+                    err(f"{cid}: result_text 가 '{seen_result_text[text]}' 와 중복된다. "
+                        f"분기마다 다른 문장이어야 한다")
+                else:
+                    seen_result_text[text] = cid
+
+
 def check_endings(data: dict) -> None:
     endings = data.get("endings") or []
     if not endings:
@@ -140,6 +205,9 @@ def main() -> int:
     actions = load(root, "actions.json")
     if actions:
         check_actions(actions)
+    events_path = root / "data" / "events.json"
+    if events_path.exists():
+        check_events(json.loads(events_path.read_text(encoding="utf-8")))
     endings_path = root / "data" / "endings.json"
     if endings_path.exists():
         check_endings(json.loads(endings_path.read_text(encoding="utf-8")))
@@ -150,7 +218,10 @@ def main() -> int:
         print(f"콘텐츠 린트 실패: {len(problems)}건", file=sys.stderr)
         return 1
     n = len((actions.get("actions") or []))
-    print(f"콘텐츠 린트 통과. 액션 {n}개 검사.")
+    ev = 0
+    if events_path.exists():
+        ev = len(json.loads(events_path.read_text(encoding="utf-8")).get("events") or [])
+    print(f"콘텐츠 린트 통과. 액션 {n}개, 이벤트 {ev}개 검사.")
     return 0
 
 

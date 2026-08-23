@@ -21,6 +21,8 @@ func run_all() -> Array[String]:
 	_test_no_softlock()
 	_test_burnout_consumes_turns()
 	_test_mastery_bank_on_ceiling()
+	_test_event_choice_gating()
+	_test_event_check_branches()
 	# 빈 스위트가 초록으로 통과하지 않게 한다.
 	if _executed == 0:
 		_failures.append("실행된 검사가 0개다. 스위트가 비었거나 러너가 깨졌다.")
@@ -181,6 +183,51 @@ func _test_mastery_bank_on_ceiling() -> void:
 	var bank: Dictionary = s["mastery_bank"]
 	_check(float(bank.get(SaStatKeys.INTELLECT, 0.0)) > 0.0,
 		"상한 초과분이 숙련도로 적립돼야 한다.")
+
+## 미충족 선택지는 숨기지 않고 사유와 함께 노출한다.
+func _test_event_choice_gating() -> void:
+	var state := SaResources.new_state(1)
+	(state["affinity"] as Dictionary)["harin"] = 10
+	var locked := {"id":"b","requirements":[{"type":"affinity","npc":"harin","target":25}],
+		"locked_reason":"하린과 아직 그렇게 친하지 않다","cost":{},"outcomes":[]}
+	var avail := SaEventResolution.choice_availability(state, locked)
+	_check(not bool(avail["ok"]), "호감 미달 선택지는 잠겨야 한다.")
+	_check(String(avail["reason"]) != "", "잠긴 선택지는 사유를 노출해야 한다.")
+
+	(state["affinity"] as Dictionary)["harin"] = 30
+	_check(bool(SaEventResolution.choice_availability(state, locked)["ok"]),
+		"호감을 채우면 열려야 한다.")
+
+	var costly := {"id":"c","requirements":[],"cost":{"gold":-99999},"outcomes":[]}
+	_check(not bool(SaEventResolution.choice_availability(state, costly)["ok"]),
+		"감당 못 하는 비용은 잠겨야 한다.")
+
+## 판정이 있는 선택지는 성공·실패가 서로 다른 결과를 낸다.
+func _test_event_check_branches() -> void:
+	var state := SaResources.new_state(1)
+	(state["stats"] as Dictionary)["commerce"] = 60
+	var high := SaEventResolution.success_chance(state, {"stat":"commerce","difficulty":35})
+	(state["stats"] as Dictionary)["commerce"] = 10
+	var low := SaEventResolution.success_chance(state, {"stat":"commerce","difficulty":35})
+	_check(high > low, "스탯이 높을수록 성공 확률이 높아야 한다. %.2f vs %.2f" % [high, low])
+	_check(high <= 0.95 and low >= 0.05, "성공 확률은 [0.05, 0.95] 로 클램프돼야 한다.")
+
+	var ev := {"id":"e1","choices":[]}
+	var choice := {"id":"a","requirements":[],"cost":{"energy":-10},
+		"check":{"stat":"commerce","difficulty":0},
+		"outcomes":[
+			{"kind":"success","result_text":"성공했다","effects":{"gold":90}},
+			{"kind":"failure","result_text":"실패했다","effects":{"gold":20}}]}
+	var r := SaEventResolution.apply(state, ev, choice, SaRng.new(1))
+	_check(["success","failure"].has(String(r["kind"])), "판정 결과는 success 또는 failure 여야 한다.")
+	_check(String(r["result_text"]) != "", "결과문이 비면 안 된다.")
+	var seen: Dictionary = (r["state"] as Dictionary)["seen_events"]
+	_check(seen.has("e1"), "발동한 이벤트는 seen_events 에 기록돼야 한다.")
+
+	# once_per_run 은 두 번 뽑히지 않는다
+	var once := [{"id":"e1","once_per_run":true,"requirements":[],"exclusions":[],"weight":1,"choices":[]}]
+	_check(SaEventResolution.eligible(r["state"], once).is_empty(),
+		"once_per_run 이벤트는 재발동하지 않아야 한다.")
 
 ## 설계의 핵심 주장: 어떤 스탯도 턴 29 이전에 100 에 도달할 수 없다.
 ## 최대 집중 플레이어(재능 B, 전부 성공, 보통 컨디션, 비전 최단 해금)를 시뮬레이션한다.

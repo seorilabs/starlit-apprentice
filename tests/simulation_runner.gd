@@ -4,12 +4,16 @@ extends SceneTree
 ## 코어는 JSON 을 모르므로 로딩은 여기서 하고 코어에는 Dictionary 만 넘긴다.
 
 const ACTIONS_PATH := "res://data/actions.json"
+const EVENTS_PATH := "res://data/events.json"
 const SEEDS := [1, 7, 13, 101, 4242, 65537, 999983]
 
 func _initialize() -> void:
 	var failures: Array[String] = []
 	var data := _load(ACTIONS_PATH)
 	var actions: Array = data.get("actions", [])
+	var events: Array = _load(EVENTS_PATH).get("events", [])
+	if events.is_empty():
+		failures.append("이벤트가 비었다")
 	if actions.size() != 38:
 		failures.append("액션이 38개가 아니다: %d" % actions.size())
 
@@ -18,6 +22,9 @@ func _initialize() -> void:
 	var energy_pressure := 0
 	var completed := 0
 	var condition_hits := {}
+	var events_fired := 0
+	var locked_choices_seen := 0
+	var distinct_events := {}
 
 	for seed_value in SEEDS:
 		var rng := SaRng.new(seed_value)
@@ -45,6 +52,31 @@ func _initialize() -> void:
 				break
 			for c in (result["entered_conditions"] as Array):
 				condition_hits[c] = int(condition_hits.get(c, 0)) + 1
+			# 3턴 중 1턴 가중 추첨으로 이벤트를 뽑는다.
+			if int(state["turn"]) % 3 == 0:
+				var ev := SaEventResolution.pick(state, events, rng)
+				if not ev.is_empty():
+					var choices: Array = ev.get("choices", [])
+					var open_choices: Array = []
+					for c in choices:
+						var av := SaEventResolution.choice_availability(state, c as Dictionary)
+						if bool(av["ok"]):
+							open_choices.append(c)
+						else:
+							locked_choices_seen += 1
+							if String(av["reason"]) == "":
+								failures.append("%s: 잠긴 선택지에 사유가 없다" % str(ev.get("id")))
+					if open_choices.is_empty():
+						failures.append("%s: 고를 수 있는 선택지가 없다" % str(ev.get("id")))
+					else:
+						var chosen: Dictionary = open_choices[rng.next_int_range(0, open_choices.size() - 1)]
+						var outcome := SaEventResolution.apply(state, ev, chosen, rng)
+						if String(outcome.get("result_text", "")) == "":
+							failures.append("%s:%s 결과문이 비었다" % [str(ev.get("id")), str(chosen.get("id"))])
+						state = outcome["state"]
+						events_fired += 1
+						distinct_events[str(ev.get("id"))] = true
+
 			min_gold = mini(min_gold, int(state["gold"]))
 			min_energy = mini(min_energy, int(state["energy"]))
 			# 불변식 6: 턴 29 이전에 100 도달 금지
@@ -62,6 +94,8 @@ func _initialize() -> void:
 
 	print("완주 %d/%d | 골드<40 경험 %d | 기력<30 경험 %d" % [completed, SEEDS.size(), gold_pressure, energy_pressure])
 	print("상태이상 진입: %s" % str(condition_hits))
+	print("이벤트 발동 %d회, 고유 %d종 | 잠긴 선택지 노출 %d회"
+		% [events_fired, distinct_events.size(), locked_choices_seen])
 	print("턴 29 이전 캡 도달: %s" % ("없음" if earliest_cap == 99 else "턴 %d" % earliest_cap))
 
 	if completed != SEEDS.size():
@@ -69,6 +103,10 @@ func _initialize() -> void:
 	if earliest_cap != 99:
 		failures.append("불변식 6 위반: 턴 %d 에 스탯이 100 에 도달했다" % earliest_cap)
 	# 불변식 13: 자원이 실제로 구속돼야 한다
+	if events_fired == 0:
+		failures.append("이벤트가 한 번도 발동하지 않았다")
+	if locked_choices_seen == 0:
+		failures.append("잠긴 선택지가 한 번도 노출되지 않았다. 요건 게이팅이 동작하지 않는다")
 	if gold_pressure == 0:
 		failures.append("불변식 13 위반: 어느 시드에서도 골드가 40 아래로 내려가지 않았다. 자원이 제약이 아니다")
 
