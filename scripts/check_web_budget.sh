@@ -22,6 +22,13 @@ PCK_REFERENCE=$((6 * 1024 * 1024))
 
 gz_size() { gzip -6 -c "$1" | wc -c | tr -d ' '; }
 mb() { echo "scale=2; $1/1048576" | bc; }
+file_size() {
+  if stat -f%z "$1" >/dev/null 2>&1; then
+    stat -f%z "$1"
+  else
+    stat -c%s "$1"
+  fi
+}
 
 # 낡은 산출물을 재면 예산도 폰트 검증도 거짓이 된다. 항상 새로 만든다.
 # SKIP_EXPORT=1 은 방금 export 한 것을 다시 재고 싶을 때만 쓴다.
@@ -43,7 +50,7 @@ raw_total=0
 for f in "${out_dir}"/*; do
   [ -f "$f" ] || continue
   case "$f" in *.map) continue;; esac
-  raw_total=$((raw_total + $(stat -f%z "$f" 2>/dev/null || stat -c%s "$f")))
+  raw_total=$((raw_total + $(file_size "$f")))
 done
 
 printf "[web-budget] 총 전송량 %.2f MB (참고선 %.2f MB)\n" "$(mb $total)" "$(mb $TOTAL_REFERENCE)" >&2
@@ -61,7 +68,7 @@ fail=0
 
 # 로딩 화면이 실제로 셸에 들어갔는지 확인한다. 이게 빠지면 다운로드가 끝날
 # 때까지 흰 화면이 남고, AIT 체크리스트의 "10초 이내 최초 화면" 이 위태로워진다.
-if ! grep -q "boot-title" "${out_dir}/index.html"; then
+if ! grep -q "boot-logo" "${out_dir}/index.html"; then
   echo "[web-budget] 커스텀 로딩 셸이 빌드에 없다. export_presets 의 custom_html_shell 을 확인한다." >&2
   fail=1
 fi
