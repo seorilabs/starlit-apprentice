@@ -20,6 +20,11 @@ PCK_BUDGET=$((6 * 1024 * 1024))
 gz_size() { gzip -6 -c "$1" | wc -c | tr -d ' '; }
 mb() { echo "scale=2; $1/1048576" | bc; }
 
+# 낡은 산출물을 재면 예산도 폰트 검증도 거짓이 된다. 항상 새로 만든다.
+# SKIP_EXPORT=1 은 방금 export 한 것을 다시 재고 싶을 때만 쓴다.
+if [ "${SKIP_EXPORT:-0}" != "1" ]; then
+  bash "$(dirname "$0")/export_web.sh" "${project_dir}"
+fi
 [ -f "${out_dir}/index.pck" ] || { echo "[web-budget] export 산출물이 없다: ${out_dir}" >&2; exit 1; }
 
 total=0

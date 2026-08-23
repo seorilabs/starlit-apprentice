@@ -47,3 +47,22 @@ jobs:
         bash scripts/check_docs.sh
         bash scripts/test_all.sh
         bash scripts/godot_quality_gate.sh --project .
+
+  # 전송 예산과 한국어 폰트 pck 탑재는 export 산출물로만 확인할 수 있다.
+  # export 템플릿이 필요해 별도 job 으로 분리한다.
+  # ⚠ 이 job 의 name 도 required check 컨텍스트를 만든다. 바꾸지 마라.
+  web-budget:
+    name: Web Budget
+    uses: seorilabs/.github/.github/workflows/godot-checks.yml@main
+    secrets: inherit
+    with:
+      godot_version: "4.7.2"
+      godot_status: stable
+      project_dir: "."
+      with_export_templates: true
+      timeout_minutes: 25
+      runs_on: >-
+        ${{ (github.event.repository.private && !github.event.pull_request.head.repo.fork)
+            && 'seorilabs-rpi-arm64' || 'ubuntu-latest' }}
+      check_command: |
+        bash scripts/check_web_budget.sh .
