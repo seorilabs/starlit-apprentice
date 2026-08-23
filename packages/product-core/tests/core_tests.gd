@@ -82,14 +82,12 @@ func _test_requirements() -> void:
 ## 구 구현은 priority 30 을 박은 3종이 나머지를 전부 가렸다.
 func _test_judgement_prefers_specificity() -> void:
 	var endings: Array = [
-		{"code": "low", "priority": 30, "requirements": [{"type":"stat","stat":"intellect","target":30}]},
+		{"code": "low", "requirements": [{"type":"stat","stat":"intellect","target":30}]},
 		{"code": "high", "requirements": [
 			{"type":"stat","stat":"intellect","target":80},
 			{"type":"stat","stat":"etiquette","target":70}]},
 	]
 	var state := {"stats": {"intellect": 90, "etiquette": 80}, "gold": 0, "stress": 0, "flags": {}}
-	_check(SaEndingJudgement.judge_legacy(state, endings) == "low",
-		"구 판정은 priority 30 때문에 요건이 낮은 엔딩을 고른다(회귀 기준).")
 	_check(SaEndingJudgement.judge(state, endings) == "high",
 		"새 판정은 요건이 높은 엔딩을 골라야 한다.")
 	_check(SaEndingJudgement.specificity(endings[1]) > SaEndingJudgement.specificity(endings[0]),

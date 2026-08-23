@@ -25,7 +25,6 @@ Godot 4 재작성 중이다. 진행 상황은 `docs/04-work/`를 본다.
   - `Time` 금지라 시간 의존은 전부 주입 인자다. 이것이 밸런스 하네스를 결정론적으로 만든다.
 - Godot scene tree·렌더링·입력·애니메이션은 `src/`와 `autoload/`에 둔다.
 - 마켓별 delivery는 `play-store/`, `app-store/`, `apps-in-toss/`, `apps/ait/`, `firebase/`로 분리한다.
-- `legacy/`는 구 TypeScript 구현이다. **밸런스 원장으로만 유지하며 GDScript 이식이 끝나면 삭제한다.** 새 코드를 여기 추가하지 않는다.
 
 ## 반드시 지킬 것
 
@@ -38,18 +37,19 @@ Godot 4 재작성 중이다. 진행 상황은 `docs/04-work/`를 본다.
 ## 검증
 
 ```bash
-pnpm legacy:all                                   # 구 밸런스 원장 (이식 완료 전까지 초록 유지)
+export GODOT_BIN=/opt/homebrew/bin/godot          # 또는 bash scripts/ensure_godot.sh
+bash scripts/test_all.sh                          # 전체 (약 5초)
 bash scripts/godot_quality_gate.sh --project .    # import → compile → smoke
-bash scripts/test_core.sh && bash scripts/test_balance.sh
-bash scripts/check_architecture.sh                # 코어 경계
 python3 tools/validate_content.py .               # 콘텐츠 정적 린트
+python3 tools/check_core_boundary.py .            # 코어 경계
+bash scripts/check_docs.sh .                      # 문서 구조
 ```
 
 Godot 검증은 `rm -rf .godot` 후 **두 번** 실행한다. 2회차가 깨끗한 것은 증거가 아니다.
 
-## Git / PR
+## Git
 
-- main 직접 반영을 명시받지 않았다면 브랜치와 PR 흐름을 쓴다.
-- PR 제목·본문은 한국어로, Draft가 아닌 Ready로 만든다.
-- PR 운영은 `seori-pr-workflow` 스킬을 따른다.
+- **미출시 단계에서는 main 직접 푸시를 쓴다.** CI 는 push→main 에서 계속 돈다.
+- 마켓 출시 이후에는 브랜치와 PR 흐름으로 되돌린다.
+- 커밋 메시지는 한국어로, 변경 목적이 드러나게 쓴다.
 - 검증되지 않은 완료를 주장하지 않는다. `.ait` 생성 성공은 콘솔 등록·심사·공개 어느 것도 의미하지 않는다.

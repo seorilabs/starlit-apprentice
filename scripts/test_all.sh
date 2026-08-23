@@ -42,7 +42,6 @@ run_godot() {
 # 새 class_name 이 전역 캐시에 없으면 파스 에러가 난다. 항상 import 를 먼저 돌린다.
 run_godot import "${godot_bin}" --headless --path "${project_dir}" --import --quit-after 1
 run_godot core        "${godot_bin}" --headless --path "${project_dir}" --script res://tests/core_test_runner.gd
-run_godot equivalence "${godot_bin}" --headless --path "${project_dir}" --script res://tests/legacy_equivalence_runner.gd
 run_godot endings     "${godot_bin}" --headless --path "${project_dir}" --script res://tests/endings_lint_runner.gd
 run_godot balance     "${godot_bin}" --headless --path "${project_dir}" --script res://tests/balance_runner.gd
 run_godot simulation  "${godot_bin}" --headless --path "${project_dir}" --script res://tests/simulation_runner.gd

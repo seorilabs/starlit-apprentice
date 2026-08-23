@@ -2,7 +2,7 @@ extends SceneTree
 ## 엔딩 도달성 하네스. 구 구현의 check-ending-reachability.mjs 를 대체한다.
 ##
 ## 구 하네스는 사람이 손으로 짠 30개 루트를 시드 1 로만 재생했다. 그래서 30/30 PASS 가
-## 나왔지만 7시드로 넓히면 15/30 만 안정적이었다(data/legacy-final-states.json).
+## 나왔지만 7시드로 넓히면 15/30 만 안정적이었다(이식 당시 실측, docs/04-work/2026-08-23-p4-core-port.md).
 ##
 ## 여기서는 규칙만으로 도달 가능한지 플래너가 찾는다. 사람이 고른 경로가 아니다.
 

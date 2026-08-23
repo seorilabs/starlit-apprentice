@@ -1,7 +1,5 @@
-# Node (legacy 밸런스 원장 전용 — 이식 완료 시 함께 제거)
+# Node (org caller 계약 스크립트 전용)
 node_modules/
-legacy/**/dist/
-legacy/**/coverage/
 
 # Godot
 .godot/

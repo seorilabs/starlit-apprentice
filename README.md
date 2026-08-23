@@ -25,22 +25,22 @@ data/                    콘텐츠 원장 (actions · events · endings · npcs 
 apps/ait/                AppsInToss 래퍼 (Godot Web export 패키징)
 firebase/  play-store/  app-store/  apps-in-toss/   마켓·백엔드 설정
 docs/                    실행 원장 (9폴더 + game-design 설계 팩)
-legacy/                  구 TypeScript 구현. 밸런스 원장으로만 유지하며 이식 완료 시 삭제한다
+scripts/  tools/         게이트와 빌드 스크립트
 ```
-
-`legacy/`는 Godot이 스캔하지 않도록 `.gdignore`로 제외돼 있다.
 
 ## 검증
 
 ```bash
-# 구 밸런스 원장 (GDScript 이식 완료 전까지 초록을 유지해야 한다)
-pnpm legacy:all
+export GODOT_BIN=/opt/homebrew/bin/godot   # 또는 bash scripts/ensure_godot.sh
 
-# 설계 팩 구조
-python3 ~/.claude/skills/game-planning-production/scripts/validate_design_pack.py docs/game-design
+bash scripts/test_all.sh                   # import → 코어 → 엔딩 린트 → 밸런스 → 시뮬 → 스모크
+python3 tools/validate_content.py .        # 콘텐츠 정적 린트
+python3 tools/check_core_boundary.py .     # 코어 경계
+bash scripts/check_docs.sh .               # 문서 구조
+bash scripts/check_web_budget.sh .         # Web 전송 예산 (export 후)
 ```
 
-Godot 골격이 생기면 `scripts/godot_quality_gate.sh`, `scripts/test_core.sh`, `scripts/test_balance.sh`가 추가된다.
+전체 스위트가 5초 안에 돈다. `rm -rf .godot` 후 **1회차**가 깨끗해야 한다 — 2회차는 증거가 아니다.
 
 ## 경계
 

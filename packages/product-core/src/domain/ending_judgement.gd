@@ -1,33 +1,12 @@
 class_name SaEndingJudgement
 extends RefCounted
-## 엔딩 판정.
+## 엔딩 판정. 콘텐츠에서 유도되는 특이도 점수로 정렬한다.
 ##
-## LEGACY 모드는 구 TypeScript 구현과 동일하게 동작한다 — 이식 등가성 검증 전용이다.
-## SPECIFICITY 모드가 새 설계다. docs/game-design/02-gdd.md 엔딩 판정
+## 구 구현은 (priority ?? 배열인덱스) 로 정렬했고 priority 30 인 3종이 나머지 26종을
+## 가려 만렙 런이 항상 court-scribe 로 수렴했다. 배열 위치가 판정에 개입하지 않는다.
+## docs/game-design/02-gdd.md 엔딩 판정
 
 const FALLBACK_CODE := "quiet-life"
-
-# ── 구 구현 등가 (검증 전용, 4.3c 이후 제거 예정) ────────────────────────────
-## 요건을 만족하는 엔딩 중 (priority ?? 배열 인덱스) 가 가장 큰 것을 고른다.
-## 동점이면 배열 인덱스가 작은 쪽. 이 규칙 때문에 priority 30 인 3종이
-## 나머지 26종(최대 암묵 우선순위 28)을 전부 가린다.
-static func judge_legacy(state: Dictionary, endings: Array) -> String:
-	var best_code := FALLBACK_CODE
-	var best_priority := -1.0
-	var best_index := 0x7FFFFFFF
-	for index in endings.size():
-		var ending: Dictionary = endings[index]
-		var reqs: Array = ending.get("requirements", [])
-		if reqs.is_empty():
-			continue
-		if not SaEndingRequirements.all_satisfied(state, reqs):
-			continue
-		var priority := float(ending.get("priority", index))
-		if priority > best_priority or (priority == best_priority and index < best_index):
-			best_priority = priority
-			best_index = index
-			best_code = String(ending.get("code", FALLBACK_CODE))
-	return best_code
 
 # ── 새 설계: 특이도 점수 ────────────────────────────────────────────────────
 ## 배열 위치와 무관하게 콘텐츠에서 유도되는 점수로 정렬한다.
