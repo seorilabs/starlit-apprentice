@@ -11,6 +11,20 @@ static func _text(value: Variant) -> String:
 	return "" if value == null else String(value)
 
 ## action 은 data/actions.json 의 항목 하나.
+## 이번 턴에 `함께` 칩이 뜨는 NPC. 없으면 빈 문자열.
+##
+## 규칙을 코어에 두는 이유: UI 와 시뮬레이션이 각자 판단하면 시뮬레이션이
+## 검증하는 게임과 플레이어가 하는 게임이 달라진다. 실제로 어긋나 있었다.
+## 매 턴 뜨면 호감이 공짜가 되므로 태그된 행동의 약 1/4 턴에만 뜬다.
+static func together_candidate(state: Dictionary, action: Dictionary) -> String:
+	var npc := _text(action.get("npc_tag", ""))
+	if npc == "":
+		return ""
+	if int(state.get("stress", 0)) >= 60:
+		return ""   # 마음이 무거우면 사람을 부르지 않는다
+	var turn := int(state.get("turn", 1))
+	return npc if (turn * 7 + npc.length()) % 4 == 0 else ""
+
 ## aptitude 는 SaAptitude.assign 결과.
 ## rng 는 호출자가 들고 다닌다 — 코어는 시간도 전역 상태도 모른다.
 static func resolve(

@@ -8,6 +8,7 @@ const CONTENT := {
 	"actions": "res://data/actions.json",
 	"events": "res://data/events.json",
 	"endings": "res://data/endings.json",
+	"npcs": "res://data/npcs.json",
 }
 
 var _run := SaRunController.new()

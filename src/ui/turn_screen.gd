@@ -221,5 +221,4 @@ func _stat_name(key: String) -> String:
 		"commerce":"상재"}.get(key, key)
 
 func _npc_name(id: String) -> String:
-	return {"sera":"세라","eden":"이든","harin":"하린","moran":"모란",
-		"gu":"구 노인","yun":"윤"}.get(id, id)
+	return _run.npc_name(id)

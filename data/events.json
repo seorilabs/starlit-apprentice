@@ -1,2179 +1,4873 @@
 {
-  "schema": "events-v1",
-  "note": "구 구현의 GameEvent 에는 choices 필드 자체가 없었다. 12번 중 4번만 발동하고 전부 자동 성공이었다.",
-  "target_count": 106,
-  "deck_partition": {
-    "pools": 3,
-    "note": "기회 이벤트를 겹치지 않는 3개 덱으로 나눈다. 런 1·2·3 은 기회 이벤트가 하나도 겹치지 않는다."
-  },
-  "events": [
+ "schema": "events-v1",
+ "note": "구 구현의 GameEvent 에는 choices 필드 자체가 없었다. 12번 중 4번만 발동하고 전부 자동 성공이었다.",
+ "target_count": 106,
+ "deck_partition": {
+  "pools": 3,
+  "note": "기회 이벤트를 겹치지 않는 3개 덱으로 나눈다. 런 1·2·3 은 기회 이벤트가 하나도 겹치지 않는다."
+ },
+ "events": [
+  {
+   "id": "cond.burnout.enter",
+   "category": "condition",
+   "weight": 100,
+   "title": "손이 멈춘 아침",
+   "art_key": "bg_room",
+   "body": "눈을 떴는데 몸이 일어나지지 않는다. 창밖은 이미 환하고, 오늘 해야 할 일이 머릿속에 줄줄이 떠오르는데도 손끝 하나 움직일 마음이 나지 않는다. 스승이 문을 두드리다가, 그냥 돌아갔다.",
+   "requirements": [
     {
-      "id": "opp.night-market-ledger",
-      "category": "opportunity",
-      "deck": 0,
-      "weight": 8,
-      "cooldown_turns": 4,
-      "title": "밤시장의 장부",
-      "art_key": "bg_plaza",
-      "body": "해질녘 시장 한 귀퉁이에서 늙은 상인이 장부를 앞에 두고 쩔쩔맨다. \"숫자가 자꾸 어긋나는데, 눈이 침침해서 원…\" 지나가던 견습생을 붙잡고 도와줄 수 있겠냐 묻는다. 오늘 밤은 길어질 것 같다.",
-      "requirements": [
-        {
-          "type": "turn_range",
-          "from": 8,
-          "to": 26
-        }
-      ],
-      "exclusions": [],
-      "choices": [
-        {
-          "id": "a",
-          "label": "밤새 장부를 맞춰 준다",
-          "requirements": [],
-          "cost": {
-            "energy": -14,
-            "stress": 8
-          },
-          "check": {
-            "stat": "commerce",
-            "difficulty": 35
-          },
-          "outcomes": [
-            {
-              "kind": "success",
-              "result_text": "새벽녘, 어긋난 숫자 한 줄을 찾아냈다. 상인은 말없이 은화 한 줌과 함께 시장 사람들에게 견습생의 이름을 알렸다.",
-              "effects": {
-                "stats": {
-                  "commerce": 7
-                },
-                "gold": 90,
-                "reputation": 6,
-                "flags": {
-                  "opp.ledger_solved": 1
-                }
-              }
-            },
-            {
-              "kind": "failure",
-              "result_text": "숫자는 끝내 맞지 않았다. 그래도 상인은 식은 국밥 한 그릇을 내밀었다. \"고맙네. 젊은 눈도 별수 없구먼.\"",
-              "effects": {
-                "stats": {
-                  "commerce": 3
-                },
-                "gold": 20,
-                "energy": -6
-              }
-            }
-          ]
-        },
-        {
-          "id": "b",
-          "label": "셈이 빠른 친구를 데려온다",
-          "requirements": [
-            {
-              "type": "affinity",
-              "npc": "harin",
-              "target": 25
-            }
-          ],
-          "locked_reason": "하린과 아직 그렇게 친하지 않다",
-          "cost": {
-            "stress": 2
-          },
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "하린은 촛불 두 개를 켜 두고 반 시간 만에 장부를 정리했다. 상인은 두 사람 몫의 사례를 건넸고, 하린은 제 몫을 견습생 손에 쥐여 주었다.",
-              "effects": {
-                "stats": {
-                  "commerce": 4
-                },
-                "gold": 60,
-                "reputation": 3,
-                "affinity": {
-                  "harin": 8
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "c",
-          "label": "미안하다고 말하고 지나간다",
-          "requirements": [],
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "등 뒤로 장부 넘기는 소리가 오래 남았다. 오늘은 별을 볼 시간이 생겼다.",
-              "effects": {
-                "stress": -5,
-                "energy": 4
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "opp.broken-lens",
-      "category": "opportunity",
-      "deck": 0,
-      "weight": 7,
-      "cooldown_turns": 5,
-      "title": "금 간 렌즈",
-      "art_key": "bg_tower",
-      "body": "천문탑 관측경의 접안 렌즈에 실금이 갔다. 새로 맞추려면 값이 만만치 않고, 이대로 두면 이번 달 관측 기록이 전부 흐려진다. 구 노인이라면 갈아 줄 수 있을지도 모른다.",
-      "requirements": [
-        {
-          "type": "turn_range",
-          "from": 5,
-          "to": 30
-        }
-      ],
-      "exclusions": [],
-      "choices": [
-        {
-          "id": "a",
-          "label": "직접 갈아 본다",
-          "requirements": [
-            {
-              "type": "stat",
-              "stat": "craft",
-              "target": 35
-            }
-          ],
-          "locked_reason": "손재주가 35 이상이어야 한다",
-          "cost": {
-            "energy": -12,
-            "stress": 6
-          },
-          "check": {
-            "stat": "craft",
-            "difficulty": 45
-          },
-          "outcomes": [
-            {
-              "kind": "success",
-              "result_text": "숫돌 위에서 세 시간. 렌즈를 끼우고 들여다보자 별이 전보다 또렷했다. 손끝이 아직 떨린다.",
-              "effects": {
-                "stats": {
-                  "craft": 8,
-                  "starsense": 4
-                },
-                "flags": {
-                  "opp.lens_fixed": 1
-                }
-              }
-            },
-            {
-              "kind": "failure",
-              "result_text": "금이 오히려 번졌다. 구 노인은 말없이 렌즈를 받아 들고 \"다음엔 힘을 빼\"라고만 했다.",
-              "effects": {
-                "stats": {
-                  "craft": 3
-                },
-                "stress": 8,
-                "affinity": {
-                  "gu": 3
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "b",
-          "label": "값을 치르고 맡긴다",
-          "requirements": [
-            {
-              "type": "resource",
-              "resource": "gold",
-              "target": 120
-            }
-          ],
-          "locked_reason": "골드가 120 이상이어야 한다",
-          "cost": {
-            "gold": -120
-          },
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "이틀 뒤 렌즈는 새것처럼 돌아왔다. 값은 아팠지만 관측 기록은 지켰다.",
-              "effects": {
-                "stats": {
-                  "starsense": 6
-                },
-                "flags": {
-                  "opp.lens_fixed": 1
-                },
-                "affinity": {
-                  "gu": 4
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "c",
-          "label": "흐린 채로 관측한다",
-          "requirements": [],
-          "cost": {
-            "stress": 6
-          },
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "흐릿한 상을 눈으로 보정하며 기록했다. 정확하진 않아도, 보는 법 자체는 늘었다.",
-              "effects": {
-                "stats": {
-                  "starsense": 3,
-                  "intellect": 2
-                }
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "opp.stray-cat",
-      "category": "opportunity",
-      "deck": 1,
-      "weight": 6,
-      "cooldown_turns": 6,
-      "title": "처마 밑의 손님",
-      "art_key": "bg_room",
-      "body": "비 오는 밤, 창을 열자 처마 밑에 젖은 고양이가 웅크리고 있다. 들여놓으면 방이 좁아지고, 두면 밤새 마음이 쓰일 것이다.",
-      "requirements": [
-        {
-          "type": "turn_range",
-          "from": 3,
-          "to": 33
-        }
-      ],
-      "exclusions": [],
-      "choices": [
-        {
-          "id": "a",
-          "label": "수건으로 닦아 들여놓는다",
-          "requirements": [],
-          "cost": {
-            "stress": -12,
-            "energy": -4
-          },
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "고양이는 책상 밑에서 잠들었다. 다음 날 아침에는 사라졌지만, 그날 밤 방은 덜 추웠다.",
-              "effects": {
-                "stats": {
-                  "etiquette": 3
-                },
-                "stress": -6
-              }
-            }
-          ]
-        },
-        {
-          "id": "b",
-          "label": "먹을 것만 내어 준다",
-          "requirements": [],
-          "cost": {
-            "gold": -8
-          },
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "고양이는 그릇을 비우고 빗속으로 돌아갔다. 창을 닫으며, 잘한 일인지 잠깐 생각했다.",
-              "effects": {
-                "stress": -4
-              }
-            }
-          ]
-        },
-        {
-          "id": "c",
-          "label": "창을 닫는다",
-          "requirements": [],
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "빗소리가 오래 이어졌다. 책장은 잘 넘어가지 않았다.",
-              "effects": {
-                "stress": 3
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "npc.rival.eden.02",
-      "category": "npc",
-      "weight": 10,
-      "once_per_run": true,
-      "title": "같은 밤을 새운 사람",
-      "art_key": "npc_eden",
-      "body": "천문탑 계단참에서 이든과 마주쳤다. 손에는 견습생이 사흘째 붙들고 있던 바로 그 관측표가 들려 있다. \"네가 먼저 볼 줄 알았는데.\" 웃는 것도 비웃는 것도 아닌 얼굴로 이든이 관측표를 내민다.",
-      "requirements": [
-        {
-          "type": "affinity",
-          "npc": "eden",
-          "target": 30
-        },
-        {
-          "type": "turn_range",
-          "from": 12,
-          "to": 36
-        }
-      ],
-      "exclusions": [],
-      "choices": [
-        {
-          "id": "a",
-          "label": "\"같이 보자\" 하고 옆에 앉는다",
-          "requirements": [],
-          "cost": {
-            "energy": -10,
-            "stress": -4
-          },
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "두 사람은 새벽까지 같은 표를 두 번 읽었다. 서로 다른 곳에서 같은 오류를 짚어 냈을 때, 이든이 처음으로 소리 내어 웃었다.",
-              "effects": {
-                "stats": {
-                  "starsense": 6,
-                  "intellect": 4
-                },
-                "affinity": {
-                  "eden": 12
-                },
-                "flags": {
-                  "npc.eden_ally": 1
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "b",
-          "label": "\"먼저 봤으면 먼저 풀어야지\"",
-          "requirements": [],
-          "cost": {
-            "energy": -6
-          },
-          "check": {
-            "stat": "courage",
-            "difficulty": 40
-          },
-          "outcomes": [
-            {
-              "kind": "success",
-              "result_text": "이든은 표를 순순히 넘겼다. 다음 날 아침, 견습생의 이름이 관측 기록 맨 윗줄에 적혔다. 이든은 그날 하루 종일 말이 없었다.",
-              "effects": {
-                "stats": {
-                  "starsense": 9
-                },
-                "reputation": 7,
-                "affinity": {
-                  "eden": -6
-                },
-                "flags": {
-                  "npc.eden_rivalry": 1
-                }
-              }
-            },
-            {
-              "kind": "failure",
-              "result_text": "표를 잡아채려다 그대로 놓쳤다. 흩어진 종이를 줍는 동안 이든은 팔짱을 낀 채 기다려 주었다. 그게 더 아팠고, 그날부터 서로를 의식하게 됐다.",
-              "effects": {
-                "stress": 10,
-                "affinity": {
-                  "eden": -10
-                },
-                "flags": {
-                  "npc.eden_rivalry": 1
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "c",
-          "label": "아무 말 없이 계단을 내려간다",
-          "requirements": [],
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "등 뒤에서 종이 넘기는 소리가 났다. 오늘 밤 천문탑은 이든의 것이다.",
-              "effects": {
-                "affinity": {
-                  "eden": -4
-                },
-                "stress": 3
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "npc.mentor.sera.01",
-      "category": "npc",
-      "weight": 10,
-      "once_per_run": true,
-      "title": "두 번 접힌 쪽지",
-      "art_key": "npc_sera",
-      "body": "책상 위에 세라의 쪽지가 놓여 있다. 두 번 접힌 종이 안에는 딱 한 줄. \"오늘은 아무것도 배우지 말고 와라.\" 무슨 뜻인지 알 수 없다.",
-      "requirements": [
-        {
-          "type": "affinity",
-          "npc": "sera",
-          "target": 20
-        },
-        {
-          "type": "turn_range",
-          "from": 4,
-          "to": 30
-        }
-      ],
-      "exclusions": [],
-      "choices": [
-        {
-          "id": "a",
-          "label": "빈손으로 찾아간다",
-          "requirements": [],
-          "cost": {
-            "energy": -6
-          },
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "세라는 차를 두 잔 내리고 아무것도 묻지 않았다. 한 시간을 앉아 있다가 나올 때, 어깨가 가벼웠다.",
-              "effects": {
-                "stress": -18,
-                "affinity": {
-                  "sera": 10
-                },
-                "stats": {
-                  "etiquette": 2
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "b",
-          "label": "오늘 배운 것을 정리해 간다",
-          "requirements": [],
-          "cost": {
-            "energy": -10,
-            "stress": 4
-          },
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "세라는 정리본을 끝까지 읽고 딱 한 마디 했다. \"쉬라고 했는데.\" 그래도 표시해 준 세 군데는 정확했다.",
-              "effects": {
-                "stats": {
-                  "intellect": 6
-                },
-                "affinity": {
-                  "sera": 3
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "c",
-          "label": "가지 않는다",
-          "requirements": [],
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "다음 날 쪽지는 사라져 있었다. 세라는 그 일을 다시 꺼내지 않았다.",
-              "effects": {
-                "affinity": {
-                  "sera": -6
-                },
-                "stress": 5
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "cond.burnout.enter",
-      "category": "condition",
-      "weight": 100,
-      "title": "손이 멈춘 아침",
-      "art_key": "bg_room",
-      "body": "눈을 떴는데 몸이 일어나지지 않는다. 창밖은 이미 환하고, 오늘 해야 할 일이 머릿속에 줄줄이 떠오르는데도 손끝 하나 움직일 마음이 나지 않는다. 스승이 문을 두드리다가, 그냥 돌아갔다.",
-      "requirements": [
-        {
-          "type": "resource",
-          "resource": "stress",
-          "target": 95
-        }
-      ],
-      "exclusions": [],
-      "choices": [
-        {
-          "id": "a",
-          "label": "이불 속에서 이틀을 보낸다",
-          "requirements": [],
-          "cost": {
-            "turn_skip": 2
-          },
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "이틀 뒤, 창을 열자 바람이 방 안으로 들어왔다. 잃어버린 것은 이틀뿐이라고, 스스로에게 말해 본다.",
-              "effects": {
-                "stress": -45,
-                "energy": 35,
-                "reputation": -8,
-                "clear_condition": "burnout"
-              }
-            }
-          ]
-        },
-        {
-          "id": "b",
-          "label": "스승에게 편지를 쓴다",
-          "requirements": [
-            {
-              "type": "affinity",
-              "npc": "sera",
-              "target": 40
-            }
-          ],
-          "locked_reason": "세라와 더 가까워야 한다",
-          "cost": {
-            "turn_skip": 1
-          },
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "다음 날 아침, 문 앞에 따뜻한 죽 한 그릇과 짧은 쪽지가 놓여 있었다. \"쉬는 것도 수련이다.\" 글씨가 평소보다 크고 둥글었다.",
-              "effects": {
-                "stress": -40,
-                "energy": 28,
-                "affinity": {
-                  "sera": 10
-                },
-                "clear_condition": "burnout"
-              }
-            }
-          ]
-        },
-        {
-          "id": "c",
-          "label": "약을 사서 버틴다",
-          "requirements": [
-            {
-              "type": "resource",
-              "resource": "gold",
-              "target": 120
-            }
-          ],
-          "locked_reason": "골드가 120 이상이어야 한다",
-          "cost": {
-            "gold": -120
-          },
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "약기운으로 하루를 버텼다. 몸은 움직였지만, 그날 배운 것은 하나도 기억나지 않았다.",
-              "effects": {
-                "stress": -25,
-                "energy": 10,
-                "stats": {
-                  "stamina": -5
-                },
-                "flags": {
-                  "cond.medicated": 1
-                },
-                "clear_condition": "burnout"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "cond.slump.enter",
-      "category": "condition",
-      "weight": 100,
-      "title": "같은 줄만 읽는다",
-      "art_key": "bg_room",
-      "body": "같은 문장을 네 번째 읽고 있다. 뜻이 머리에 들어오지 않는다. 어제도 그랬고 그제도 그랬다. 책을 덮자니 뒤처질 것 같고, 펴 두자니 아무것도 남지 않는다.",
-      "requirements": [
-        {
-          "type": "condition",
-          "condition": "slump"
-        }
-      ],
-      "exclusions": [],
-      "choices": [
-        {
-          "id": "a",
-          "label": "사흘을 통째로 쉰다",
-          "requirements": [],
-          "cost": {
-            "turn_skip": 1
-          },
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "사흘째 되던 날, 책장이 저절로 넘어갔다. 무엇이 달라졌는지는 알 수 없었다.",
-              "effects": {
-                "stress": -30,
-                "energy": 20,
-                "clear_condition": "slump"
-              }
-            }
-          ]
-        },
-        {
-          "id": "b",
-          "label": "온천에 간다",
-          "requirements": [
-            {
-              "type": "resource",
-              "resource": "gold",
-              "target": 50
-            }
-          ],
-          "locked_reason": "골드가 50 이상이어야 한다",
-          "cost": {
-            "gold": -50
-          },
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "뜨거운 물에 어깨까지 잠기자 그제야 얼마나 굳어 있었는지 알았다.",
-              "effects": {
-                "stress": -35,
-                "energy": 25,
-                "clear_condition": "slump"
-              }
-            }
-          ]
-        },
-        {
-          "id": "c",
-          "label": "그래도 책상에 앉는다",
-          "requirements": [],
-          "cost": {
-            "stress": 8,
-            "energy": -10
-          },
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "두 시간을 앉아 반 쪽을 넘겼다. 남은 것은 반 쪽과, 조금 더 무거워진 마음이다.",
-              "effects": {
-                "stats": {
-                  "intellect": 2
-                }
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "world.first-frost",
-      "category": "world",
-      "weight": 4,
-      "cooldown_turns": 8,
-      "title": "첫서리",
-      "art_key": "bg_plaza",
-      "body": "새벽에 창틀이 하얗게 얼었다. 계절이 한 칸 넘어갔다는 것을 손끝으로 안다.",
-      "requirements": [
-        {
-          "type": "turn_range",
-          "from": 2,
-          "to": 35
-        }
-      ],
-      "exclusions": [],
-      "choices": [
-        {
-          "id": "a",
-          "label": "잠시 바라본다",
-          "requirements": [],
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "잠시 손을 대 보았다. 차가움이 손끝에서 손목까지 올라왔다가 사라졌다. 겨울 준비를 해야겠다고 생각했다.",
-              "effects": {
-                "stress": -3
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "world.bell",
-      "category": "world",
-      "weight": 4,
-      "cooldown_turns": 8,
-      "title": "저녁 종",
-      "art_key": "bg_plaza",
-      "body": "아카데미 종이 여섯 번 울린다. 하루가 끝났다는 뜻이고, 아직 남았다는 뜻이기도 하다.",
-      "requirements": [
-        {
-          "type": "turn_range",
-          "from": 2,
-          "to": 35
-        }
-      ],
-      "exclusions": [],
-      "choices": [
-        {
-          "id": "a",
-          "label": "잠시 바라본다",
-          "requirements": [],
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "종소리가 멎을 때까지 서 있었다. 여섯 번은 생각보다 길었고, 그동안 아무 생각도 하지 않았다.",
-              "effects": {
-                "energy": 2
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "world.lantern-night",
-      "category": "world",
-      "weight": 4,
-      "cooldown_turns": 8,
-      "title": "등불 축제",
-      "art_key": "bg_plaza",
-      "body": "광장에 등이 걸렸다. 사람들 사이를 지나며 걷기만 해도 마음이 조금 밝아진다.",
-      "requirements": [
-        {
-          "type": "turn_range",
-          "from": 2,
-          "to": 35
-        }
-      ],
-      "exclusions": [],
-      "choices": [
-        {
-          "id": "a",
-          "label": "잠시 바라본다",
-          "requirements": [],
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "등 아래를 두 바퀴 돌았다. 아는 얼굴 몇이 인사를 건넸고, 이름을 불러 준 사람도 있었다.",
-              "effects": {
-                "stress": -8,
-                "reputation": 1
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "milestone.s1",
-      "category": "milestone",
-      "weight": 100,
-      "once_per_run": true,
-      "title": "첫 계절 심사",
-      "art_key": "bg_plaza",
-      "body": "아카데미 마당에 명패가 걸렸다. 첫 계절 심사다. 세 달 동안 무엇을 쌓았는지 이 자리에서 한 번 확인한다. 앞줄에 선 사람들의 등이 유난히 곧아 보인다.",
-      "requirements": [
-        {
-          "type": "turn_range",
-          "from": 9,
-          "to": 9
-        }
-      ],
-      "exclusions": [],
-      "choices": [
-        {
-          "id": "a",
-          "label": "준비한 대로 나선다",
-          "requirements": [],
-          "cost": {
-            "stress": 6
-          },
-          "check": {
-            "stat": "*best",
-            "difficulty": 55
-          },
-          "outcomes": [
-            {
-              "kind": "success",
-              "result_text": "1분기 심사를 통과했다. 이름이 명패 가운데 줄에 올랐다. 큰 소리는 없었지만, 지나가던 사람 몇이 어깨를 스치며 지나갔다.",
-              "effects": {
-                "reputation": 8,
-                "gold": 40,
-                "flags": {
-                  "milestone:s1:pass": 1
-                }
-              }
-            },
-            {
-              "kind": "failure",
-              "result_text": "1분기 심사에서 이름이 아래 줄에 남았다. 명패를 오래 보고 있다가, 결국 등을 돌렸다.",
-              "effects": {
-                "stress": 14,
-                "reputation": -4,
-                "flags": {
-                  "milestone:s1:fail": 1
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "b",
-          "label": "물러서서 다음을 기약한다",
-          "requirements": [],
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "1분기 심사장에 들어가지 않았다. 아무도 뭐라 하지 않았고, 그게 더 오래 남았다.",
-              "effects": {
-                "stress": 8,
-                "reputation": -6,
-                "flags": {
-                  "milestone:s1:skip": 1
-                }
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "milestone.s2",
-      "category": "milestone",
-      "weight": 100,
-      "once_per_run": true,
-      "title": "한여름 심사",
-      "art_key": "bg_plaza",
-      "body": "두 번째 심사. 지난번에 무엇이 부족했는지는 스스로가 가장 잘 안다. 마당의 열기가 목덜미를 덥힌다.",
-      "requirements": [
-        {
-          "type": "turn_range",
-          "from": 18,
-          "to": 18
-        }
-      ],
-      "exclusions": [],
-      "choices": [
-        {
-          "id": "a",
-          "label": "준비한 대로 나선다",
-          "requirements": [],
-          "cost": {
-            "stress": 6
-          },
-          "check": {
-            "stat": "*best",
-            "difficulty": 78
-          },
-          "outcomes": [
-            {
-              "kind": "success",
-              "result_text": "2분기 심사를 통과했다. 이름이 명패 가운데 줄에 올랐다. 큰 소리는 없었지만, 지나가던 사람 몇이 어깨를 스치며 지나갔다.",
-              "effects": {
-                "reputation": 8,
-                "gold": 40,
-                "flags": {
-                  "milestone:s2:pass": 1
-                }
-              }
-            },
-            {
-              "kind": "failure",
-              "result_text": "2분기 심사에서 이름이 아래 줄에 남았다. 명패를 오래 보고 있다가, 결국 등을 돌렸다.",
-              "effects": {
-                "stress": 14,
-                "reputation": -4,
-                "flags": {
-                  "milestone:s2:fail": 1
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "b",
-          "label": "물러서서 다음을 기약한다",
-          "requirements": [],
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "2분기 심사장에 들어가지 않았다. 아무도 뭐라 하지 않았고, 그게 더 오래 남았다.",
-              "effects": {
-                "stress": 8,
-                "reputation": -6,
-                "flags": {
-                  "milestone:s2:skip": 1
-                }
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "milestone.s3",
-      "category": "milestone",
-      "weight": 100,
-      "once_per_run": true,
-      "title": "서리 내린 심사",
-      "art_key": "bg_plaza",
-      "body": "세 번째 심사. 이쯤이면 각자 무엇이 될지 대충 보인다고들 한다. 명패 앞에서 손이 조금 차다.",
-      "requirements": [
-        {
-          "type": "turn_range",
-          "from": 27,
-          "to": 27
-        }
-      ],
-      "exclusions": [],
-      "choices": [
-        {
-          "id": "a",
-          "label": "준비한 대로 나선다",
-          "requirements": [],
-          "cost": {
-            "stress": 6
-          },
-          "check": {
-            "stat": "*best",
-            "difficulty": 98
-          },
-          "outcomes": [
-            {
-              "kind": "success",
-              "result_text": "3분기 심사를 통과했다. 이름이 명패 가운데 줄에 올랐다. 큰 소리는 없었지만, 지나가던 사람 몇이 어깨를 스치며 지나갔다.",
-              "effects": {
-                "reputation": 8,
-                "gold": 40,
-                "flags": {
-                  "milestone:s3:pass": 1
-                }
-              }
-            },
-            {
-              "kind": "failure",
-              "result_text": "3분기 심사에서 이름이 아래 줄에 남았다. 명패를 오래 보고 있다가, 결국 등을 돌렸다.",
-              "effects": {
-                "stress": 14,
-                "reputation": -4,
-                "flags": {
-                  "milestone:s3:fail": 1
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "b",
-          "label": "물러서서 다음을 기약한다",
-          "requirements": [],
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "3분기 심사장에 들어가지 않았다. 아무도 뭐라 하지 않았고, 그게 더 오래 남았다.",
-              "effects": {
-                "stress": 8,
-                "reputation": -6,
-                "flags": {
-                  "milestone:s3:skip": 1
-                }
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "milestone.s4",
-      "category": "milestone",
-      "weight": 100,
-      "once_per_run": true,
-      "title": "마지막 심사",
-      "art_key": "bg_plaza",
-      "body": "마지막 심사다. 일 년이 이 자리로 모인다. 뒤에 남은 것은 없고, 앞에 있는 것은 문 하나다.",
-      "requirements": [
-        {
-          "type": "turn_range",
-          "from": 36,
-          "to": 36
-        }
-      ],
-      "exclusions": [],
-      "choices": [
-        {
-          "id": "a",
-          "label": "준비한 대로 나선다",
-          "requirements": [],
-          "cost": {
-            "stress": 6
-          },
-          "check": {
-            "stat": "*best",
-            "difficulty": 118
-          },
-          "outcomes": [
-            {
-              "kind": "success",
-              "result_text": "4분기 심사를 통과했다. 이름이 명패 가운데 줄에 올랐다. 큰 소리는 없었지만, 지나가던 사람 몇이 어깨를 스치며 지나갔다.",
-              "effects": {
-                "reputation": 8,
-                "gold": 40,
-                "flags": {
-                  "milestone:s4:pass": 1
-                }
-              }
-            },
-            {
-              "kind": "failure",
-              "result_text": "4분기 심사에서 이름이 아래 줄에 남았다. 명패를 오래 보고 있다가, 결국 등을 돌렸다.",
-              "effects": {
-                "stress": 14,
-                "reputation": -4,
-                "flags": {
-                  "milestone:s4:fail": 1
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "b",
-          "label": "물러서서 다음을 기약한다",
-          "requirements": [],
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "4분기 심사장에 들어가지 않았다. 아무도 뭐라 하지 않았고, 그게 더 오래 남았다.",
-              "effects": {
-                "stress": 8,
-                "reputation": -6,
-                "flags": {
-                  "milestone:s4:skip": 1
-                }
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "path.declaration",
-      "category": "path",
-      "weight": 100,
-      "once_per_run": true,
-      "title": "길을 고르는 날",
-      "art_key": "bg_tower",
-      "body": "세라가 서류 한 장을 내민다. \"이제 정할 때다.\" 남은 반년을 어디에 쓸지 적어 내는 종이다. 한 번 적으면 바꾸는 데 값을 치른다.",
-      "requirements": [
-        {
-          "type": "turn_range",
-          "from": 19,
-          "to": 19
-        }
-      ],
-      "exclusions": [],
-      "choices": [
-        {
-          "id": "star",
-          "label": "별의 길",
-          "requirements": [
-            {
-              "type": "stat",
-              "stat": "starsense",
-              "target": 40
-            }
-          ],
-          "locked_reason": "별감응이 40 이상이어야 한다",
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "별의 길이라 적었다. 세라는 종이를 접으며 \"그럴 줄 알았다\"고만 했다. 그날 밤 천문탑 열쇠가 하나 더 생겼다.",
-              "effects": {
-                "flags": {
-                  "path:star": 1
-                },
-                "affinity": {
-                  "sera": 8
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "letters",
-          "label": "글의 길",
-          "requirements": [
-            {
-              "type": "stat",
-              "stat": "intellect",
-              "target": 40
-            }
-          ],
-          "locked_reason": "지성이 40 이상이어야 한다",
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "글의 길이라 적었다. 필사실 안쪽 자리가 배정됐다. 그곳은 조용하고, 조금 춥다.",
-              "effects": {
-                "flags": {
-                  "path:letters": 1
-                },
-                "affinity": {
-                  "sera": 5
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "craft",
-          "label": "손의 길",
-          "requirements": [
-            {
-              "type": "stat",
-              "stat": "craft",
-              "target": 40
-            }
-          ],
-          "locked_reason": "손재주가 40 이상이어야 한다",
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "손의 길이라 적었다. 구 노인은 종이를 보지도 않고 안뜰 열쇠를 던져 주었다.",
-              "effects": {
-                "flags": {
-                  "path:craft": 1
-                },
-                "affinity": {
-                  "gu": 8
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "stage",
-          "label": "무대의 길",
-          "requirements": [
-            {
-              "type": "stat",
-              "stat": "sensibility",
-              "target": 40
-            }
-          ],
-          "locked_reason": "감성이 40 이상이어야 한다",
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "무대의 길이라 적었다. 다음 공연의 이름 없는 배역 하나가 비어 있다고 했다.",
-              "effects": {
-                "flags": {
-                  "path:stage": 1
-                },
-                "affinity": {
-                  "yun": 8
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "market",
-          "label": "저잣거리의 길",
-          "requirements": [
-            {
-              "type": "stat",
-              "stat": "commerce",
-              "target": 40
-            }
-          ],
-          "locked_reason": "상재가 40 이상이어야 한다",
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "저잣거리의 길이라 적었다. 하린이 장부 한 권을 통째로 넘겨주며 \"이제 네 것\"이라 했다.",
-              "effects": {
-                "flags": {
-                  "path:market": 1
-                },
-                "affinity": {
-                  "harin": 8
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "people",
-          "label": "사람의 길",
-          "requirements": [
-            {
-              "type": "stat",
-              "stat": "etiquette",
-              "target": 40
-            }
-          ],
-          "locked_reason": "예법이 40 이상이어야 한다",
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "사람의 길이라 적었다. 모란은 부채를 접으며 \"어려운 걸 골랐구나\"라고 했다.",
-              "effects": {
-                "flags": {
-                  "path:people": 1
-                },
-                "affinity": {
-                  "moran": 8
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "none",
-          "label": "아직 정하지 못했다고 쓴다",
-          "requirements": [],
-          "cost": {
-            "stress": 10
-          },
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "빈칸으로 냈다. 세라는 아무 말 없이 종이를 받아 갔다. 남은 반년은 온전히 스스로 정해야 한다.",
-              "effects": {
-                "flags": {
-                  "path:none": 1
-                },
-                "affinity": {
-                  "sera": -4
-                }
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "npc.harin.01",
-      "category": "npc",
-      "weight": 9,
-      "once_per_run": true,
-      "title": "두 사람 몫의 국밥",
-      "art_key": "npc_harin",
-      "body": "하린이 국밥 두 그릇을 시켜 놓고 기다리고 있다. \"오늘은 내가 산다.\" 안경 너머 눈이 평소보다 붉다. 장부에서 큰 실수를 했다는 소문이 돌던 참이다.",
-      "requirements": [
-        {
-          "type": "affinity",
-          "npc": "harin",
-          "target": 30
-        },
-        {
-          "type": "turn_range",
-          "from": 8,
-          "to": 34
-        }
-      ],
-      "exclusions": [],
-      "choices": [
-        {
-          "id": "a",
-          "label": "아무것도 묻지 않고 먹는다",
-          "requirements": [],
-          "cost": {
-            "gold": 0,
-            "stress": -10
-          },
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "국밥은 식을 때까지 아무 말 없이 비워졌다. 나오면서 하린이 딱 한 마디 했다. \"고마워.\"",
-              "effects": {
-                "affinity": {
-                  "harin": 12
-                },
-                "stress": -6
-              }
-            }
-          ]
-        },
-        {
-          "id": "b",
-          "label": "장부를 같이 들여다보자고 한다",
-          "requirements": [
-            {
-              "type": "stat",
-              "stat": "commerce",
-              "target": 35
-            }
-          ],
-          "locked_reason": "상재가 35 이상이어야 한다",
-          "cost": {
-            "energy": -10
-          },
-          "check": {
-            "stat": "commerce",
-            "difficulty": 45,
-            "npc_id": "harin"
-          },
-          "outcomes": [
-            {
-              "kind": "success",
-              "result_text": "세 시간 만에 어긋난 항목을 찾아냈다. 하린은 안경을 벗고 한참 눈을 눌렀다. \"내가 왜 못 봤지.\"",
-              "effects": {
-                "stats": {
-                  "commerce": 8
-                },
-                "affinity": {
-                  "harin": 14
-                },
-                "reputation": 4
-              }
-            },
-            {
-              "kind": "failure",
-              "result_text": "둘이 붙어 봐도 답이 안 나왔다. 그래도 혼자 보던 것보다는 나았다고, 하린이 말했다.",
-              "effects": {
-                "stats": {
-                  "commerce": 3
-                },
-                "affinity": {
-                  "harin": 6
-                },
-                "stress": 6
-              }
-            }
-          ]
-        },
-        {
-          "id": "c",
-          "label": "약속이 있다고 하고 일어선다",
-          "requirements": [],
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "국밥 두 그릇 값은 하린이 냈다. 다음 날 마주쳤을 때 하린은 평소처럼 웃었다.",
-              "effects": {
-                "affinity": {
-                  "harin": -8
-                }
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "npc.gu.01",
-      "category": "npc",
-      "weight": 9,
-      "once_per_run": true,
-      "title": "부러진 끌",
-      "art_key": "npc_gu",
-      "body": "구 노인이 부러진 끌을 들고 있다. 삼십 년 쓴 것이라 했다. \"쇠도 늙는다.\" 새로 벼릴지, 묻어 줄지 물으면서 노인은 견습생을 본다.",
-      "requirements": [
-        {
-          "type": "affinity",
-          "npc": "gu",
-          "target": 35
-        },
-        {
-          "type": "turn_range",
-          "from": 10,
-          "to": 34
-        }
-      ],
-      "exclusions": [],
-      "choices": [
-        {
-          "id": "a",
-          "label": "직접 벼려 보겠다고 한다",
-          "requirements": [
-            {
-              "type": "stat",
-              "stat": "craft",
-              "target": 45
-            }
-          ],
-          "locked_reason": "손재주가 45 이상이어야 한다",
-          "cost": {
-            "energy": -16,
-            "stress": 8
-          },
-          "check": {
-            "stat": "craft",
-            "difficulty": 55,
-            "npc_id": "gu"
-          },
-          "outcomes": [
-            {
-              "kind": "success",
-              "result_text": "화덕 앞에서 반나절. 끌은 처음보다 짧아졌지만 날은 섰다. 노인은 그것을 견습생 손에 쥐여 주었다.",
-              "effects": {
-                "stats": {
-                  "craft": 10
-                },
-                "affinity": {
-                  "gu": 14
-                },
-                "flags": {
-                  "npc.gu_chisel": 1
-                }
-              }
-            },
-            {
-              "kind": "failure",
-              "result_text": "쇠가 세 번 튀었다. 노인은 집게를 받아 들며 \"오늘은 여기까지\"라고 했다. 화가 난 것 같지는 않았다.",
-              "effects": {
-                "stats": {
-                  "craft": 4
-                },
-                "affinity": {
-                  "gu": 5
-                },
-                "stress": 8
-              }
-            }
-          ]
-        },
-        {
-          "id": "b",
-          "label": "묻어 주자고 한다",
-          "requirements": [],
-          "cost": {
-            "stress": -8
-          },
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "공방 뒤 감나무 아래에 묻었다. 노인은 흙을 두 번 다지고 일어섰다. \"다음 건 네가 골라.\"",
-              "effects": {
-                "affinity": {
-                  "gu": 10
-                },
-                "stats": {
-                  "etiquette": 3
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "c",
-          "label": "새것을 사 드린다",
-          "requirements": [
-            {
-              "type": "resource",
-              "resource": "gold",
-              "target": 150
-            }
-          ],
-          "locked_reason": "골드가 150 이상이어야 한다",
-          "cost": {
-            "gold": -150
-          },
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "노인은 새 끌을 한참 들여다보다 서랍에 넣었다. 그리고 부러진 것을 계속 썼다.",
-              "effects": {
-                "affinity": {
-                  "gu": 4
-                },
-                "stats": {
-                  "craft": 2
-                }
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "npc.moran.01",
-      "category": "npc",
-      "weight": 9,
-      "once_per_run": true,
-      "title": "초대장 한 장",
-      "art_key": "npc_moran",
-      "body": "모란의 초대장이 왔다. 저녁 자리에 사람이 하나 빈다고 했다. 격식을 갖춰야 하는 자리이고, 실수하면 오래 회자된다.",
-      "requirements": [
-        {
-          "type": "affinity",
-          "npc": "moran",
-          "target": 30
-        },
-        {
-          "type": "turn_range",
-          "from": 12,
-          "to": 34
-        }
-      ],
-      "exclusions": [],
-      "choices": [
-        {
-          "id": "a",
-          "label": "옷을 갖춰 입고 간다",
-          "requirements": [
-            {
-              "type": "resource",
-              "resource": "gold",
-              "target": 80
-            }
-          ],
-          "locked_reason": "골드가 80 이상이어야 한다",
-          "cost": {
-            "gold": -80,
-            "energy": -10,
-            "stress": 10
-          },
-          "check": {
-            "stat": "etiquette",
-            "difficulty": 50,
-            "npc_id": "moran"
-          },
-          "outcomes": [
-            {
-              "kind": "success",
-              "result_text": "두 시간 동안 세 번 말했고 세 번 다 맞았다. 돌아가는 길에 모란이 \"다음에도 부르마\"라고 했다.",
-              "effects": {
-                "stats": {
-                  "etiquette": 8,
-                  "eloquence": 5
-                },
-                "reputation": 10,
-                "affinity": {
-                  "moran": 12
-                }
-              }
-            },
-            {
-              "kind": "failure",
-              "result_text": "잔을 드는 순서를 틀렸다. 아무도 지적하지 않았고, 그래서 더 길게 느껴졌다.",
-              "effects": {
-                "stats": {
-                  "etiquette": 3
-                },
-                "stress": 12,
-                "reputation": -3,
-                "affinity": {
-                  "moran": 2
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "b",
-          "label": "평소 옷차림으로 간다",
-          "requirements": [],
-          "cost": {
-            "energy": -10,
-            "stress": 14
-          },
-          "check": {
-            "stat": "courage",
-            "difficulty": 45
-          },
-          "outcomes": [
-            {
-              "kind": "success",
-              "result_text": "차림새를 두고 한마디 나왔지만, 견습생이 웃어넘기자 자리가 오히려 풀렸다. 모란은 아무 말도 하지 않았다.",
-              "effects": {
-                "stats": {
-                  "courage": 6,
-                  "eloquence": 4
-                },
-                "reputation": 4,
-                "affinity": {
-                  "moran": 6
-                }
-              }
-            },
-            {
-              "kind": "failure",
-              "result_text": "자리 내내 옷깃을 만지작거렸다. 무슨 이야기가 오갔는지 기억나지 않는다.",
-              "effects": {
-                "stress": 16,
-                "reputation": -6,
-                "affinity": {
-                  "moran": -4
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "c",
-          "label": "정중히 사양한다",
-          "requirements": [],
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "짧은 답장을 보냈다. 모란은 답을 하지 않았고, 다음 초대는 오지 않았다.",
-              "effects": {
-                "affinity": {
-                  "moran": -10
-                }
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "npc.yun.01",
-      "category": "npc",
-      "weight": 9,
-      "once_per_run": true,
-      "title": "지도에 없는 길",
-      "art_key": "npc_yun",
-      "body": "윤이 낡은 지도를 펴 놓고 손가락으로 빈 곳을 짚는다. \"여기, 아무도 안 그려 놨어.\" 하루면 다녀올 수 있다고 하는데, 하루가 아까운 시기다.",
-      "requirements": [
-        {
-          "type": "affinity",
-          "npc": "yun",
-          "target": 25
-        },
-        {
-          "type": "turn_range",
-          "from": 6,
-          "to": 32
-        }
-      ],
-      "exclusions": [],
-      "choices": [
-        {
-          "id": "a",
-          "label": "따라나선다",
-          "requirements": [],
-          "cost": {
-            "energy": -18,
-            "stress": -14
-          },
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "길은 지도보다 짧았고 풍경은 지도보다 길었다. 돌아오는 길에 윤이 그 자리에 작게 표시를 넣었다.",
-              "effects": {
-                "stats": {
-                  "sensibility": 7,
-                  "courage": 4
-                },
-                "affinity": {
-                  "yun": 12
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "b",
-          "label": "지도만 빌린다",
-          "requirements": [],
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "지도를 베껴 두었다. 언젠가 가겠다고 생각했고, 그 언젠가는 오지 않을지도 모른다.",
-              "effects": {
-                "stats": {
-                  "intellect": 4
-                },
-                "affinity": {
-                  "yun": 3
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "c",
-          "label": "오늘은 할 일이 있다",
-          "requirements": [],
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "윤은 어깨를 으쓱하고 혼자 떠났다. 사흘 뒤 돌아왔을 때 아무 말도 하지 않았다.",
-              "effects": {
-                "affinity": {
-                  "yun": -6
-                }
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "opp.rain-archive",
-      "category": "opportunity",
-      "deck": 1,
-      "weight": 7,
-      "cooldown_turns": 5,
-      "title": "비 새는 서고",
-      "art_key": "bg_room",
-      "body": "지하 서고 천장에서 물이 샌다. 아래 선반의 기록 다발이 젖어 가는데 사서는 자리에 없다. 옮기려면 지금이고, 혼자서는 무겁다.",
-      "requirements": [
-        {
-          "type": "turn_range",
-          "from": 4,
-          "to": 30
-        }
-      ],
-      "exclusions": [],
-      "choices": [
-        {
-          "id": "a",
-          "label": "혼자 다 옮긴다",
-          "requirements": [],
-          "cost": {
-            "energy": -16,
-            "stress": 6
-          },
-          "check": {
-            "stat": "stamina",
-            "difficulty": 40
-          },
-          "outcomes": [
-            {
-              "kind": "success",
-              "result_text": "스무 다발을 옮기고 나니 팔이 떨렸다. 다음 날 사서가 이름을 물어 기록해 갔다.",
-              "effects": {
-                "stats": {
-                  "stamina": 7,
-                  "intellect": 3
-                },
-                "reputation": 6
-              }
-            },
-            {
-              "kind": "failure",
-              "result_text": "절반쯤 옮겼을 때 다발이 무너졌다. 젖은 종이 냄새가 오래 손에 남았다.",
-              "effects": {
-                "stats": {
-                  "stamina": 3
-                },
-                "stress": 10
-              }
-            }
-          ]
-        },
-        {
-          "id": "b",
-          "label": "사람을 부르러 간다",
-          "requirements": [],
-          "cost": {
-            "energy": -6
-          },
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "셋이 붙으니 금방 끝났다. 공은 나눠 가졌고, 그건 그것대로 괜찮았다.",
-              "effects": {
-                "stats": {
-                  "eloquence": 4
-                },
-                "reputation": 3,
-                "affinity": {
-                  "harin": 4
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "c",
-          "label": "윗선반만 챙기고 나온다",
-          "requirements": [],
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "가장 오래된 것만 건졌다. 나머지는 다음 날 폐기 목록에 올랐다.",
-              "effects": {
-                "stats": {
-                  "intellect": 2
-                },
-                "stress": 4
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "opp.stage-understudy",
-      "category": "opportunity",
-      "deck": 1,
-      "weight": 7,
-      "cooldown_turns": 6,
-      "title": "빈 배역",
-      "art_key": "bg_plaza",
-      "body": "극장 사람이 헐레벌떡 뛰어왔다. 오늘 저녁 배역 하나가 비었다. 대사는 열두 줄, 시간은 두 시간. 아무도 견습생을 알아보지 못할 것이다.",
-      "requirements": [
-        {
-          "type": "turn_range",
-          "from": 8,
-          "to": 32
-        }
-      ],
-      "exclusions": [],
-      "choices": [
-        {
-          "id": "a",
-          "label": "무대에 선다",
-          "requirements": [],
-          "cost": {
-            "energy": -14,
-            "stress": 12
-          },
-          "check": {
-            "stat": "sensibility",
-            "difficulty": 45
-          },
-          "outcomes": [
-            {
-              "kind": "success",
-              "result_text": "열두 줄을 하나도 틀리지 않았다. 막이 내리고 나서야 손이 떨리기 시작했다.",
-              "effects": {
-                "stats": {
-                  "sensibility": 9,
-                  "eloquence": 5
-                },
-                "reputation": 8,
-                "gold": 30
-              }
-            },
-            {
-              "kind": "failure",
-              "result_text": "여섯 번째 줄에서 막혔다. 옆 배우가 받아 주었고, 관객은 눈치채지 못했을 것이다. 아마도.",
-              "effects": {
-                "stats": {
-                  "sensibility": 4
-                },
-                "stress": 14,
-                "gold": 15
-              }
-            }
-          ]
-        },
-        {
-          "id": "b",
-          "label": "무대 뒤를 돕는다",
-          "requirements": [],
-          "cost": {
-            "energy": -10,
-            "stress": 4
-          },
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "막을 세 번 올리고 내렸다. 무대는 뒤에서 보면 전혀 다른 물건이었다.",
-              "effects": {
-                "stats": {
-                  "craft": 4,
-                  "sensibility": 3
-                },
-                "gold": 20,
-                "affinity": {
-                  "yun": 5
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "c",
-          "label": "사양한다",
-          "requirements": [],
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "저녁 내내 객석 소리가 창 너머로 들렸다. 책장은 잘 넘어가지 않았다.",
-              "effects": {
-                "stress": 5
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "opp.lost-child",
-      "category": "opportunity",
-      "deck": 2,
-      "weight": 7,
-      "cooldown_turns": 5,
-      "title": "광장의 아이",
-      "art_key": "bg_plaza",
-      "body": "광장 한가운데 아이가 울고 있다. 어른들은 지나가고, 아이는 이름 말고는 아무것도 말하지 못한다. 해가 기울고 있다.",
-      "requirements": [
-        {
-          "type": "turn_range",
-          "from": 3,
-          "to": 33
-        }
-      ],
-      "exclusions": [],
-      "choices": [
-        {
-          "id": "a",
-          "label": "함께 집을 찾아 준다",
-          "requirements": [],
-          "cost": {
-            "energy": -12,
-            "stress": 4
-          },
-          "check": {
-            "stat": "etiquette",
-            "difficulty": 35
-          },
-          "outcomes": [
-            {
-              "kind": "success",
-              "result_text": "세 골목을 돌아 문 앞에 닿았다. 아이 어머니가 견습생의 두 손을 오래 잡고 놓지 않았다.",
-              "effects": {
-                "stats": {
-                  "etiquette": 6
-                },
-                "reputation": 9
-              }
-            },
-            {
-              "kind": "failure",
-              "result_text": "밤이 되도록 찾지 못해 결국 초소에 맡겼다. 다음 날 아이가 집에 돌아갔다는 말만 전해 들었다.",
-              "effects": {
-                "stats": {
-                  "etiquette": 3
-                },
-                "stress": 8,
-                "reputation": 2
-              }
-            }
-          ]
-        },
-        {
-          "id": "b",
-          "label": "초소에 데려다준다",
-          "requirements": [],
-          "cost": {
-            "energy": -4
-          },
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "초소 사람이 아이를 받아 안았다. 옳은 일이었고, 조금 서운했다.",
-              "effects": {
-                "reputation": 3,
-                "affinity": {
-                  "eden": 3
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "c",
-          "label": "지나간다",
-          "requirements": [],
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "뒤를 돌아보지 않았다. 그날 밤 잠이 늦게 들었다.",
-              "effects": {
-                "stress": 8,
-                "reputation": -2
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "opp.coin-found",
-      "category": "opportunity",
-      "deck": 2,
-      "weight": 6,
-      "cooldown_turns": 7,
-      "title": "길에 떨어진 주머니",
-      "art_key": "bg_plaza",
-      "body": "골목 모퉁이에 가죽 주머니가 떨어져 있다. 묵직하다. 주위에는 아무도 없고, 안에 이름표도 없다.",
-      "requirements": [
-        {
-          "type": "turn_range",
-          "from": 2,
-          "to": 34
-        }
-      ],
-      "exclusions": [],
-      "choices": [
-        {
-          "id": "a",
-          "label": "초소에 맡긴다",
-          "requirements": [],
-          "cost": {
-            "energy": -4
-          },
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "사흘 뒤 주인이 찾아와 사례를 두고 갔다. 액수는 주머니보다 적었지만, 마음은 가벼웠다.",
-              "effects": {
-                "gold": 40,
-                "reputation": 7
-              }
-            }
-          ]
-        },
-        {
-          "id": "b",
-          "label": "주인을 직접 찾는다",
-          "requirements": [],
-          "cost": {
-            "energy": -12,
-            "stress": 6
-          },
-          "check": {
-            "stat": "eloquence",
-            "difficulty": 40
-          },
-          "outcomes": [
-            {
-              "kind": "success",
-              "result_text": "시장 사람들에게 두 시간을 물어 주인을 찾았다. 노점 주인이었고, 그날 이후 지날 때마다 인사를 건넸다.",
-              "effects": {
-                "stats": {
-                  "eloquence": 6
-                },
-                "gold": 30,
-                "reputation": 9,
-                "affinity": {
-                  "harin": 5
-                }
-              }
-            },
-            {
-              "kind": "failure",
-              "result_text": "아무도 아는 사람이 없었다. 결국 초소에 맡기고 돌아섰다.",
-              "effects": {
-                "stats": {
-                  "eloquence": 2
-                },
-                "reputation": 3,
-                "energy": -4
-              }
-            }
-          ]
-        },
-        {
-          "id": "c",
-          "label": "가져간다",
-          "requirements": [],
-          "cost": {},
-          "check": null,
-          "outcomes": [
-            {
-              "kind": "only",
-              "result_text": "주머니는 생각보다 무거웠다. 며칠 동안 골목을 돌아서 다녔다.",
-              "effects": {
-                "gold": 110,
-                "reputation": -8,
-                "stress": 10
-              }
-            }
-          ]
-        }
-      ]
+     "type": "resource",
+     "resource": "stress",
+     "target": 95
     }
-  ],
-  "milestone_note": "계절 심사는 대표 계열 스탯(*best)으로 판정한다. 특정 스탯을 하드코딩하면 그 스탯을 안 키운 빌드가 심사를 통째로 놓치고 평판이 구조적으로 막힌다."
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "이불 속에서 이틀을 보낸다",
+     "requirements": [],
+     "cost": {
+      "turn_skip": 2
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "이틀 뒤, 창을 열자 바람이 방 안으로 들어왔다. 잃어버린 것은 이틀뿐이라고, 스스로에게 말해 본다.",
+       "effects": {
+        "stress": -45,
+        "energy": 35,
+        "reputation": -8,
+        "clear_condition": "burnout"
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "스승에게 편지를 쓴다",
+     "requirements": [
+      {
+       "type": "affinity",
+       "npc": "sera",
+       "target": 40
+      }
+     ],
+     "locked_reason": "세라와 더 가까워야 한다",
+     "cost": {
+      "turn_skip": 1
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "다음 날 아침, 문 앞에 따뜻한 죽 한 그릇과 짧은 쪽지가 놓여 있었다. \"쉬는 것도 수련이다.\" 글씨가 평소보다 크고 둥글었다.",
+       "effects": {
+        "stress": -40,
+        "energy": 28,
+        "affinity": {
+         "sera": 10
+        },
+        "clear_condition": "burnout"
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "약을 사서 버틴다",
+     "requirements": [
+      {
+       "type": "resource",
+       "resource": "gold",
+       "target": 120
+      }
+     ],
+     "locked_reason": "골드가 120 이상이어야 한다",
+     "cost": {
+      "gold": -120
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "약기운으로 하루를 버텼다. 몸은 움직였지만, 그날 배운 것은 하나도 기억나지 않았다.",
+       "effects": {
+        "stress": -25,
+        "energy": 10,
+        "stats": {
+         "stamina": -5
+        },
+        "flags": {
+         "cond.medicated": 1
+        },
+        "clear_condition": "burnout"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cond.slump.enter",
+   "category": "condition",
+   "weight": 100,
+   "title": "같은 줄만 읽는다",
+   "art_key": "bg_room",
+   "body": "같은 문장을 네 번째 읽고 있다. 뜻이 머리에 들어오지 않는다. 어제도 그랬고 그제도 그랬다. 책을 덮자니 뒤처질 것 같고, 펴 두자니 아무것도 남지 않는다.",
+   "requirements": [
+    {
+     "type": "condition",
+     "condition": "slump"
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "사흘을 통째로 쉰다",
+     "requirements": [],
+     "cost": {
+      "turn_skip": 1
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "사흘째 되던 날, 책장이 저절로 넘어갔다. 무엇이 달라졌는지는 알 수 없었다.",
+       "effects": {
+        "stress": -30,
+        "energy": 20,
+        "clear_condition": "slump"
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "온천에 간다",
+     "requirements": [
+      {
+       "type": "resource",
+       "resource": "gold",
+       "target": 50
+      }
+     ],
+     "locked_reason": "골드가 50 이상이어야 한다",
+     "cost": {
+      "gold": -50
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "뜨거운 물에 어깨까지 잠기자 그제야 얼마나 굳어 있었는지 알았다.",
+       "effects": {
+        "stress": -35,
+        "energy": 25,
+        "clear_condition": "slump"
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "그래도 책상에 앉는다",
+     "requirements": [],
+     "cost": {
+      "stress": 8,
+      "energy": -10
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "두 시간을 앉아 반 쪽을 넘겼다. 남은 것은 반 쪽과, 조금 더 무거워진 마음이다.",
+       "effects": {
+        "stats": {
+         "intellect": 2
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "milestone.s1",
+   "category": "milestone",
+   "weight": 100,
+   "once_per_run": true,
+   "title": "첫 계절 심사",
+   "art_key": "bg_plaza",
+   "body": "아카데미 마당에 명패가 걸렸다. 첫 계절 심사다. 세 달 동안 무엇을 쌓았는지 이 자리에서 한 번 확인한다. 앞줄에 선 사람들의 등이 유난히 곧아 보인다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 9,
+     "to": 9
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "준비한 대로 나선다",
+     "requirements": [],
+     "cost": {
+      "stress": 6
+     },
+     "check": {
+      "stat": "*best",
+      "difficulty": 55
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "1분기 심사를 통과했다. 이름이 명패 가운데 줄에 올랐다. 큰 소리는 없었지만, 지나가던 사람 몇이 어깨를 스치며 지나갔다.",
+       "effects": {
+        "reputation": 8,
+        "gold": 40,
+        "flags": {
+         "milestone:s1:pass": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "1분기 심사에서 이름이 아래 줄에 남았다. 명패를 오래 보고 있다가, 결국 등을 돌렸다.",
+       "effects": {
+        "stress": 14,
+        "reputation": -4,
+        "flags": {
+         "milestone:s1:fail": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "물러서서 다음을 기약한다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "1분기 심사장에 들어가지 않았다. 아무도 뭐라 하지 않았고, 그게 더 오래 남았다.",
+       "effects": {
+        "stress": 8,
+        "reputation": -6,
+        "flags": {
+         "milestone:s1:skip": 1
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "milestone.s2",
+   "category": "milestone",
+   "weight": 100,
+   "once_per_run": true,
+   "title": "한여름 심사",
+   "art_key": "bg_plaza",
+   "body": "두 번째 심사. 지난번에 무엇이 부족했는지는 스스로가 가장 잘 안다. 마당의 열기가 목덜미를 덥힌다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 18,
+     "to": 18
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "준비한 대로 나선다",
+     "requirements": [],
+     "cost": {
+      "stress": 6
+     },
+     "check": {
+      "stat": "*best",
+      "difficulty": 78
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "2분기 심사를 통과했다. 이름이 명패 가운데 줄에 올랐다. 큰 소리는 없었지만, 지나가던 사람 몇이 어깨를 스치며 지나갔다.",
+       "effects": {
+        "reputation": 8,
+        "gold": 40,
+        "flags": {
+         "milestone:s2:pass": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "2분기 심사에서 이름이 아래 줄에 남았다. 명패를 오래 보고 있다가, 결국 등을 돌렸다.",
+       "effects": {
+        "stress": 14,
+        "reputation": -4,
+        "flags": {
+         "milestone:s2:fail": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "물러서서 다음을 기약한다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "2분기 심사장에 들어가지 않았다. 아무도 뭐라 하지 않았고, 그게 더 오래 남았다.",
+       "effects": {
+        "stress": 8,
+        "reputation": -6,
+        "flags": {
+         "milestone:s2:skip": 1
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "milestone.s3",
+   "category": "milestone",
+   "weight": 100,
+   "once_per_run": true,
+   "title": "서리 내린 심사",
+   "art_key": "bg_plaza",
+   "body": "세 번째 심사. 이쯤이면 각자 무엇이 될지 대충 보인다고들 한다. 명패 앞에서 손이 조금 차다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 27,
+     "to": 27
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "준비한 대로 나선다",
+     "requirements": [],
+     "cost": {
+      "stress": 6
+     },
+     "check": {
+      "stat": "*best",
+      "difficulty": 98
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "3분기 심사를 통과했다. 이름이 명패 가운데 줄에 올랐다. 큰 소리는 없었지만, 지나가던 사람 몇이 어깨를 스치며 지나갔다.",
+       "effects": {
+        "reputation": 8,
+        "gold": 40,
+        "flags": {
+         "milestone:s3:pass": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "3분기 심사에서 이름이 아래 줄에 남았다. 명패를 오래 보고 있다가, 결국 등을 돌렸다.",
+       "effects": {
+        "stress": 14,
+        "reputation": -4,
+        "flags": {
+         "milestone:s3:fail": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "물러서서 다음을 기약한다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "3분기 심사장에 들어가지 않았다. 아무도 뭐라 하지 않았고, 그게 더 오래 남았다.",
+       "effects": {
+        "stress": 8,
+        "reputation": -6,
+        "flags": {
+         "milestone:s3:skip": 1
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "milestone.s4",
+   "category": "milestone",
+   "weight": 100,
+   "once_per_run": true,
+   "title": "마지막 심사",
+   "art_key": "bg_plaza",
+   "body": "마지막 심사다. 일 년이 이 자리로 모인다. 뒤에 남은 것은 없고, 앞에 있는 것은 문 하나다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 36,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "준비한 대로 나선다",
+     "requirements": [],
+     "cost": {
+      "stress": 6
+     },
+     "check": {
+      "stat": "*best",
+      "difficulty": 118
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "4분기 심사를 통과했다. 이름이 명패 가운데 줄에 올랐다. 큰 소리는 없었지만, 지나가던 사람 몇이 어깨를 스치며 지나갔다.",
+       "effects": {
+        "reputation": 8,
+        "gold": 40,
+        "flags": {
+         "milestone:s4:pass": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "4분기 심사에서 이름이 아래 줄에 남았다. 명패를 오래 보고 있다가, 결국 등을 돌렸다.",
+       "effects": {
+        "stress": 14,
+        "reputation": -4,
+        "flags": {
+         "milestone:s4:fail": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "물러서서 다음을 기약한다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "4분기 심사장에 들어가지 않았다. 아무도 뭐라 하지 않았고, 그게 더 오래 남았다.",
+       "effects": {
+        "stress": 8,
+        "reputation": -6,
+        "flags": {
+         "milestone:s4:skip": 1
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.gu.01",
+   "category": "npc",
+   "weight": 9,
+   "once_per_run": true,
+   "title": "부러진 끌",
+   "art_key": "npc_gu",
+   "body": "구 노인이 부러진 끌을 들고 있다. 삼십 년 쓴 것이라 했다. \"쇠도 늙는다.\" 새로 벼릴지, 묻어 줄지 물으면서 노인은 견습생을 본다.",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "gu",
+     "target": 35
+    },
+    {
+     "type": "turn_range",
+     "from": 10,
+     "to": 34
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "직접 벼려 보겠다고 한다",
+     "requirements": [
+      {
+       "type": "stat",
+       "stat": "craft",
+       "target": 45
+      }
+     ],
+     "locked_reason": "손재주가 45 이상이어야 한다",
+     "cost": {
+      "energy": -16,
+      "stress": 8
+     },
+     "check": {
+      "stat": "craft",
+      "difficulty": 55,
+      "npc_id": "gu"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "화덕 앞에서 반나절. 끌은 처음보다 짧아졌지만 날은 섰다. 노인은 그것을 견습생 손에 쥐여 주었다.",
+       "effects": {
+        "stats": {
+         "craft": 10
+        },
+        "affinity": {
+         "gu": 14
+        },
+        "flags": {
+         "npc.gu_chisel": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "쇠가 세 번 튀었다. 노인은 집게를 받아 들며 \"오늘은 여기까지\"라고 했다. 화가 난 것 같지는 않았다.",
+       "effects": {
+        "stats": {
+         "craft": 4
+        },
+        "affinity": {
+         "gu": 5
+        },
+        "stress": 8
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "묻어 주자고 한다",
+     "requirements": [],
+     "cost": {
+      "stress": -8
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "공방 뒤 감나무 아래에 묻었다. 노인은 흙을 두 번 다지고 일어섰다. \"다음 건 네가 골라.\"",
+       "effects": {
+        "affinity": {
+         "gu": 10
+        },
+        "stats": {
+         "etiquette": 3
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "새것을 사 드린다",
+     "requirements": [
+      {
+       "type": "resource",
+       "resource": "gold",
+       "target": 150
+      }
+     ],
+     "locked_reason": "골드가 150 이상이어야 한다",
+     "cost": {
+      "gold": -150
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "노인은 새 끌을 한참 들여다보다 서랍에 넣었다. 그리고 부러진 것을 계속 썼다.",
+       "effects": {
+        "affinity": {
+         "gu": 4
+        },
+        "stats": {
+         "craft": 2
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.gu.02",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "쇳가루 쓸기",
+   "art_key": "npc_gu",
+   "body": "공방 문이 열려 있다. 구 노인은 등을 돌린 채 렌즈를 갈고 있고, 바닥에는 쇳가루가 사흘치 쌓였다. 인기척을 알아챘을 텐데도 돌아보지 않는다. 구석에 빗자루가 세워져 있다.",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "gu",
+     "target": 20
+    },
+    {
+     "type": "turn_range",
+     "from": 5,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "말없이 빗자루를 든다",
+     "requirements": [],
+     "cost": {
+      "energy": -10
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "한 시간 뒤 바닥이 드러났다. 구 노인은 그때까지 한 번도 돌아보지 않았고, 나갈 때 문 옆에 식은 차 한 잔이 놓여 있었다.",
+       "effects": {
+        "stats": {
+         "stamina": 7,
+         "craft": 4
+        },
+        "affinity": {
+         "gu": 14
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"뭐 도울 게 있습니까\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "\"물어보는 놈은 안 도와.\" 구 노인은 렌즈에서 눈을 떼지 않았다. 견습생이 그냥 서 있자 한참 뒤에 덧붙였다. \"빗자루는 저기 있다.\"",
+       "effects": {
+        "stats": {
+         "craft": 3
+        },
+        "affinity": {
+         "gu": 4
+        },
+        "stress": 3
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "렌즈 가는 걸 어깨너머로 본다",
+     "requirements": [],
+     "cost": {
+      "energy": -6
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "두 시간을 서서 봤다. 같은 동작이 삼백 번쯤 반복됐고, 삼백한 번째에 무엇이 다른지 겨우 보였다. 구 노인이 그때 처음 입을 열었다. \"이제 봤구나.\"",
+       "effects": {
+        "stats": {
+         "craft": 9,
+         "starsense": 3
+        },
+        "affinity": {
+         "gu": 10
+        },
+        "stress": 5
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.gu.03",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "손이 아는 것",
+   "art_key": "npc_gu",
+   "body": "구 노인이 렌즈를 세 번 연속으로 깎아 냈다. 셋 다 실패다. 노인은 손을 펴 들여다보더니 견습생 쪽으로 밀어 놓는다. \"눈이 갔다. 이제 손만 남았어.\" 작업대 위에 미완성 접안경이 놓여 있다.",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "gu",
+     "target": 50
+    },
+    {
+     "type": "turn_range",
+     "from": 16,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"제 눈을 빌려 드리겠습니다\"",
+     "requirements": [],
+     "cost": {
+      "energy": -14,
+      "stress": 4
+     },
+     "check": {
+      "stat": "craft",
+      "difficulty": 52,
+      "npc_id": "gu"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "견습생이 보고 노인이 깎았다. 네 번째 렌즈가 처음으로 살아남았다. 노인은 그것을 불빛에 비춰 보고 아무 말 없이 작업대 서랍에 넣었다. 서랍에는 그런 렌즈가 하나도 없었다.",
+       "effects": {
+        "stats": {
+         "craft": 14,
+         "starsense": 6
+        },
+        "affinity": {
+         "gu": 18
+        },
+        "flags": {
+         "gu.lens_saved": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "견습생이 짚어 준 자리가 틀렸다. 다섯 번째 렌즈도 깨졌다. 노인은 화내지 않고 유리 조각을 쓸어 담았다. \"내 눈이 갔을 때도 이랬다. 틀린 줄 모르는 게 무서운 거야.\"",
+       "effects": {
+        "stats": {
+         "craft": 5
+        },
+        "stress": 10,
+        "affinity": {
+         "gu": 8
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"의사를 만나 보셔야 합니다\"",
+     "requirements": [],
+     "cost": {
+      "gold": -80
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "노인은 끝까지 안 가겠다고 하다가, 견습생이 진료비를 이미 냈다는 말에 입을 다물었다. 돌아와서는 아무 말도 하지 않았지만 그날부터 작업 시간이 절반으로 줄었다.",
+       "effects": {
+        "stats": {
+         "etiquette": 6
+        },
+        "affinity": {
+         "gu": 16
+        },
+        "flags": {
+         "gu.doctor": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "\"접안경은 제가 마무리하겠습니다\"",
+     "requirements": [
+      {
+       "type": "stat",
+       "stat": "craft",
+       "target": 45
+      }
+     ],
+     "cost": {
+      "energy": -16
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "사흘 걸렸다. 완성된 접안경을 노인이 들여다보더니 어긋난 곳 두 군데를 손톱으로 짚었다. \"여기랑 여기. 나머진 됐다.\" 그건 노인이 할 수 있는 최대한의 칭찬이었다.",
+       "effects": {
+        "stats": {
+         "craft": 12,
+         "stamina": 5
+        },
+        "reputation": 6,
+        "affinity": {
+         "gu": 12
+        }
+       }
+      }
+     ],
+     "locked_reason": "손재주 45 이상이어야 한다"
+    }
+   ]
+  },
+  {
+   "id": "npc.gu.04",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "마지막 망원경",
+   "art_key": "npc_gu",
+   "body": "공방 안쪽 천을 걷자 이 층 높이의 골조가 나온다. 삼십 년 전에 시작해 이십 년 전에 멈춘 대형 망원경이다. \"부품이 열한 개 모자라. 도면은 여기 있고.\" 구 노인이 그을린 손으로 도면을 펴며 말한다. \"혼자서는 못 한다.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "gu",
+     "target": 65
+    },
+    {
+     "type": "turn_range",
+     "from": 23,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"열한 개, 같이 만듭시다\"",
+     "requirements": [],
+     "cost": {
+      "energy": -18,
+      "gold": -70,
+      "stress": 6
+     },
+     "check": {
+      "stat": "craft",
+      "difficulty": 64,
+      "npc_id": "gu"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "마지막 부품이 들어맞은 건 눈 오는 새벽이었다. 두 사람이 번갈아 접안부에 눈을 댔다. 삼십 년 만에 그 망원경이 처음으로 하늘을 봤고, 노인은 오래 자리를 비켜 주지 않았다.",
+       "effects": {
+        "stats": {
+         "craft": 18,
+         "starsense": 10,
+         "stamina": 6
+        },
+        "reputation": 18,
+        "affinity": {
+         "gu": 20
+        },
+        "flags": {
+         "gu.telescope": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "아홉 개까지 만들고 열 번째에서 막혔다. 도면의 그 부분은 이미 지워져 있었다. 노인은 골조에 다시 천을 덮으며 말했다. \"아홉 개면 이십 년보다 낫다.\"",
+       "effects": {
+        "stats": {
+         "craft": 10,
+         "stamina": 4
+        },
+        "stress": 12,
+        "affinity": {
+         "gu": 12
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"사람을 더 부르면 어떻습니까\"",
+     "requirements": [
+      {
+       "type": "resource",
+       "resource": "reputation",
+       "target": 30
+      }
+     ],
+     "cost": {
+      "energy": -8,
+      "stress": 4
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "견습생이 부른 다섯 사람이 공방을 채웠다. 노인은 처음엔 못마땅해했지만, 열한 개가 두 주 만에 나오자 아무 말도 하지 않았다. 다만 조립은 끝까지 혼자 했다.",
+       "effects": {
+        "stats": {
+         "craft": 10,
+         "eloquence": 8
+        },
+        "reputation": 14,
+        "affinity": {
+         "gu": 8
+        },
+        "flags": {
+         "gu.telescope": 1
+        }
+       }
+      }
+     ],
+     "locked_reason": "평판 30 이상이어야 한다"
+    },
+    {
+     "id": "c",
+     "label": "\"제가 여력이 안 됩니다\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "노인은 도면을 접고 천을 도로 덮었다. \"그럼 됐다.\" 그 뒤로 공방 안쪽 천은 다시 걷히지 않았다.",
+       "effects": {
+        "affinity": {
+         "gu": -6
+        },
+        "stress": -5
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.gu.05",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "문패",
+   "art_key": "npc_gu",
+   "body": "구 노인이 공방 문패를 떼어 작업대에 올려놓는다. 삼십 년 비바람에 글자가 거의 지워졌다. \"새로 파야 하는데 손이 안 따라.\" 노인이 끌을 견습생 쪽으로 민다. \"네 이름을 파든 내 이름을 파든, 네가 정해라.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "gu",
+     "target": 80
+    },
+    {
+     "type": "turn_range",
+     "from": 30,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "노인의 이름을 다시 판다",
+     "requirements": [],
+     "cost": {
+      "energy": -10
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "원래 글자를 그대로 따라 팠다. 노인은 문패를 걸고 한참 올려다봤다. \"내가 판 것보다 낫군.\" 그러고는 덧붙였다. \"그러니까 다음 건 네 이름으로 해라.\"",
+       "effects": {
+        "stats": {
+         "craft": 14,
+         "etiquette": 8
+        },
+        "affinity": {
+         "gu": 16
+        },
+        "flags": {
+         "gu.nameplate_kept": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "두 이름을 나란히 판다",
+     "requirements": [],
+     "cost": {
+      "energy": -14,
+      "stress": 4
+     },
+     "check": {
+      "stat": "craft",
+      "difficulty": 60,
+      "npc_id": "gu"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "글자 사이 간격까지 맞추는 데 하루가 더 걸렸다. 노인은 문패를 걸고 나서 처음으로 견습생의 어깨를 쳤다. 손이 무거웠다.",
+       "effects": {
+        "stats": {
+         "craft": 16,
+         "stamina": 6
+        },
+        "reputation": 12,
+        "affinity": {
+         "gu": 20
+        },
+        "flags": {
+         "gu.workshop_heir": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "두 번째 이름에서 끌이 미끄러졌다. 나무를 새로 구하려니 며칠이 걸린다. 노인이 문패를 받아 들고 미끄러진 자리를 손끝으로 문질렀다. \"이대로 걸자. 흠도 기록이다.\"",
+       "effects": {
+        "stats": {
+         "craft": 8
+        },
+        "stress": 8,
+        "affinity": {
+         "gu": 14
+        },
+        "flags": {
+         "gu.workshop_heir": 1
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.harin.01",
+   "category": "npc",
+   "weight": 9,
+   "once_per_run": true,
+   "title": "두 사람 몫의 국밥",
+   "art_key": "npc_harin",
+   "body": "하린이 국밥 두 그릇을 시켜 놓고 기다리고 있다. \"오늘은 내가 산다.\" 안경 너머 눈이 평소보다 붉다. 장부에서 큰 실수를 했다는 소문이 돌던 참이다.",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "harin",
+     "target": 30
+    },
+    {
+     "type": "turn_range",
+     "from": 8,
+     "to": 34
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "아무것도 묻지 않고 먹는다",
+     "requirements": [],
+     "cost": {
+      "gold": 0,
+      "stress": -10
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "국밥은 식을 때까지 아무 말 없이 비워졌다. 나오면서 하린이 딱 한 마디 했다. \"고마워.\"",
+       "effects": {
+        "affinity": {
+         "harin": 12
+        },
+        "stress": -6
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "장부를 같이 들여다보자고 한다",
+     "requirements": [
+      {
+       "type": "stat",
+       "stat": "commerce",
+       "target": 35
+      }
+     ],
+     "locked_reason": "상재가 35 이상이어야 한다",
+     "cost": {
+      "energy": -10
+     },
+     "check": {
+      "stat": "commerce",
+      "difficulty": 45,
+      "npc_id": "harin"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "세 시간 만에 어긋난 항목을 찾아냈다. 하린은 안경을 벗고 한참 눈을 눌렀다. \"내가 왜 못 봤지.\"",
+       "effects": {
+        "stats": {
+         "commerce": 8
+        },
+        "affinity": {
+         "harin": 14
+        },
+        "reputation": 4
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "둘이 붙어 봐도 답이 안 나왔다. 그래도 혼자 보던 것보다는 나았다고, 하린이 말했다.",
+       "effects": {
+        "stats": {
+         "commerce": 3
+        },
+        "affinity": {
+         "harin": 6
+        },
+        "stress": 6
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "약속이 있다고 하고 일어선다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "국밥 두 그릇 값은 하린이 냈다. 다음 날 마주쳤을 때 하린은 평소처럼 웃었다.",
+       "effects": {
+        "affinity": {
+         "harin": -8
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.harin.02",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "주판알 세는 소리",
+   "art_key": "npc_harin",
+   "body": "수업이 끝나고도 하린은 강의실에 남아 있다. 책이 아니라 장부를 펼쳐 놓고 주판을 튕기는 중이다. 견습생과 눈이 마주치자 하린이 안경을 밀어 올린다. \"집에 국밥집이 있어서. 오늘 안에 안 맞추면 내일 장을 못 봐.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "harin",
+     "target": 20
+    },
+    {
+     "type": "turn_range",
+     "from": 3,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"같이 맞춰 볼까\"",
+     "requirements": [],
+     "cost": {
+      "energy": -8
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "둘이 붙으니 한 시간이 이십 분으로 줄었다. 하린이 장부를 덮으며 말했다. \"내일 국밥 한 그릇은 네 거야. 값은 안 받아.\"",
+       "effects": {
+        "stats": {
+         "commerce": 7,
+         "intellect": 3
+        },
+        "affinity": {
+         "harin": 12
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"장부 보는 법 좀 알려 줘\"",
+     "requirements": [],
+     "cost": {
+      "energy": -10,
+      "stress": 3
+     },
+     "check": {
+      "stat": "commerce",
+      "difficulty": 30,
+      "npc_id": "harin"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "하린은 가르치는 데 소질이 있었다. 두 시간 만에 견습생은 수입과 지출을 나눠 적을 줄 알게 됐다. \"이거 알면 평생 안 굶어.\"",
+       "effects": {
+        "stats": {
+         "commerce": 10,
+         "eloquence": 3
+        },
+        "affinity": {
+         "harin": 10
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "숫자가 자꾸 눈앞에서 미끄러졌다. 하린은 답답해하지 않고 세 번을 다시 설명했다. \"처음엔 다 그래. 나도 아버지한테 열 번 들었어.\"",
+       "effects": {
+        "stats": {
+         "commerce": 3
+        },
+        "stress": 6,
+        "affinity": {
+         "harin": 6
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "\"나중에 봐\" 하고 나선다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "문을 닫는 순간에도 주판알 소리가 들렸다. 다음 날 하린은 눈 밑이 검었지만 아무 말도 하지 않았다.",
+       "effects": {
+        "affinity": {
+         "harin": -3
+        },
+        "stress": -3
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.harin.03",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "장부에 없는 줄",
+   "art_key": "npc_harin",
+   "body": "하린이 장부 한 장을 뜯어 보여 준다. 수입란이 석 달째 비어 있다. \"아버지가 남긴 빚이 있어. 이자만 갚는 중이야.\" 하린은 웃으려다 실패했다. \"수업료를 이번 달까지만 내고 그만둘까 싶어.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "harin",
+     "target": 50
+    },
+    {
+     "type": "turn_range",
+     "from": 16,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"내가 얼마쯤 보탤게\"",
+     "requirements": [
+      {
+       "type": "resource",
+       "resource": "gold",
+       "target": 90
+      }
+     ],
+     "cost": {
+      "gold": -90
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "하린은 받지 않겠다고 세 번 말하고 네 번째에 받았다. 대신 국밥집 지분 십분의 일을 종이에 적어 주었다. \"장부에 남기는 게 내 방식이야.\"",
+       "effects": {
+        "stats": {
+         "commerce": 8
+        },
+        "affinity": {
+         "harin": 22
+        },
+        "flags": {
+         "harin.share": 1
+        }
+       }
+      }
+     ],
+     "locked_reason": "금화 90 이상이어야 한다"
+    },
+    {
+     "id": "b",
+     "label": "\"빚 갚을 방법을 같이 찾자\"",
+     "requirements": [],
+     "cost": {
+      "energy": -14,
+      "stress": 5
+     },
+     "check": {
+      "stat": "commerce",
+      "difficulty": 50,
+      "npc_id": "harin"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "두 사람은 사흘 밤을 들여 이자율을 다시 계산했다. 채권자가 계산을 두 번 확인하더니 조건을 바꿔 주었다. 하린은 그날 처음으로 견습생 앞에서 울었다.",
+       "effects": {
+        "stats": {
+         "commerce": 14,
+         "eloquence": 6
+        },
+        "affinity": {
+         "harin": 20
+        },
+        "flags": {
+         "harin.debt_eased": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "숫자는 아무리 돌려도 같은 자리로 돌아왔다. 하린이 먼저 주판을 접었다. \"같이 봐 준 것만으로 됐어. 혼자 보면 자꾸 틀리게 보이거든.\"",
+       "effects": {
+        "stats": {
+         "commerce": 5
+        },
+        "stress": 10,
+        "affinity": {
+         "harin": 10
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "\"그만두는 것도 방법이야\"",
+     "requirements": [],
+     "cost": {
+      "stress": 4
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "하린은 오래 생각하더니 고개를 저었다. \"네가 그렇게 말해 주니까 오히려 아깝네.\" 그 달 수업료는 국밥집 솥을 하나 팔아 냈다.",
+       "effects": {
+        "stats": {
+         "sensibility": 6
+        },
+        "affinity": {
+         "harin": 4
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.harin.04",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "별을 파는 가게",
+   "art_key": "npc_harin",
+   "body": "하린이 도면 한 장을 펼친다. 국밥집 옆 빈 점포에 관측 도구와 별자리 그림을 파는 가게를 내겠다는 계획이다. \"수업에서 배운 걸 팔면 안 된다는 법은 없잖아.\" 안경 너머로 눈이 반짝인다. \"동업하자. 너는 별을 대고 나는 셈을 대고.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "harin",
+     "target": 65
+    },
+    {
+     "type": "turn_range",
+     "from": 22,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"하자. 대신 별 쪽은 내가 다 본다\"",
+     "requirements": [],
+     "cost": {
+      "gold": -60,
+      "energy": -12
+     },
+     "check": {
+      "stat": "commerce",
+      "difficulty": 58,
+      "npc_id": "harin"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "첫 달 매출은 국밥집의 절반이었고, 셋째 달에는 국밥집을 넘겼다. 손님 중 절반은 아카데미 견습생이었고 나머지 절반은 별을 처음 보는 사람들이었다.",
+       "effects": {
+        "stats": {
+         "commerce": 14,
+         "eloquence": 8
+        },
+        "reputation": 14,
+        "affinity": {
+         "harin": 16
+        },
+        "flags": {
+         "harin.shop": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "위치가 나빴다. 두 달 만에 점포를 접었고 밑천은 반만 남았다. 하린은 장부를 덮으며 말했다. \"실패한 장사도 장부에 남아. 다음엔 여기서 시작하면 돼.\"",
+       "effects": {
+        "stats": {
+         "commerce": 8
+        },
+        "gold": 30,
+        "stress": 8,
+        "affinity": {
+         "harin": 10
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"나는 학업이 먼저야\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "하린은 실망한 티를 내지 않았다. \"네가 그럴 줄 알았어. 그래서 물어본 거야.\" 도면은 접혀 서랍에 들어갔지만 버려지지는 않았다.",
+       "effects": {
+        "stats": {
+         "intellect": 5
+        },
+        "affinity": {
+         "harin": -2
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "\"이름만 빌려줄게\"",
+     "requirements": [
+      {
+       "type": "resource",
+       "resource": "reputation",
+       "target": 25
+      }
+     ],
+     "cost": {
+      "stress": 3
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "간판에 견습생의 이름이 작게 들어갔다. 그것만으로 첫 달 손님이 두 배가 됐다. 하린은 이익의 삼분의 일을 꼬박꼬박 보내왔고, 견습생은 한 번도 가게에 가지 않았다.",
+       "effects": {
+        "gold": 140,
+        "stats": {
+         "commerce": 5
+        },
+        "affinity": {
+         "harin": 6
+        },
+        "flags": {
+         "harin.name_lent": 1
+        }
+       }
+      }
+     ],
+     "locked_reason": "평판 25 이상이어야 한다"
+    }
+   ]
+  },
+  {
+   "id": "npc.harin.05",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "마지막 국밥",
+   "art_key": "npc_harin",
+   "body": "졸업이 가까운 밤, 하린이 국밥 두 그릇을 들고 온다. \"내일 가게 넘겨. 사겠다는 사람이 나왔어.\" 김이 오르는 그릇 너머로 하린이 안경을 벗는다. 안경 없는 얼굴은 처음 본다. \"이제 나 뭐 하지?\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "harin",
+     "target": 80
+    },
+    {
+     "type": "turn_range",
+     "from": 30,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"같이 가자. 어디로 가든\"",
+     "requirements": [],
+     "cost": {
+      "stress": -10
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "하린은 안경을 도로 쓰고 웃었다. \"그 말 들으려고 두 그릇 시켰어.\" 국물이 식을 때까지 두 사람은 갈 만한 도시 이름을 번갈아 댔다.",
+       "effects": {
+        "stats": {
+         "eloquence": 10,
+         "sensibility": 8
+        },
+        "affinity": {
+         "harin": 18
+        },
+        "flags": {
+         "harin.together": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"셈 잘하는 사람은 어디든 필요해\"",
+     "requirements": [],
+     "cost": {},
+     "check": {
+      "stat": "eloquence",
+      "difficulty": 55,
+      "npc_id": "harin"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "하린은 그날 밤 안에 세 군데 자리를 떠올렸고, 다음 달 왕립 조달청 서기 시험에 원서를 냈다. 합격 통지가 온 날 국밥집 자리에는 다른 간판이 걸려 있었다.",
+       "effects": {
+        "stats": {
+         "eloquence": 12,
+         "commerce": 8
+        },
+        "reputation": 10,
+        "affinity": {
+         "harin": 14
+        },
+        "flags": {
+         "harin.clerk": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "\"그건 아는데.\" 하린은 국물만 저었다. \"아는 거랑 정하는 건 다르잖아.\" 그날 두 사람은 아무것도 정하지 못했고, 그릇만 깨끗이 비웠다.",
+       "effects": {
+        "stress": 6,
+        "affinity": {
+         "harin": 6
+        },
+        "stats": {
+         "sensibility": 5
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.mentor.sera.01",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "두 번 접힌 쪽지",
+   "art_key": "npc_sera",
+   "body": "책상 위에 세라의 쪽지가 놓여 있다. 두 번 접힌 종이 안에는 딱 한 줄. \"오늘은 아무것도 배우지 말고 와라.\" 무슨 뜻인지 알 수 없다.",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "sera",
+     "target": 20
+    },
+    {
+     "type": "turn_range",
+     "from": 4,
+     "to": 30
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "빈손으로 찾아간다",
+     "requirements": [],
+     "cost": {
+      "energy": -6
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "세라는 차를 두 잔 내리고 아무것도 묻지 않았다. 한 시간을 앉아 있다가 나올 때, 어깨가 가벼웠다.",
+       "effects": {
+        "stress": -18,
+        "affinity": {
+         "sera": 10
+        },
+        "stats": {
+         "etiquette": 2
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "오늘 배운 것을 정리해 간다",
+     "requirements": [],
+     "cost": {
+      "energy": -10,
+      "stress": 4
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "세라는 정리본을 끝까지 읽고 딱 한 마디 했다. \"쉬라고 했는데.\" 그래도 표시해 준 세 군데는 정확했다.",
+       "effects": {
+        "stats": {
+         "intellect": 6
+        },
+        "affinity": {
+         "sera": 3
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "가지 않는다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "다음 날 쪽지는 사라져 있었다. 세라는 그 일을 다시 꺼내지 않았다.",
+       "effects": {
+        "affinity": {
+         "sera": -6
+        },
+        "stress": 5
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.mentor.sera.02",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "틀린 채로 십 년",
+   "art_key": "npc_sera",
+   "body": "세라가 오래된 관측 노트 한 권을 책상에 올려놓는다. 펼친 면의 계산이 처음부터 끝까지 틀려 있다. \"내 것이다. 스물셋에 쓰고 서른셋에 틀린 걸 알았다.\" 세라는 페이지를 넘기지 않고 견습생을 본다. \"십 년을 틀린 채로 가르쳤다는 뜻이지.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "sera",
+     "target": 35
+    },
+    {
+     "type": "turn_range",
+     "from": 9,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"어디가 틀렸는지 찾아보고 싶습니다\"",
+     "requirements": [],
+     "cost": {
+      "energy": -12
+     },
+     "check": {
+      "stat": "intellect",
+      "difficulty": 38,
+      "npc_id": "sera"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "세 시간 만에 열한 번째 줄을 짚었다. 세라는 오래 아무 말도 하지 않다가, 노트를 덮으며 짧게 말했다. \"나는 사흘 걸렸다.\"",
+       "effects": {
+        "stats": {
+         "intellect": 9,
+         "starsense": 4
+        },
+        "affinity": {
+         "sera": 10
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "밤새 붙들었지만 끝내 찾지 못했다. 세라는 실망한 기색 없이 촛불을 새로 갈아 주었다. \"틀린 걸 못 찾는 게 정상이다. 그래서 십 년이 걸린 거고.\"",
+       "effects": {
+        "stats": {
+         "intellect": 3
+        },
+        "stress": 8,
+        "affinity": {
+         "sera": 4
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"왜 지금 보여 주십니까\"",
+     "requirements": [],
+     "cost": {
+      "stress": 2
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "\"네가 요즘 틀리는 걸 무서워하기에.\" 세라는 노트를 서랍에 넣고 잠그지 않았다. \"거기 그대로 둔다. 무서우면 열어 봐라.\"",
+       "effects": {
+        "stats": {
+         "starsense": 5
+        },
+        "affinity": {
+         "sera": 12
+        },
+        "flags": {
+         "sera.notebook_open": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "아무 말 없이 노트를 덮어 돌려준다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "세라는 노트를 받아 들고 잠깐 견습생의 얼굴을 살폈다. 그날 수업은 평소보다 십오 분 일찍 끝났다.",
+       "effects": {
+        "affinity": {
+         "sera": -2
+        },
+        "stress": -4
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.mentor.sera.03",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "봉인된 서가",
+   "art_key": "npc_sera",
+   "body": "천문탑 삼층에는 자물쇠가 걸린 서가가 있다. 세라가 열쇠를 꺼내는 걸 견습생은 처음 봤다. \"여기 있는 건 검증되지 않은 관측이다. 틀렸다는 뜻이 아니라, 아직 아무도 다시 보지 않았다는 뜻이지.\" 먼지가 촛불 속에서 천천히 돌았다.",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "sera",
+     "target": 50
+    },
+    {
+     "type": "turn_range",
+     "from": 15,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"하나 골라서 다시 검증해 보겠습니다\"",
+     "requirements": [],
+     "cost": {
+      "energy": -14,
+      "stress": 4
+     },
+     "check": {
+      "stat": "starsense",
+      "difficulty": 52,
+      "npc_id": "sera"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "고른 것은 사십 년 전 어느 견습생의 겨울 관측이었다. 좌표 하나를 고치자 나머지가 전부 맞아 들어갔다. 세라가 그 이름을 소리 내어 읽었다. 오래 잊혔던 이름이었다.",
+       "effects": {
+        "stats": {
+         "starsense": 12,
+         "intellect": 5
+        },
+        "reputation": 8,
+        "affinity": {
+         "sera": 12
+        },
+        "flags": {
+         "sera.archive_verified": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "두 주를 매달렸지만 원본의 오차가 너무 컸다. 세라는 기록을 제자리에 꽂으며 말했다. \"검증 못 한 것도 기록이다. 다음 사람이 여기서 시작한다.\"",
+       "effects": {
+        "stats": {
+         "starsense": 4
+        },
+        "stress": 10,
+        "affinity": {
+         "sera": 5
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"선생님 것도 여기 있습니까\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "세라는 아래에서 두 번째 칸을 가리켰다. 열두 권이 나란히 꽂혀 있었다. \"내가 못 끝낸 것들이다. 언젠가 누가 열겠지 하고 넣어 뒀다.\" 그러고는 열쇠를 견습생 손에 쥐여 주었다.",
+       "effects": {
+        "stats": {
+         "intellect": 6
+        },
+        "affinity": {
+         "sera": 16
+        },
+        "flags": {
+         "sera.key_given": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "\"저는 아직 이르다고 생각합니다\"",
+     "requirements": [],
+     "cost": {
+      "stress": -6
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "세라는 고개를 끄덕이고 자물쇠를 다시 걸었다. \"이르다고 말할 줄 아는 것도 실력이다.\" 계단을 내려오는 동안 뒤에서 자물쇠가 한 번 더 확인되는 소리가 났다.",
+       "effects": {
+        "stats": {
+         "etiquette": 4
+        },
+        "affinity": {
+         "sera": 3
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.mentor.sera.04",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "끝내지 못한 논문",
+   "art_key": "npc_sera",
+   "body": "세라가 원고 뭉치를 내민다. 절반은 촘촘한 글씨, 절반은 백지다. \"세 번 학회에 냈고 세 번 반려됐다. 네 번째를 낼 기운은 없다.\" 창밖으로 눈이 내리기 시작했다. \"네 이름으로 내라. 내 이름은 각주에 넣든 말든.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "sera",
+     "target": 65
+    },
+    {
+     "type": "turn_range",
+     "from": 21,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"두 사람 이름으로 내겠습니다\"",
+     "requirements": [],
+     "cost": {
+      "energy": -16,
+      "stress": 6
+     },
+     "check": {
+      "stat": "intellect",
+      "difficulty": 62,
+      "npc_id": "sera"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "백지 절반을 채우는 데 한 계절이 걸렸다. 학회 회신에는 두 이름이 나란히 적혀 있었다. 세라는 그 편지를 읽고 또 읽더니, 결국 견습생에게 돌려주며 말했다. \"네가 갖고 있어라.\"",
+       "effects": {
+        "stats": {
+         "intellect": 14,
+         "starsense": 8
+        },
+        "reputation": 18,
+        "affinity": {
+         "sera": 14
+        },
+        "flags": {
+         "sera.joint_paper": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "네 번째도 반려됐다. 사유는 지난 세 번과 달랐다 — 이번엔 논지가 아니라 분량이었다. 세라가 웃었다. 견습생이 처음 보는 웃음이었다. \"진전이다.\"",
+       "effects": {
+        "stats": {
+         "intellect": 6
+        },
+        "reputation": 4,
+        "stress": 12,
+        "affinity": {
+         "sera": 8
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"제 이름만 넣으라시면 받지 않겠습니다\"",
+     "requirements": [],
+     "cost": {
+      "stress": 4
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "세라는 원고를 도로 가져가 서랍에 넣었다. 그러나 잠그지는 않았다. \"고집이 세군.\" 그 뒤로 두 사람은 매주 한 번씩 그 서랍을 함께 열었다.",
+       "effects": {
+        "stats": {
+         "etiquette": 6,
+         "intellect": 4
+        },
+        "affinity": {
+         "sera": 18
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "\"제 이름으로 내겠습니다\"",
+     "requirements": [
+      {
+       "type": "stat",
+       "stat": "courage",
+       "target": 45
+      }
+     ],
+     "cost": {
+      "energy": -12
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "견습생의 단독 이름으로 실렸다. 학계는 새 이름을 얻었고, 세라는 각주 어디에도 없었다. 세라는 아무렇지 않다고 했고, 실제로 아무렇지 않아 보였다. 그게 더 오래 남았다.",
+       "effects": {
+        "stats": {
+         "intellect": 10
+        },
+        "reputation": 22,
+        "affinity": {
+         "sera": -8
+        },
+        "flags": {
+         "sera.solo_credit": 1
+        }
+       }
+      }
+     ],
+     "locked_reason": "담력 45 이상이어야 한다"
+    }
+   ]
+  },
+  {
+   "id": "npc.mentor.sera.05",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "관측표를 넘기는 밤",
+   "art_key": "npc_sera",
+   "body": "세라가 삼십 년 쓴 관측표를 통째로 책상에 올린다. 표지 가죽이 손때로 검게 변해 있다. \"올해가 마지막 수업이다. 학장에게는 이미 말했다.\" 세라의 목소리는 평소와 똑같았다. \"이건 네가 이어 쓰든 태우든 네 것이다.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "sera",
+     "target": 80
+    },
+    {
+     "type": "turn_range",
+     "from": 28,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"이어 쓰겠습니다\"",
+     "requirements": [],
+     "cost": {
+      "energy": -10
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "첫 장을 넘기니 세라의 스물셋 글씨가 나왔다. 마지막 장 다음에 견습생의 글씨가 처음으로 얹혔다. 필체가 전혀 달라서, 오히려 이어진 것이 분명히 보였다.",
+       "effects": {
+        "stats": {
+         "starsense": 16,
+         "intellect": 10
+        },
+        "reputation": 12,
+        "affinity": {
+         "sera": 10
+        },
+        "flags": {
+         "sera.successor": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"선생님이 더 쓰셔야 합니다\"",
+     "requirements": [],
+     "cost": {
+      "stress": 6
+     },
+     "check": {
+      "stat": "eloquence",
+      "difficulty": 58,
+      "npc_id": "sera"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "무슨 말을 어떻게 했는지 견습생 자신도 나중에 기억하지 못했다. 다만 그해 겨울 세라의 사직서는 학장 책상에서 되돌아왔고, 관측표에는 두 사람의 글씨가 번갈아 얹히기 시작했다.",
+       "effects": {
+        "stats": {
+         "eloquence": 12,
+         "starsense": 8
+        },
+        "affinity": {
+         "sera": 20
+        },
+        "flags": {
+         "sera.stayed": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "세라는 끝까지 듣고 나서 고개를 저었다. \"고맙다. 그런데 나는 이미 오래 생각했다.\" 관측표는 그대로 견습생에게 남았고, 세라는 봄에 아카데미를 떠났다.",
+       "effects": {
+        "stats": {
+         "starsense": 8
+        },
+        "stress": 14,
+        "affinity": {
+         "sera": 6
+        },
+        "flags": {
+         "sera.successor": 1
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.moran.01",
+   "category": "npc",
+   "weight": 9,
+   "once_per_run": true,
+   "title": "초대장 한 장",
+   "art_key": "npc_moran",
+   "body": "모란의 초대장이 왔다. 저녁 자리에 사람이 하나 빈다고 했다. 격식을 갖춰야 하는 자리이고, 실수하면 오래 회자된다.",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "moran",
+     "target": 30
+    },
+    {
+     "type": "turn_range",
+     "from": 12,
+     "to": 34
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "옷을 갖춰 입고 간다",
+     "requirements": [
+      {
+       "type": "resource",
+       "resource": "gold",
+       "target": 80
+      }
+     ],
+     "locked_reason": "골드가 80 이상이어야 한다",
+     "cost": {
+      "gold": -80,
+      "energy": -10,
+      "stress": 10
+     },
+     "check": {
+      "stat": "etiquette",
+      "difficulty": 50,
+      "npc_id": "moran"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "두 시간 동안 세 번 말했고 세 번 다 맞았다. 돌아가는 길에 모란이 \"다음에도 부르마\"라고 했다.",
+       "effects": {
+        "stats": {
+         "etiquette": 8,
+         "eloquence": 5
+        },
+        "reputation": 10,
+        "affinity": {
+         "moran": 12
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "잔을 드는 순서를 틀렸다. 아무도 지적하지 않았고, 그래서 더 길게 느껴졌다.",
+       "effects": {
+        "stats": {
+         "etiquette": 3
+        },
+        "stress": 12,
+        "reputation": -3,
+        "affinity": {
+         "moran": 2
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "평소 옷차림으로 간다",
+     "requirements": [],
+     "cost": {
+      "energy": -10,
+      "stress": 14
+     },
+     "check": {
+      "stat": "courage",
+      "difficulty": 45
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "차림새를 두고 한마디 나왔지만, 견습생이 웃어넘기자 자리가 오히려 풀렸다. 모란은 아무 말도 하지 않았다.",
+       "effects": {
+        "stats": {
+         "courage": 6,
+         "eloquence": 4
+        },
+        "reputation": 4,
+        "affinity": {
+         "moran": 6
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "자리 내내 옷깃을 만지작거렸다. 무슨 이야기가 오갔는지 기억나지 않는다.",
+       "effects": {
+        "stress": 16,
+        "reputation": -6,
+        "affinity": {
+         "moran": -4
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "정중히 사양한다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "짧은 답장을 보냈다. 모란은 답을 하지 않았고, 다음 초대는 오지 않았다.",
+       "effects": {
+        "affinity": {
+         "moran": -10
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.moran.02",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "값이 붙은 호의",
+   "art_key": "npc_moran",
+   "body": "모란이 부채를 접으며 수업료 영수증을 밀어 놓는다. 이번 달 것이 이미 납부 처리돼 있다. \"놀랄 것 없다. 나는 될성부른 것에 미리 걸어 두는 사람이야.\" 부채가 다시 펴진다. \"물론 값은 나중에 받는다.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "moran",
+     "target": 20
+    },
+    {
+     "type": "turn_range",
+     "from": 6,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"어떤 값입니까\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "모란이 처음으로 부채를 완전히 접었다. \"묻는 아이는 오랜만이군.\" 값은 끝내 말해 주지 않았지만, 그날 이후 모란은 견습생을 이름으로 불렀다.",
+       "effects": {
+        "stats": {
+         "etiquette": 6
+        },
+        "affinity": {
+         "moran": 14
+        },
+        "flags": {
+         "moran.asked_price": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "고개 숙여 받는다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "\"영리하구나.\" 모란은 만족한 듯했다. 그 달 견습생의 지갑은 가벼워지지 않았고, 대신 사교 모임 초대장이 두 장 늘었다.",
+       "effects": {
+        "gold": 112,
+        "stats": {
+         "etiquette": 4
+        },
+        "reputation": 5,
+        "affinity": {
+         "moran": 10
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "\"제 수업료는 제가 냅니다\"",
+     "requirements": [
+      {
+       "type": "resource",
+       "resource": "gold",
+       "target": 60
+      }
+     ],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "모란은 영수증을 도로 챙기며 웃었다. \"그 고집, 값이 오르겠어.\" 다음 달에도 그다음 달에도 모란은 같은 제안을 하지 않았다. 대신 견습생이 어디에 돈을 쓰는지 지켜보기 시작했다.",
+       "effects": {
+        "stats": {
+         "courage": 6,
+         "etiquette": 3
+        },
+        "affinity": {
+         "moran": 6
+        },
+        "flags": {
+         "moran.refused_once": 1
+        }
+       }
+      }
+     ],
+     "locked_reason": "금화 60 이상이어야 한다"
+    }
+   ]
+  },
+  {
+   "id": "npc.moran.03",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "부채 뒤의 자리",
+   "art_key": "npc_moran",
+   "body": "상단 연회. 모란이 견습생을 자기 옆자리에 앉힌다. 맞은편은 학장이고, 그 옆은 왕실 조달관이다. \"오늘은 아무것도 안 해도 된다. 앉아 있기만 해.\" 부채가 얼굴 절반을 가린다. \"대신 누가 누구 말을 끊는지 봐 두렴.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "moran",
+     "target": 50
+    },
+    {
+     "type": "turn_range",
+     "from": 16,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "조용히 앉아 끝까지 본다",
+     "requirements": [],
+     "cost": {
+      "energy": -8,
+      "stress": 6
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "세 시간 동안 견습생은 한 마디도 하지 않았다. 돌아오는 마차에서 모란이 물었다. \"몇 번 끊겼지?\" \"조달관이 학장 말을 네 번 끊었습니다.\" 모란이 부채로 무릎을 한 번 쳤다.",
+       "effects": {
+        "stats": {
+         "etiquette": 12,
+         "sensibility": 5
+        },
+        "reputation": 8,
+        "affinity": {
+         "moran": 16
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "조달관에게 먼저 말을 건다",
+     "requirements": [],
+     "cost": {
+      "stress": 8
+     },
+     "check": {
+      "stat": "eloquence",
+      "difficulty": 54,
+      "npc_id": "moran"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "견습생이 관측 얘기를 꺼내자 조달관이 몸을 앞으로 기울였다. 연회가 끝날 무렵 조달관은 견습생의 이름을 수첩에 적었다. 모란은 부채 뒤에서 아무 말도 하지 않았다.",
+       "effects": {
+        "stats": {
+         "eloquence": 12,
+         "etiquette": 6
+        },
+        "reputation": 16,
+        "affinity": {
+         "moran": 10
+        },
+        "flags": {
+         "moran.quartermaster": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "말을 꺼낸 순간 자리 전체가 조용해졌다. 조달관은 정중하게 웃고 화제를 돌렸다. 모란이 나중에 딱 한 마디 했다. \"순서라는 게 있단다.\"",
+       "effects": {
+        "stress": 12,
+        "reputation": -4,
+        "affinity": {
+         "moran": -4
+        },
+        "stats": {
+         "etiquette": 4
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "몸이 좋지 않다며 일찍 나온다",
+     "requirements": [],
+     "cost": {
+      "stress": -8
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "모란은 붙잡지 않았다. 다만 다음 연회부터 견습생의 자리는 모란 옆이 아니었다.",
+       "effects": {
+        "affinity": {
+         "moran": -10
+        },
+        "stats": {
+         "stamina": 3
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.moran.04",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "무엇을 사는가",
+   "art_key": "npc_moran",
+   "body": "모란의 서재. 벽 한 면이 후원했던 견습생들의 초상으로 덮여 있다. 스물 몇 장 중 대부분은 이름을 들어 본 적 없는 사람들이다. \"다 실패했지.\" 모란이 부채로 벽을 훑는다. \"그래도 나는 매년 걸었다. 왜인 것 같니.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "moran",
+     "target": 65
+    },
+    {
+     "type": "turn_range",
+     "from": 23,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"한 명이라도 성공하면 되니까\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "모란이 고개를 저었다. \"장사꾼 답이구나. 틀리진 않았고.\" 그러고는 빈 액자 하나를 가리켰다. \"저건 네 거다. 성공하든 말든 걸 거야.\"",
+       "effects": {
+        "stats": {
+         "commerce": 8,
+         "etiquette": 6
+        },
+        "affinity": {
+         "moran": 12
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"실패한 사람들도 어딘가에서 살고 있으니까\"",
+     "requirements": [],
+     "cost": {
+      "stress": 4
+     },
+     "check": {
+      "stat": "sensibility",
+      "difficulty": 58,
+      "npc_id": "moran"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "모란은 오래 부채를 펴지 않았다. \"내가 이 말을 듣자고 이십 년을 걸었나 보다.\" 그날 견습생은 모란의 서재에서 처음으로 차를 대접받았다. 값 얘기는 없었다.",
+       "effects": {
+        "stats": {
+         "sensibility": 12,
+         "etiquette": 8
+        },
+        "affinity": {
+         "moran": 22
+        },
+        "flags": {
+         "moran.true_reason": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "\"착한 소리구나.\" 모란은 부채를 펴고 화제를 돌렸다. 초상 얘기는 그날 이후 다시 나오지 않았다.",
+       "effects": {
+        "stats": {
+         "sensibility": 4
+        },
+        "affinity": {
+         "moran": 2
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "\"저는 실패하지 않겠습니다\"",
+     "requirements": [],
+     "cost": {
+      "stress": 6
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "모란이 소리 내어 웃었다. 서재에서 처음 들어 보는 웃음이었다. \"스물다섯 명이 똑같이 말했다.\" 그러나 부채는 접힌 채였고, 그건 모란이 믿을 때 하는 짓이었다.",
+       "effects": {
+        "stats": {
+         "courage": 10
+        },
+        "reputation": 6,
+        "affinity": {
+         "moran": 8
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.moran.05",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "값을 받지 않는 날",
+   "art_key": "npc_moran",
+   "body": "모란이 문서 한 장을 태우고 있다. 견습생 앞으로 된 후원 각서다. \"값을 받겠다고 했지. 이제 안 받는다.\" 재가 화로에서 올라간다. \"대신 조건이 하나 있다. 네가 언젠가 누군가에게 똑같이 해라. 값 얘기는 하고, 받지는 말고.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "moran",
+     "target": 80
+    },
+    {
+     "type": "turn_range",
+     "from": 30,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"그렇게 하겠습니다\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "모란은 부채를 접어 견습생에게 건넸다. 손잡이 안쪽에 아주 작게 이름 스물여섯 개가 새겨져 있었다. 마지막 자리는 비어 있었다.",
+       "effects": {
+        "stats": {
+         "etiquette": 14,
+         "sensibility": 8
+        },
+        "reputation": 16,
+        "affinity": {
+         "moran": 12
+        },
+        "flags": {
+         "moran.fan": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"값을 치르게 해 주십시오\"",
+     "requirements": [
+      {
+       "type": "resource",
+       "resource": "gold",
+       "target": 200
+      }
+     ],
+     "cost": {
+      "gold": -200
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "모란은 돈을 세지도 않고 서랍에 넣었다. \"이걸로 내년에 한 명 더 걸겠다.\" 그러고는 덧붙였다. \"네가 처음이다. 갚은 아이는.\"",
+       "effects": {
+        "stats": {
+         "etiquette": 10,
+         "commerce": 8
+        },
+        "reputation": 20,
+        "affinity": {
+         "moran": 20
+        },
+        "flags": {
+         "moran.repaid": 1
+        }
+       }
+      }
+     ],
+     "locked_reason": "금화 200 이상이어야 한다"
+    }
+   ]
+  },
+  {
+   "id": "npc.rival.eden.01",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "이름을 외우는 방식",
+   "art_key": "npc_eden",
+   "body": "게시판 앞. 이번 주 관측 배정표에서 이든이 자기 이름 옆에 적힌 견습생의 이름을 손가락으로 짚는다. \"너였구나.\" 그러고는 이름을 두 번 소리 내어 읽는다. 외우려는 게 아니라 표시해 두려는 사람의 방식이었다.",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "eden",
+     "target": 20
+    },
+    {
+     "type": "turn_range",
+     "from": 4,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"나도 네 이름 외웠어\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "이든이 잠깐 멈칫하더니 웃었다. \"그럼 됐네.\" 그 주 관측에서 두 사람은 한 마디도 나누지 않았지만, 각자 상대가 몇 번 기록하는지 세고 있었다.",
+       "effects": {
+        "stats": {
+         "courage": 5
+        },
+        "affinity": {
+         "eden": 8
+        },
+        "flags": {
+         "npc.eden_rivalry": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"같은 조면 잘 부탁해\"",
+     "requirements": [],
+     "cost": {
+      "stress": -3
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "\"부탁받을 일은 없을 텐데.\" 말은 그렇게 했지만 이든은 첫날 망원경 각도를 조용히 맞춰 두고 갔다. 견습생은 그걸 다음 날 아침에야 알았다.",
+       "effects": {
+        "stats": {
+         "etiquette": 4,
+         "starsense": 3
+        },
+        "affinity": {
+         "eden": 12
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "배정표를 다시 확인하고 자리를 뜬다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "등 뒤에서 이든이 뭐라고 했지만 듣지 못했다. 그 주 내내 관측탑에서 마주칠 때마다 이든은 먼저 인사하지 않았다.",
+       "effects": {
+        "stats": {
+         "intellect": 3
+        },
+        "affinity": {
+         "eden": -3
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.rival.eden.02",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "같은 밤을 새운 사람",
+   "art_key": "npc_eden",
+   "body": "천문탑 계단참에서 이든과 마주쳤다. 손에는 견습생이 사흘째 붙들고 있던 바로 그 관측표가 들려 있다. \"네가 먼저 볼 줄 알았는데.\" 웃는 것도 비웃는 것도 아닌 얼굴로 이든이 관측표를 내민다.",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "eden",
+     "target": 30
+    },
+    {
+     "type": "turn_range",
+     "from": 12,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"같이 보자\" 하고 옆에 앉는다",
+     "requirements": [],
+     "cost": {
+      "energy": -10,
+      "stress": -4
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "두 사람은 새벽까지 같은 표를 두 번 읽었다. 서로 다른 곳에서 같은 오류를 짚어 냈을 때, 이든이 처음으로 소리 내어 웃었다.",
+       "effects": {
+        "stats": {
+         "starsense": 6,
+         "intellect": 4
+        },
+        "affinity": {
+         "eden": 12
+        },
+        "flags": {
+         "npc.eden_ally": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"먼저 봤으면 먼저 풀어야지\"",
+     "requirements": [],
+     "cost": {
+      "energy": -6
+     },
+     "check": {
+      "stat": "courage",
+      "difficulty": 40
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "이든은 표를 순순히 넘겼다. 다음 날 아침, 견습생의 이름이 관측 기록 맨 윗줄에 적혔다. 이든은 그날 하루 종일 말이 없었다.",
+       "effects": {
+        "stats": {
+         "starsense": 9
+        },
+        "reputation": 7,
+        "affinity": {
+         "eden": -6
+        },
+        "flags": {
+         "npc.eden_rivalry": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "표를 잡아채려다 그대로 놓쳤다. 흩어진 종이를 줍는 동안 이든은 팔짱을 낀 채 기다려 주었다. 그게 더 아팠고, 그날부터 서로를 의식하게 됐다.",
+       "effects": {
+        "stress": 10,
+        "affinity": {
+         "eden": -10
+        },
+        "flags": {
+         "npc.eden_rivalry": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "아무 말 없이 계단을 내려간다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "등 뒤에서 종이 넘기는 소리가 났다. 오늘 밤 천문탑은 이든의 것이다.",
+       "effects": {
+        "affinity": {
+         "eden": -4
+        },
+        "stress": 3
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.rival.eden.03",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "서로의 약점",
+   "art_key": "npc_eden",
+   "body": "합동 실습 뒤풀이. 술은 없고 식은 차만 있다. 이든이 잔을 내려놓고 말한다. \"네가 계산에서 자릿수를 자주 놓치는 거, 나만 아는 거 아니야.\" 잠깐 뜸을 들이더니 덧붙인다. \"나는 손이 떨려서 미세조정을 못 해. 이건 아무도 몰라.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "eden",
+     "target": 50
+    },
+    {
+     "type": "turn_range",
+     "from": 17,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"그럼 서로 봐 주자\"",
+     "requirements": [],
+     "cost": {
+      "energy": -8
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "그날 이후 두 사람의 기록지에는 상대의 필적이 한 줄씩 섞였다. 교수들은 두 견습생의 정확도가 동시에 올라간 이유를 끝내 알아내지 못했다.",
+       "effects": {
+        "stats": {
+         "starsense": 8,
+         "craft": 5
+        },
+        "affinity": {
+         "eden": 16
+        },
+        "flags": {
+         "npc.eden_ally": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"왜 나한테 말해\"",
+     "requirements": [],
+     "cost": {
+      "stress": 3
+     },
+     "check": {
+      "stat": "sensibility",
+      "difficulty": 48,
+      "npc_id": "eden"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "이든은 오래 대답하지 않다가 말했다. \"이기고 싶은 상대한테는 말할 수 있더라. 진 적이 없으니까.\" 그건 자랑이 아니라 고백에 가까웠다.",
+       "effects": {
+        "stats": {
+         "sensibility": 9,
+         "courage": 4
+        },
+        "affinity": {
+         "eden": 14
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "\"말하고 후회 중이야.\" 이든은 잔을 들고 일어섰다. 다음 실습에서 이든의 손은 평소보다 더 떨렸고, 견습생은 그걸 못 본 척했다.",
+       "effects": {
+        "stress": 8,
+        "affinity": {
+         "eden": -4
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "\"약점은 각자 알아서 하는 거야\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "이든이 잔을 비우고 고개를 끄덕였다. \"그렇지. 내가 잠깐 이상했다.\" 그 뒤로 이든은 견습생 앞에서 다시는 손을 보이지 않았다.",
+       "effects": {
+        "stats": {
+         "courage": 6
+        },
+        "affinity": {
+         "eden": -8
+        },
+        "flags": {
+         "npc.eden_rivalry": 1
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.rival.eden.04",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "한 자리",
+   "art_key": "npc_eden",
+   "body": "왕립 관측단이 견습생 한 명을 받는다는 공고가 붙었다. 아카데미에서 지원 자격이 되는 사람은 둘뿐이다. 이든이 공고문 앞에서 견습생을 기다리고 있었다. \"둘 다 내면 둘 다 떨어질 수도 있대. 심사위원이 그러더라.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "eden",
+     "target": 65
+    },
+    {
+     "type": "turn_range",
+     "from": 24,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"그래도 둘 다 내자\"",
+     "requirements": [],
+     "cost": {
+      "stress": 8
+     },
+     "check": {
+      "stat": "starsense",
+      "difficulty": 68,
+      "npc_id": "eden"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "둘 다 냈고, 둘 다 붙었다. 관측단은 예정에 없던 두 자리를 만들었다. 심사평에는 두 지원서가 서로를 인용하고 있다고 적혀 있었다.",
+       "effects": {
+        "stats": {
+         "starsense": 14,
+         "courage": 8
+        },
+        "reputation": 20,
+        "affinity": {
+         "eden": 18
+        },
+        "flags": {
+         "npc.eden_ally": 1,
+         "eden.both_passed": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "둘 다 냈고, 둘 다 떨어졌다. 돌아오는 길에 이든이 말했다. \"후회 안 해.\" 견습생도 그랬다. 두 사람은 그날 처음으로 나란히 걸었다.",
+       "effects": {
+        "stats": {
+         "courage": 10
+        },
+        "stress": 10,
+        "affinity": {
+         "eden": 20
+        },
+        "flags": {
+         "npc.eden_ally": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"네가 내. 나는 안 낼게\"",
+     "requirements": [],
+     "cost": {
+      "stress": 10
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "이든은 화를 냈다. 처음이었다. \"양보받으려고 기다린 게 아니야.\" 결국 이든은 지원서를 내지 않았고, 그 자리는 다른 아카데미 사람에게 갔다. 둘 다 아무것도 얻지 못했다.",
+       "effects": {
+        "stress": 12,
+        "affinity": {
+         "eden": -6
+        },
+        "stats": {
+         "sensibility": 6
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "\"나는 낼 거야. 너도 내든지\"",
+     "requirements": [],
+     "cost": {
+      "energy": -6
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "이든이 웃었다. \"그래야 너지.\" 두 사람은 같은 날 같은 창구에 지원서를 냈고, 접수원이 두 번 이름을 확인했다.",
+       "effects": {
+        "stats": {
+         "courage": 9,
+         "starsense": 6
+        },
+        "reputation": 8,
+        "affinity": {
+         "eden": 6
+        },
+        "flags": {
+         "npc.eden_rivalry": 1
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.rival.eden.05",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "마지막 밤의 내기",
+   "art_key": "npc_eden",
+   "body": "졸업 관측을 앞둔 밤, 이든이 관측탑 꼭대기에서 기다리고 있다. 망원경 두 대가 나란히 서 있다. \"내기하자. 오늘 밤 먼저 새 별 찾는 사람이 이기는 걸로.\" 그러고는 덧붙인다. \"진 사람은 이긴 사람 이름을 기록지에 같이 적기.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "eden",
+     "target": 80
+    },
+    {
+     "type": "turn_range",
+     "from": 30,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"좋아. 진짜로 이길 거야\"",
+     "requirements": [],
+     "cost": {
+      "energy": -18,
+      "stress": 5
+     },
+     "check": {
+      "stat": "starsense",
+      "difficulty": 72,
+      "npc_id": "eden"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "새벽 네 시, 견습생의 망원경이 먼저 잡았다. 이든은 한참 들여다보더니 자기 기록지에 두 이름을 적었다. \"약속은 약속이니까.\" 그리고 아주 작게 덧붙였다. \"축하해.\"",
+       "effects": {
+        "stats": {
+         "starsense": 18,
+         "courage": 8
+        },
+        "reputation": 16,
+        "affinity": {
+         "eden": 12
+        },
+        "flags": {
+         "eden.final_win": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "이든이 먼저 찾았다. 견습생은 약속대로 기록지에 두 이름을 적었다. 이든이 그걸 보더니 자기 것에도 두 이름을 적었다. \"어차피 같이 본 거잖아.\"",
+       "effects": {
+        "stats": {
+         "starsense": 10
+        },
+        "reputation": 10,
+        "affinity": {
+         "eden": 16
+        },
+        "flags": {
+         "npc.eden_ally": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"내기 말고 그냥 같이 보자\"",
+     "requirements": [],
+     "cost": {
+      "energy": -12,
+      "stress": -8
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "두 망원경은 밤새 같은 방향을 봤다. 아무것도 새로 찾지 못했지만, 두 사람은 각자의 기록지 마지막 줄에 같은 문장을 적었다. 나중에 비교해 보고 둘 다 웃었다.",
+       "effects": {
+        "stats": {
+         "starsense": 12,
+         "sensibility": 8
+        },
+        "affinity": {
+         "eden": 22
+        },
+        "flags": {
+         "npc.eden_ally": 1,
+         "eden.final_together": 1
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.yun.01",
+   "category": "npc",
+   "weight": 9,
+   "once_per_run": true,
+   "title": "지도에 없는 길",
+   "art_key": "npc_yun",
+   "body": "윤이 낡은 지도를 펴 놓고 손가락으로 빈 곳을 짚는다. \"여기, 아무도 안 그려 놨어.\" 하루면 다녀올 수 있다고 하는데, 하루가 아까운 시기다.",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "yun",
+     "target": 25
+    },
+    {
+     "type": "turn_range",
+     "from": 6,
+     "to": 32
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "따라나선다",
+     "requirements": [],
+     "cost": {
+      "energy": -18,
+      "stress": -14
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "길은 지도보다 짧았고 풍경은 지도보다 길었다. 돌아오는 길에 윤이 그 자리에 작게 표시를 넣었다.",
+       "effects": {
+        "stats": {
+         "sensibility": 7,
+         "courage": 4
+        },
+        "affinity": {
+         "yun": 12
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "지도만 빌린다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "지도를 베껴 두었다. 언젠가 가겠다고 생각했고, 그 언젠가는 오지 않을지도 모른다.",
+       "effects": {
+        "stats": {
+         "intellect": 4
+        },
+        "affinity": {
+         "yun": 3
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "오늘은 할 일이 있다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "윤은 어깨를 으쓱하고 혼자 떠났다. 사흘 뒤 돌아왔을 때 아무 말도 하지 않았다.",
+       "effects": {
+        "affinity": {
+         "yun": -6
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.yun.02",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "왜 떠도는가",
+   "art_key": "npc_yun",
+   "body": "성문 밖 언덕. 윤이 배낭을 베고 누워 하늘을 보고 있다. \"여기 별이 제일 잘 보여. 아카데미 탑보다.\" 챙 넓은 모자가 얼굴을 덮는다. \"나는 어디에도 안 적혀 있어서 어디서나 볼 수 있거든.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "yun",
+     "target": 35
+    },
+    {
+     "type": "turn_range",
+     "from": 11,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"적히면 못 보게 돼?\"",
+     "requirements": [],
+     "cost": {
+      "stress": -6
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "윤이 모자를 들어 올렸다. \"적히면 적힌 대로만 보게 돼.\" 그러고는 다시 덮었다. \"너는 아직 반쯤만 적혔더라. 좋은 시기야.\"",
+       "effects": {
+        "stats": {
+         "sensibility": 9,
+         "starsense": 4
+        },
+        "affinity": {
+         "yun": 12
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "옆에 누워 같이 본다",
+     "requirements": [],
+     "cost": {
+      "energy": -8,
+      "stress": -10
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "두 시간 동안 아무도 말하지 않았다. 별자리 이름을 하나도 대지 않고 별을 본 건 견습생에게 처음이었다. 내려오는 길에 윤이 물었다. \"그거 수업에서 안 가르치지.\"",
+       "effects": {
+        "stats": {
+         "sensibility": 12,
+         "courage": 4
+        },
+        "affinity": {
+         "yun": 16
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "\"나는 적히고 싶은데\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "윤이 웃는 소리가 모자 아래에서 났다. \"그럼 잘 적혀. 나는 적힌 사람들 구경하는 게 재밌어서 돌아다니는 거니까.\"",
+       "effects": {
+        "stats": {
+         "courage": 6,
+         "eloquence": 4
+        },
+        "affinity": {
+         "yun": 6
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.yun.03",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "옛 이름",
+   "art_key": "npc_yun",
+   "body": "봉인된 서가에서 나온 사십 년 전 관측 기록. 서명란에 적힌 이름을 윤이 보더니 표정이 굳는다. \"그거 우리 아버지야.\" 윤이 모자를 벗는다. \"학회에서 쫓겨났어. 틀린 걸 냈다고. 나는 그게 틀리지 않았다고 생각해.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "yun",
+     "target": 50
+    },
+    {
+     "type": "turn_range",
+     "from": 18,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"같이 검증해 보자\"",
+     "requirements": [],
+     "cost": {
+      "energy": -14,
+      "stress": 6
+     },
+     "check": {
+      "stat": "starsense",
+      "difficulty": 56,
+      "npc_id": "yun"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "기록은 틀리지 않았다. 사십 년 전의 관측 도구가 못 따라갔을 뿐이었다. 학회에 정정 요청을 낸 날, 윤은 처음으로 아카데미 정문 안으로 들어왔다.",
+       "effects": {
+        "stats": {
+         "starsense": 14,
+         "sensibility": 6
+        },
+        "reputation": 16,
+        "affinity": {
+         "yun": 20
+        },
+        "flags": {
+         "yun.father_cleared": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "두 주를 붙들었지만 결론이 나지 않았다. 윤은 기록을 접으며 말했다. \"괜찮아. 아무도 안 봤던 걸 둘이 봤잖아.\" 그러나 그날 밤 윤은 언덕에 올라가지 않았다.",
+       "effects": {
+        "stats": {
+         "starsense": 6
+        },
+        "stress": 10,
+        "affinity": {
+         "yun": 10
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"왜 직접 안 해 봤어\"",
+     "requirements": [],
+     "cost": {
+      "stress": 4
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "\"자격이 없으니까.\" 윤이 모자를 도로 썼다. \"검증은 학적이 있는 사람만 낼 수 있어.\" 그건 견습생이 가진 것이었고, 윤은 그 말을 하려고 기록을 보여 준 게 아니었다.",
+       "effects": {
+        "stats": {
+         "sensibility": 8
+        },
+        "affinity": {
+         "yun": 8
+        },
+        "flags": {
+         "yun.father_known": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "기록을 조용히 덮는다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "윤은 고맙다고 했다. 진심이었다. 그리고 그 계절이 끝나기 전에 도시를 떠났다가, 겨울에 아무 일 없었던 것처럼 돌아왔다.",
+       "effects": {
+        "stats": {
+         "etiquette": 5
+        },
+        "affinity": {
+         "yun": -4
+        },
+        "stress": -6
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.yun.04",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "국경 너머 사흘",
+   "art_key": "npc_yun",
+   "body": "윤이 지도를 펼친다. 아카데미 관측 범위 바깥, 사흘 걸리는 고원이다. \"여기서만 보이는 게 있어. 일 년에 한 번, 이번 달.\" 손끝이 국경선을 넘어간다. \"허가는 없어. 걸리면 학적에 남을 거야.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "yun",
+     "target": 65
+    },
+    {
+     "type": "turn_range",
+     "from": 24,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"가자\"",
+     "requirements": [],
+     "cost": {
+      "energy": -20,
+      "gold": -50,
+      "stress": 8
+     },
+     "check": {
+      "stat": "courage",
+      "difficulty": 62,
+      "npc_id": "yun"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "사흘째 밤에 그것이 떴다. 견습생은 손이 떨려 기록을 두 번 다시 썼다. 돌아오는 길에 윤이 말했다. \"이제 너도 어디에도 안 적힌 걸 하나 갖게 됐네.\"",
+       "effects": {
+        "stats": {
+         "starsense": 18,
+         "courage": 10,
+         "sensibility": 6
+        },
+        "reputation": 12,
+        "affinity": {
+         "yun": 22
+        },
+        "flags": {
+         "yun.plateau": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "국경 초소에서 되돌려 보내졌다. 학적에 경고가 한 줄 남았다. 윤은 미안해했지만 견습생은 후회하지 않았고, 그 말을 하는 데 사흘이 걸렸다.",
+       "effects": {
+        "stats": {
+         "courage": 8
+        },
+        "reputation": -10,
+        "stress": 14,
+        "affinity": {
+         "yun": 12
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"허가를 받아 보자\"",
+     "requirements": [
+      {
+       "type": "resource",
+       "resource": "reputation",
+       "target": 35
+      }
+     ],
+     "cost": {
+      "energy": -10,
+      "stress": 5
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "학장은 사흘을 끌다가 도장을 찍었다. 정식 관측 기록으로 남았고, 윤의 이름도 동행자로 적혔다. 윤이 문서에 자기 이름이 적힌 걸 본 건 그때가 처음이었다.",
+       "effects": {
+        "stats": {
+         "starsense": 12,
+         "eloquence": 8
+        },
+        "reputation": 20,
+        "affinity": {
+         "yun": 18
+        },
+        "flags": {
+         "yun.plateau": 1,
+         "yun.recorded": 1
+        }
+       }
+      }
+     ],
+     "locked_reason": "평판 35 이상이어야 한다"
+    },
+    {
+     "id": "c",
+     "label": "\"나는 못 가\"",
+     "requirements": [],
+     "cost": {
+      "stress": 6
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "윤은 혼자 갔다. 열흘 뒤 돌아와 기록 사본을 건넸다. \"네 몫이야. 안 갔어도.\" 견습생은 그걸 받지 못하고 한참 서 있었다.",
+       "effects": {
+        "stats": {
+         "starsense": 6
+        },
+        "affinity": {
+         "yun": -8
+        },
+        "stress": 4
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.yun.05",
+   "category": "npc",
+   "weight": 10,
+   "once_per_run": true,
+   "title": "머물지 떠날지",
+   "art_key": "npc_yun",
+   "body": "봄이 오고 윤의 배낭이 꾸려져 있다. 언덕에서 윤이 말한다. \"학장이 자리를 제안했어. 객원 관측자.\" 모자를 벗어 무릎에 놓는다. 벗은 채로 오래 있는 건 처음이다. \"적히는 게 어떤 건지 나는 모르거든.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "yun",
+     "target": 80
+    },
+    {
+     "type": "turn_range",
+     "from": 30,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"남아. 여기서도 볼 수 있어\"",
+     "requirements": [],
+     "cost": {
+      "stress": 5
+     },
+     "check": {
+      "stat": "eloquence",
+      "difficulty": 58,
+      "npc_id": "yun"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "윤은 배낭을 풀었다. 객원 관측자 명패에 이름이 새겨지던 날, 윤은 그 앞에서 한참을 서 있다가 모자를 벗어 들었다. 아버지의 이름과 같은 성이었다.",
+       "effects": {
+        "stats": {
+         "eloquence": 12,
+         "sensibility": 10
+        },
+        "reputation": 10,
+        "affinity": {
+         "yun": 18
+        },
+        "flags": {
+         "yun.stayed": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "윤은 웃으며 고개를 저었다. \"네가 그렇게 말해 줘서 갈 수 있는 거야.\" 그해 봄 윤은 떠났고, 계절마다 관측 기록이 이름 없이 아카데미에 도착했다.",
+       "effects": {
+        "stats": {
+         "sensibility": 8
+        },
+        "stress": 8,
+        "affinity": {
+         "yun": 12
+        },
+        "flags": {
+         "yun.left": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"가. 대신 기록은 보내 줘\"",
+     "requirements": [],
+     "cost": {
+      "stress": -6
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "윤이 모자를 도로 썼다. \"그건 할 수 있지.\" 그날 이후 아카데미 서고에는 어느 학파에도 속하지 않은 관측 기록이 계절마다 한 권씩 쌓이기 시작했다.",
+       "effects": {
+        "stats": {
+         "sensibility": 12,
+         "starsense": 8
+        },
+        "reputation": 8,
+        "affinity": {
+         "yun": 16
+        },
+        "flags": {
+         "yun.left": 1,
+         "yun.records": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "\"같이 가면 안 될까\"",
+     "requirements": [
+      {
+       "type": "stat",
+       "stat": "courage",
+       "target": 60
+      }
+     ],
+     "cost": {
+      "stress": 10
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "윤은 오래 대답하지 않았다. \"너는 적혀야 하는 사람이야.\" 그러고는 배낭에서 낡은 지도를 꺼내 반으로 접어 주었다. \"졸업하고 와. 반쪽은 내가 갖고 있을게.\"",
+       "effects": {
+        "stats": {
+         "courage": 10,
+         "sensibility": 8
+        },
+        "affinity": {
+         "yun": 20
+        },
+        "flags": {
+         "yun.half_map": 1
+        }
+       }
+      }
+     ],
+     "locked_reason": "담력 60 이상이어야 한다"
+    }
+   ]
+  },
+  {
+   "id": "opp.broken-lens",
+   "category": "opportunity",
+   "deck": 0,
+   "weight": 7,
+   "cooldown_turns": 5,
+   "title": "금 간 렌즈",
+   "art_key": "bg_tower",
+   "body": "천문탑 관측경의 접안 렌즈에 실금이 갔다. 새로 맞추려면 값이 만만치 않고, 이대로 두면 이번 달 관측 기록이 전부 흐려진다. 구 노인이라면 갈아 줄 수 있을지도 모른다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 5,
+     "to": 30
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "직접 갈아 본다",
+     "requirements": [
+      {
+       "type": "stat",
+       "stat": "craft",
+       "target": 35
+      }
+     ],
+     "locked_reason": "손재주가 35 이상이어야 한다",
+     "cost": {
+      "energy": -12,
+      "stress": 6
+     },
+     "check": {
+      "stat": "craft",
+      "difficulty": 45
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "숫돌 위에서 세 시간. 렌즈를 끼우고 들여다보자 별이 전보다 또렷했다. 손끝이 아직 떨린다.",
+       "effects": {
+        "stats": {
+         "craft": 8,
+         "starsense": 4
+        },
+        "flags": {
+         "opp.lens_fixed": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "금이 오히려 번졌다. 구 노인은 말없이 렌즈를 받아 들고 \"다음엔 힘을 빼\"라고만 했다.",
+       "effects": {
+        "stats": {
+         "craft": 3
+        },
+        "stress": 8,
+        "affinity": {
+         "gu": 3
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "값을 치르고 맡긴다",
+     "requirements": [
+      {
+       "type": "resource",
+       "resource": "gold",
+       "target": 120
+      }
+     ],
+     "locked_reason": "골드가 120 이상이어야 한다",
+     "cost": {
+      "gold": -120
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "이틀 뒤 렌즈는 새것처럼 돌아왔다. 값은 아팠지만 관측 기록은 지켰다.",
+       "effects": {
+        "stats": {
+         "starsense": 6
+        },
+        "flags": {
+         "opp.lens_fixed": 1
+        },
+        "affinity": {
+         "gu": 4
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "흐린 채로 관측한다",
+     "requirements": [],
+     "cost": {
+      "stress": 6
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "흐릿한 상을 눈으로 보정하며 기록했다. 정확하진 않아도, 보는 법 자체는 늘었다.",
+       "effects": {
+        "stats": {
+         "starsense": 3,
+         "intellect": 2
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "opp.coin-found",
+   "category": "opportunity",
+   "deck": 2,
+   "weight": 6,
+   "cooldown_turns": 7,
+   "title": "길에 떨어진 주머니",
+   "art_key": "bg_plaza",
+   "body": "골목 모퉁이에 가죽 주머니가 떨어져 있다. 묵직하다. 주위에는 아무도 없고, 안에 이름표도 없다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 2,
+     "to": 34
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "초소에 맡긴다",
+     "requirements": [],
+     "cost": {
+      "energy": -4
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "사흘 뒤 주인이 찾아와 사례를 두고 갔다. 액수는 주머니보다 적었지만, 마음은 가벼웠다.",
+       "effects": {
+        "gold": 40,
+        "reputation": 7
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "주인을 직접 찾는다",
+     "requirements": [],
+     "cost": {
+      "energy": -12,
+      "stress": 6
+     },
+     "check": {
+      "stat": "eloquence",
+      "difficulty": 40
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "시장 사람들에게 두 시간을 물어 주인을 찾았다. 노점 주인이었고, 그날 이후 지날 때마다 인사를 건넸다.",
+       "effects": {
+        "stats": {
+         "eloquence": 6
+        },
+        "gold": 30,
+        "reputation": 9,
+        "affinity": {
+         "harin": 5
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "아무도 아는 사람이 없었다. 결국 초소에 맡기고 돌아섰다.",
+       "effects": {
+        "stats": {
+         "eloquence": 2
+        },
+        "reputation": 3,
+        "energy": -4
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "가져간다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "주머니는 생각보다 무거웠다. 며칠 동안 골목을 돌아서 다녔다.",
+       "effects": {
+        "gold": 110,
+        "reputation": -8,
+        "stress": 10
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "opp.lost-child",
+   "category": "opportunity",
+   "deck": 2,
+   "weight": 7,
+   "cooldown_turns": 5,
+   "title": "광장의 아이",
+   "art_key": "bg_plaza",
+   "body": "광장 한가운데 아이가 울고 있다. 어른들은 지나가고, 아이는 이름 말고는 아무것도 말하지 못한다. 해가 기울고 있다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 3,
+     "to": 33
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "함께 집을 찾아 준다",
+     "requirements": [],
+     "cost": {
+      "energy": -12,
+      "stress": 4
+     },
+     "check": {
+      "stat": "etiquette",
+      "difficulty": 35
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "세 골목을 돌아 문 앞에 닿았다. 아이 어머니가 견습생의 두 손을 오래 잡고 놓지 않았다.",
+       "effects": {
+        "stats": {
+         "etiquette": 6
+        },
+        "reputation": 9
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "밤이 되도록 찾지 못해 결국 초소에 맡겼다. 다음 날 아이가 집에 돌아갔다는 말만 전해 들었다.",
+       "effects": {
+        "stats": {
+         "etiquette": 3
+        },
+        "stress": 8,
+        "reputation": 2
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "초소에 데려다준다",
+     "requirements": [],
+     "cost": {
+      "energy": -4
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "초소 사람이 아이를 받아 안았다. 옳은 일이었고, 조금 서운했다.",
+       "effects": {
+        "reputation": 3,
+        "affinity": {
+         "eden": 3
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "지나간다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "뒤를 돌아보지 않았다. 그날 밤 잠이 늦게 들었다.",
+       "effects": {
+        "stress": 8,
+        "reputation": -2
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "opp.night-market-ledger",
+   "category": "opportunity",
+   "deck": 0,
+   "weight": 8,
+   "cooldown_turns": 4,
+   "title": "밤시장의 장부",
+   "art_key": "bg_plaza",
+   "body": "해질녘 시장 한 귀퉁이에서 늙은 상인이 장부를 앞에 두고 쩔쩔맨다. \"숫자가 자꾸 어긋나는데, 눈이 침침해서 원…\" 지나가던 견습생을 붙잡고 도와줄 수 있겠냐 묻는다. 오늘 밤은 길어질 것 같다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 8,
+     "to": 26
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "밤새 장부를 맞춰 준다",
+     "requirements": [],
+     "cost": {
+      "energy": -14,
+      "stress": 8
+     },
+     "check": {
+      "stat": "commerce",
+      "difficulty": 35
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "새벽녘, 어긋난 숫자 한 줄을 찾아냈다. 상인은 말없이 은화 한 줌과 함께 시장 사람들에게 견습생의 이름을 알렸다.",
+       "effects": {
+        "stats": {
+         "commerce": 7
+        },
+        "gold": 90,
+        "reputation": 6,
+        "flags": {
+         "opp.ledger_solved": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "숫자는 끝내 맞지 않았다. 그래도 상인은 식은 국밥 한 그릇을 내밀었다. \"고맙네. 젊은 눈도 별수 없구먼.\"",
+       "effects": {
+        "stats": {
+         "commerce": 3
+        },
+        "gold": 20,
+        "energy": -6
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "셈이 빠른 친구를 데려온다",
+     "requirements": [
+      {
+       "type": "affinity",
+       "npc": "harin",
+       "target": 25
+      }
+     ],
+     "locked_reason": "하린과 아직 그렇게 친하지 않다",
+     "cost": {
+      "stress": 2
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "하린은 촛불 두 개를 켜 두고 반 시간 만에 장부를 정리했다. 상인은 두 사람 몫의 사례를 건넸고, 하린은 제 몫을 견습생 손에 쥐여 주었다.",
+       "effects": {
+        "stats": {
+         "commerce": 4
+        },
+        "gold": 60,
+        "reputation": 3,
+        "affinity": {
+         "harin": 8
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "미안하다고 말하고 지나간다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "등 뒤로 장부 넘기는 소리가 오래 남았다. 오늘은 별을 볼 시간이 생겼다.",
+       "effects": {
+        "stress": -5,
+        "energy": 4
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "opp.rain-archive",
+   "category": "opportunity",
+   "deck": 1,
+   "weight": 7,
+   "cooldown_turns": 5,
+   "title": "비 새는 서고",
+   "art_key": "bg_room",
+   "body": "지하 서고 천장에서 물이 샌다. 아래 선반의 기록 다발이 젖어 가는데 사서는 자리에 없다. 옮기려면 지금이고, 혼자서는 무겁다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 4,
+     "to": 30
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "혼자 다 옮긴다",
+     "requirements": [],
+     "cost": {
+      "energy": -16,
+      "stress": 6
+     },
+     "check": {
+      "stat": "stamina",
+      "difficulty": 40
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "스무 다발을 옮기고 나니 팔이 떨렸다. 다음 날 사서가 이름을 물어 기록해 갔다.",
+       "effects": {
+        "stats": {
+         "stamina": 7,
+         "intellect": 3
+        },
+        "reputation": 6
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "절반쯤 옮겼을 때 다발이 무너졌다. 젖은 종이 냄새가 오래 손에 남았다.",
+       "effects": {
+        "stats": {
+         "stamina": 3
+        },
+        "stress": 10
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "사람을 부르러 간다",
+     "requirements": [],
+     "cost": {
+      "energy": -6
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "셋이 붙으니 금방 끝났다. 공은 나눠 가졌고, 그건 그것대로 괜찮았다.",
+       "effects": {
+        "stats": {
+         "eloquence": 4
+        },
+        "reputation": 3,
+        "affinity": {
+         "harin": 4
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "윗선반만 챙기고 나온다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "가장 오래된 것만 건졌다. 나머지는 다음 날 폐기 목록에 올랐다.",
+       "effects": {
+        "stats": {
+         "intellect": 2
+        },
+        "stress": 4
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "opp.stage-understudy",
+   "category": "opportunity",
+   "deck": 1,
+   "weight": 7,
+   "cooldown_turns": 6,
+   "title": "빈 배역",
+   "art_key": "bg_plaza",
+   "body": "극장 사람이 헐레벌떡 뛰어왔다. 오늘 저녁 배역 하나가 비었다. 대사는 열두 줄, 시간은 두 시간. 아무도 견습생을 알아보지 못할 것이다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 8,
+     "to": 32
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "무대에 선다",
+     "requirements": [],
+     "cost": {
+      "energy": -14,
+      "stress": 12
+     },
+     "check": {
+      "stat": "sensibility",
+      "difficulty": 45
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "열두 줄을 하나도 틀리지 않았다. 막이 내리고 나서야 손이 떨리기 시작했다.",
+       "effects": {
+        "stats": {
+         "sensibility": 9,
+         "eloquence": 5
+        },
+        "reputation": 8,
+        "gold": 30
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "여섯 번째 줄에서 막혔다. 옆 배우가 받아 주었고, 관객은 눈치채지 못했을 것이다. 아마도.",
+       "effects": {
+        "stats": {
+         "sensibility": 4
+        },
+        "stress": 14,
+        "gold": 15
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "무대 뒤를 돕는다",
+     "requirements": [],
+     "cost": {
+      "energy": -10,
+      "stress": 4
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "막을 세 번 올리고 내렸다. 무대는 뒤에서 보면 전혀 다른 물건이었다.",
+       "effects": {
+        "stats": {
+         "craft": 4,
+         "sensibility": 3
+        },
+        "gold": 20,
+        "affinity": {
+         "yun": 5
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "사양한다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "저녁 내내 객석 소리가 창 너머로 들렸다. 책장은 잘 넘어가지 않았다.",
+       "effects": {
+        "stress": 5
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "opp.stray-cat",
+   "category": "opportunity",
+   "deck": 1,
+   "weight": 6,
+   "cooldown_turns": 6,
+   "title": "처마 밑의 손님",
+   "art_key": "bg_room",
+   "body": "비 오는 밤, 창을 열자 처마 밑에 젖은 고양이가 웅크리고 있다. 들여놓으면 방이 좁아지고, 두면 밤새 마음이 쓰일 것이다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 3,
+     "to": 33
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "수건으로 닦아 들여놓는다",
+     "requirements": [],
+     "cost": {
+      "stress": -12,
+      "energy": -4
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "고양이는 책상 밑에서 잠들었다. 다음 날 아침에는 사라졌지만, 그날 밤 방은 덜 추웠다.",
+       "effects": {
+        "stats": {
+         "etiquette": 3
+        },
+        "stress": -6
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "먹을 것만 내어 준다",
+     "requirements": [],
+     "cost": {
+      "gold": -8
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "고양이는 그릇을 비우고 빗속으로 돌아갔다. 창을 닫으며, 잘한 일인지 잠깐 생각했다.",
+       "effects": {
+        "stress": -4
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "창을 닫는다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "빗소리가 오래 이어졌다. 책장은 잘 넘어가지 않았다.",
+       "effects": {
+        "stress": 3
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "path.declaration",
+   "category": "path",
+   "weight": 100,
+   "once_per_run": true,
+   "title": "길을 고르는 날",
+   "art_key": "bg_tower",
+   "body": "세라가 서류 한 장을 내민다. \"이제 정할 때다.\" 남은 반년을 어디에 쓸지 적어 내는 종이다. 한 번 적으면 바꾸는 데 값을 치른다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 19,
+     "to": 19
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "star",
+     "label": "별의 길",
+     "requirements": [
+      {
+       "type": "stat",
+       "stat": "starsense",
+       "target": 40
+      }
+     ],
+     "locked_reason": "별감응이 40 이상이어야 한다",
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "별의 길이라 적었다. 세라는 종이를 접으며 \"그럴 줄 알았다\"고만 했다. 그날 밤 천문탑 열쇠가 하나 더 생겼다.",
+       "effects": {
+        "flags": {
+         "path:star": 1
+        },
+        "affinity": {
+         "sera": 8
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "letters",
+     "label": "글의 길",
+     "requirements": [
+      {
+       "type": "stat",
+       "stat": "intellect",
+       "target": 40
+      }
+     ],
+     "locked_reason": "지성이 40 이상이어야 한다",
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "글의 길이라 적었다. 필사실 안쪽 자리가 배정됐다. 그곳은 조용하고, 조금 춥다.",
+       "effects": {
+        "flags": {
+         "path:letters": 1
+        },
+        "affinity": {
+         "sera": 5
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "craft",
+     "label": "손의 길",
+     "requirements": [
+      {
+       "type": "stat",
+       "stat": "craft",
+       "target": 40
+      }
+     ],
+     "locked_reason": "손재주가 40 이상이어야 한다",
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "손의 길이라 적었다. 구 노인은 종이를 보지도 않고 안뜰 열쇠를 던져 주었다.",
+       "effects": {
+        "flags": {
+         "path:craft": 1
+        },
+        "affinity": {
+         "gu": 8
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "stage",
+     "label": "무대의 길",
+     "requirements": [
+      {
+       "type": "stat",
+       "stat": "sensibility",
+       "target": 40
+      }
+     ],
+     "locked_reason": "감성이 40 이상이어야 한다",
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "무대의 길이라 적었다. 다음 공연의 이름 없는 배역 하나가 비어 있다고 했다.",
+       "effects": {
+        "flags": {
+         "path:stage": 1
+        },
+        "affinity": {
+         "yun": 8
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "market",
+     "label": "저잣거리의 길",
+     "requirements": [
+      {
+       "type": "stat",
+       "stat": "commerce",
+       "target": 40
+      }
+     ],
+     "locked_reason": "상재가 40 이상이어야 한다",
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "저잣거리의 길이라 적었다. 하린이 장부 한 권을 통째로 넘겨주며 \"이제 네 것\"이라 했다.",
+       "effects": {
+        "flags": {
+         "path:market": 1
+        },
+        "affinity": {
+         "harin": 8
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "people",
+     "label": "사람의 길",
+     "requirements": [
+      {
+       "type": "stat",
+       "stat": "etiquette",
+       "target": 40
+      }
+     ],
+     "locked_reason": "예법이 40 이상이어야 한다",
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "사람의 길이라 적었다. 모란은 부채를 접으며 \"어려운 걸 골랐구나\"라고 했다.",
+       "effects": {
+        "flags": {
+         "path:people": 1
+        },
+        "affinity": {
+         "moran": 8
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "none",
+     "label": "아직 정하지 못했다고 쓴다",
+     "requirements": [],
+     "cost": {
+      "stress": 10
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "빈칸으로 냈다. 세라는 아무 말 없이 종이를 받아 갔다. 남은 반년은 온전히 스스로 정해야 한다.",
+       "effects": {
+        "flags": {
+         "path:none": 1
+        },
+        "affinity": {
+         "sera": -4
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "world.bell",
+   "category": "world",
+   "weight": 4,
+   "cooldown_turns": 8,
+   "title": "저녁 종",
+   "art_key": "bg_plaza",
+   "body": "아카데미 종이 여섯 번 울린다. 하루가 끝났다는 뜻이고, 아직 남았다는 뜻이기도 하다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 2,
+     "to": 35
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "잠시 바라본다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "종소리가 멎을 때까지 서 있었다. 여섯 번은 생각보다 길었고, 그동안 아무 생각도 하지 않았다.",
+       "effects": {
+        "energy": 2
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "world.first-frost",
+   "category": "world",
+   "weight": 4,
+   "cooldown_turns": 8,
+   "title": "첫서리",
+   "art_key": "bg_plaza",
+   "body": "새벽에 창틀이 하얗게 얼었다. 계절이 한 칸 넘어갔다는 것을 손끝으로 안다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 2,
+     "to": 35
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "잠시 바라본다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "잠시 손을 대 보았다. 차가움이 손끝에서 손목까지 올라왔다가 사라졌다. 겨울 준비를 해야겠다고 생각했다.",
+       "effects": {
+        "stress": -3
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "world.lantern-night",
+   "category": "world",
+   "weight": 4,
+   "cooldown_turns": 8,
+   "title": "등불 축제",
+   "art_key": "bg_plaza",
+   "body": "광장에 등이 걸렸다. 사람들 사이를 지나며 걷기만 해도 마음이 조금 밝아진다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 2,
+     "to": 35
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "잠시 바라본다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "등 아래를 두 바퀴 돌았다. 아는 얼굴 몇이 인사를 건넸고, 이름을 불러 준 사람도 있었다.",
+       "effects": {
+        "stress": -8,
+        "reputation": 1
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "milestone_note": "계절 심사는 대표 계열 스탯(*best)으로 판정한다. 특정 스탯을 하드코딩하면 그 스탯을 안 키운 빌드가 심사를 통째로 놓치고 평판이 구조적으로 막힌다."
 }

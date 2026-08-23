@@ -19,10 +19,16 @@ TIERS = {"basic", "advanced", "arcane"}
 MIN_SOURCES_PER_STAT = 3
 
 problems: list[str] = []
+notices: list[str] = []
 
 
 def err(msg: str) -> None:
     problems.append(msg)
+
+
+def warn(msg: str) -> None:
+    """아직 저작 중이라 실패시킬 수 없지만 보이지 않으면 잊히는 것."""
+    notices.append(msg)
 
 
 def load(root: Path, name: str) -> dict:
@@ -211,6 +217,109 @@ def check_endings(data: dict) -> None:
             seen[key] = str(e.get("code"))
 
 
+# 이벤트와 엔딩은 평가기가 다르고 어휘도 다르다. 한쪽 어휘를 다른 쪽에 쓰면
+# 코어가 모르는 타입이 되어 조건이 조용히 영구 거짓이 된다 — 에러는 나지 않는다.
+EVENT_REQ_TYPES = {
+    "stat", "resource", "affinity", "npc_met", "flag",
+    "turn_range", "condition", "declared_path",
+}
+ENDING_REQ_TYPES = {
+    "stat", "resource", "flag", "flag-sum", "average",
+    "affinity", "condition", "declared",
+}
+RESOURCE_KEYS = {"gold", "energy", "stress", "reputation", "turn"}
+
+
+def check_requirement_types(events: dict, endings: dict) -> None:
+    def scan(reqs: object, where: str, allowed: set[str]) -> None:
+        if not isinstance(reqs, list):
+            return
+        for r in reqs:
+            if not isinstance(r, dict):
+                continue
+            kind = str(r.get("type") or "")
+            if kind not in allowed:
+                err(f"{where}: 코어가 모르는 요건 타입 '{kind}' — 이 조건은 영원히 거짓이다")
+                continue
+            if kind == "stat" and r.get("stat") not in STATS:
+                err(f"{where}: 모르는 스탯 요건 '{r.get('stat')}'")
+            if kind == "resource" and r.get("resource") not in RESOURCE_KEYS:
+                err(f"{where}: 모르는 자원 요건 '{r.get('resource')}'")
+
+    for e in (events.get("events") or []):
+        where = f"이벤트 '{e.get('id')}'"
+        scan(e.get("requirements"), where, EVENT_REQ_TYPES)
+        scan(e.get("exclusions"), where, EVENT_REQ_TYPES)
+        for c in (e.get("choices") or []):
+            scan(c.get("requirements"), f"{where} 선택지 '{c.get('id')}'", EVENT_REQ_TYPES)
+    for e in (endings.get("endings") or []):
+        scan(e.get("requirements"), f"엔딩 '{e.get('code')}'", ENDING_REQ_TYPES)
+
+
+def check_npcs(doc: dict, actions: dict, events: dict, endings: dict) -> set[str]:
+    """NPC 원장을 검사하고, 참조 검사에 쓸 id 집합을 돌려준다."""
+    npcs = doc.get("npcs") or []
+    if not npcs:
+        err("data/npcs.json 에 npcs 가 비어 있다")
+        return set()
+    ids: set[str] = set()
+    for n in npcs:
+        nid = str(n.get("id") or "")
+        if not nid:
+            err("NPC 에 id 가 없다")
+            continue
+        if nid in ids:
+            err(f"NPC id 중복: {nid}")
+        ids.add(nid)
+        for field in ("name", "role", "art_key", "blurb"):
+            if not str(n.get(field) or "").strip():
+                err(f"NPC '{nid}' 의 {field} 가 비어 있다")
+        if not (n.get("stats") or []):
+            err(f"NPC '{nid}' 에 담당 스탯이 없다")
+        for s in (n.get("stats") or []):
+            if s not in STATS:
+                err(f"NPC '{nid}' 가 모르는 스탯을 담당한다: {s}")
+
+    # 참조 무결성. 없는 NPC 를 가리키면 호감이 영원히 0 이라 게이트가 조용히 잠긴다.
+    def scan(node: object, where: str) -> None:
+        if isinstance(node, dict):
+            for k, v in node.items():
+                if k in ("npc", "npc_id", "npc_tag") and isinstance(v, str) and v:
+                    if v not in ids:
+                        err(f"{where}: 등록되지 않은 NPC 참조 '{v}'")
+                elif k == "affinity" and isinstance(v, dict):
+                    for target in v:
+                        if target not in ids:
+                            err(f"{where}: 등록되지 않은 NPC 호감 '{target}'")
+                else:
+                    scan(v, where)
+        elif isinstance(node, list):
+            for item in node:
+                scan(item, where)
+
+    for e in (events.get("events") or []):
+        scan(e, f"이벤트 '{e.get('id')}'")
+    for a in (actions.get("actions") or []):
+        scan(a, f"액션 '{a.get('id')}'")
+    for e in (endings.get("endings") or []):
+        scan(e, f"엔딩 '{e.get('code')}'")
+
+    # 체인 임계값마다 이벤트가 실제로 있어야 NPC 투자에 보상이 생긴다.
+    thresholds = doc.get("chain_thresholds") or []
+    for nid in sorted(ids):
+        have = set()
+        for e in (events.get("events") or []):
+            if e.get("category") != "npc":
+                continue
+            for r in (e.get("requirements") or []):
+                if r.get("type") == "affinity" and r.get("npc") == nid:
+                    have.add(int(r.get("target", 0)))
+        missing = [t for t in thresholds if not any(abs(h - t) <= 5 for h in have)]
+        if missing:
+            warn(f"NPC '{nid}' 체인에 이벤트가 없는 호감 구간: {missing}")
+    return ids
+
+
 def main() -> int:
     root = Path(sys.argv[1] if len(sys.argv) > 1 else ".")
     actions = load(root, "actions.json")
@@ -220,8 +329,19 @@ def main() -> int:
     if events_path.exists():
         check_events(json.loads(events_path.read_text(encoding="utf-8")))
     endings_path = root / "data" / "endings.json"
+    endings_doc: dict = {}
     if endings_path.exists():
-        check_endings(json.loads(endings_path.read_text(encoding="utf-8")))
+        endings_doc = json.loads(endings_path.read_text(encoding="utf-8"))
+        check_endings(endings_doc)
+    events_for_types = json.loads(events_path.read_text(encoding="utf-8")) if events_path.exists() else {}
+    check_requirement_types(events_for_types, endings_doc)
+    npcs_path = root / "data" / "npcs.json"
+    if npcs_path.exists():
+        events_doc = json.loads(events_path.read_text(encoding="utf-8")) if events_path.exists() else {}
+        check_npcs(json.loads(npcs_path.read_text(encoding="utf-8")),
+                   actions or {}, events_doc, endings_doc)
+    else:
+        err("data/npcs.json 이 없다")
 
     if problems:
         for p in problems:
@@ -232,6 +352,8 @@ def main() -> int:
     ev = 0
     if events_path.exists():
         ev = len(json.loads(events_path.read_text(encoding="utf-8")).get("events") or [])
+    for m in notices:
+        print(f"  경고: {m}")
     print(f"콘텐츠 린트 통과. 액션 {n}개, 이벤트 {ev}개 검사.")
     return 0
 

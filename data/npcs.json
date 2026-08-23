@@ -1,0 +1,76 @@
+{
+  "affinity_bands": [
+    {"id": "stranger", "name": "낯섦", "min": 0},
+    {"id": "acquaintance", "name": "안면", "min": 20},
+    {"id": "familiar", "name": "친분", "min": 40},
+    {"id": "trusted", "name": "신뢰", "min": 60},
+    {"id": "dear", "name": "각별", "min": 80}
+  ],
+  "chain_thresholds": [20, 35, 50, 65, 80],
+  "npcs": [
+    {
+      "id": "sera",
+      "name": "세라",
+      "role": "스승",
+      "stats": ["intellect", "starsense"],
+      "appears_turn": 1,
+      "art_key": "npc_sera",
+      "look": "은발, 짙은 남색 로브, 손에 관측표",
+      "blurb": "천문학 교수. 칭찬이 인색하고 대신 다음 과제를 준다."
+    },
+    {
+      "id": "eden",
+      "name": "이든",
+      "role": "라이벌",
+      "stats": ["starsense", "courage"],
+      "appears_turn": 4,
+      "art_key": "npc_eden",
+      "look": "붉은 머리끈, 짧은 망토, 팔짱",
+      "blurb": "같은 해에 들어온 견습생. 이기고 싶어 하는 마음을 숨기지 않는다.",
+      "branching": {
+        "ally": {"affinity_min": 65},
+        "rivalry": {"affinity_max": 25, "flag": "npc.eden_rivalry", "flag_min": 4}
+      }
+    },
+    {
+      "id": "harin",
+      "name": "하린",
+      "role": "동기",
+      "stats": ["commerce", "eloquence"],
+      "appears_turn": 3,
+      "art_key": "npc_harin",
+      "look": "둥근 안경, 앞치마, 주판",
+      "blurb": "낮에는 수업, 밤에는 국밥집. 셈이 빠르고 셈으로 사람을 챙긴다."
+    },
+    {
+      "id": "moran",
+      "name": "모란",
+      "role": "후원자",
+      "stats": ["etiquette"],
+      "appears_turn": 6,
+      "art_key": "npc_moran",
+      "look": "금실 자수 숄, 부채",
+      "blurb": "아카데미에 돈을 대는 상단주. 호의에는 언제나 값이 매겨져 있다."
+    },
+    {
+      "id": "gu",
+      "name": "구 노인",
+      "role": "장인",
+      "stats": ["craft", "stamina"],
+      "appears_turn": 5,
+      "art_key": "npc_gu",
+      "look": "흰 수염, 가죽 앞치마, 그을린 손",
+      "blurb": "관측기구를 만드는 공방 주인. 말수가 적고 손이 대신 말한다."
+    },
+    {
+      "id": "yun",
+      "name": "윤",
+      "role": "떠돌이",
+      "stats": ["sensibility", "courage"],
+      "appears_turn": 8,
+      "art_key": "npc_yun",
+      "look": "넓은 챙 모자, 낡은 배낭",
+      "blurb": "계절마다 나타났다 사라지는 여행자. 어느 학파에도 속하지 않는다."
+    }
+  ]
+}

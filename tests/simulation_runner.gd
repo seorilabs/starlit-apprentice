@@ -25,6 +25,9 @@ func _initialize() -> void:
 	var events_fired := 0
 	var locked_choices_seen := 0
 	var distinct_events := {}
+	var together_used := 0
+	var npc_events := 0
+	var peak_affinity := {}
 
 	for seed_value in SEEDS:
 		var rng := SaRng.new(seed_value)
@@ -45,7 +48,11 @@ func _initialize() -> void:
 					% [seed_value, int(state["turn"])])
 				break
 			var before := int(state["turn"])
-			var result := SaTurn.resolve(state, pick, apt, rng)
+			# 함께는 호감의 주 채널이다. 안 쓰면 NPC 콘텐츠 30종이 검증되지 않는다.
+			var together := SaTurn.together_candidate(state, pick)
+			var result := SaTurn.resolve(state, pick, apt, rng, together)
+			if together != "":
+				together_used += 1
 			state = result["state"]
 			if int(state["turn"]) <= before:
 				failures.append("seed %d: 턴이 진행되지 않았다" % seed_value)
@@ -56,7 +63,7 @@ func _initialize() -> void:
 			var scheduled: Array = []
 			for e in events:
 				var cat := String((e as Dictionary).get("category", ""))
-				if cat == "milestone" or cat == "path" or cat == "condition":
+				if cat == "milestone" or cat == "path" or cat == "condition" or cat == "npc":
 					scheduled.append(e)
 			var due := SaEventResolution.eligible(state, scheduled)
 			# 3턴 중 1턴은 나머지 풀에서 가중 추첨한다.
@@ -65,7 +72,7 @@ func _initialize() -> void:
 				var pool: Array = []
 				for e in events:
 					var cat2 := String((e as Dictionary).get("category", ""))
-					if cat2 != "milestone" and cat2 != "path" and cat2 != "condition":
+					if cat2 != "milestone" and cat2 != "path" and cat2 != "condition" and cat2 != "npc":
 						pool.append(e)
 				drawn = SaEventResolution.pick(state, pool, rng)
 			var ev: Dictionary = due[0] if not due.is_empty() else drawn
@@ -91,6 +98,8 @@ func _initialize() -> void:
 						state = outcome["state"]
 						events_fired += 1
 						distinct_events[str(ev.get("id"))] = true
+						if String(ev.get("category", "")) == "npc":
+							npc_events += 1
 
 			min_gold = mini(min_gold, int(state["gold"]))
 			min_energy = mini(min_energy, int(state["energy"]))
@@ -100,6 +109,9 @@ func _initialize() -> void:
 					if int((state["stats"] as Dictionary)[key]) >= 100:
 						earliest_cap = mini(earliest_cap, before)
 
+		for npc_id in (state.get("affinity", {}) as Dictionary).keys():
+			var v := int((state["affinity"] as Dictionary)[npc_id])
+			peak_affinity[npc_id] = maxi(int(peak_affinity.get(npc_id, 0)), v)
 		if int(state.get("turn", 1)) > SaGrowthCurve.TURNS_TOTAL:
 			completed += 1
 		if min_gold < 40:
@@ -116,6 +128,8 @@ func _initialize() -> void:
 		var prefix := String(id).split(".")[0]
 		by_cat[prefix] = int(by_cat.get(prefix, 0)) + 1
 	print("고유 이벤트 분포: %s" % str(by_cat))
+	print("함께 사용 %d회 | NPC 이벤트 %d회 | 시드별 최고 호감 %s"
+		% [together_used, npc_events, str(peak_affinity)])
 	print("턴 29 이전 캡 도달: %s" % ("없음" if earliest_cap == 99 else "턴 %d" % earliest_cap))
 
 	if completed != SEEDS.size():
@@ -127,6 +141,11 @@ func _initialize() -> void:
 		failures.append("이벤트가 한 번도 발동하지 않았다")
 	if locked_choices_seen == 0:
 		failures.append("잠긴 선택지가 한 번도 노출되지 않았다. 요건 게이팅이 동작하지 않는다")
+	# 함께가 죽으면 호감이 라이더(+2)만 남아 NPC 콘텐츠 30종이 통째로 도달 불가가 된다.
+	if together_used == 0:
+		failures.append("함께 수식이 한 번도 사용되지 않았다. 호감의 주 채널이 죽었다")
+	if npc_events < SEEDS.size() * 3:
+		failures.append("NPC 이벤트가 시드당 3회 미만이다: %d/%d" % [npc_events, SEEDS.size()])
 	if gold_pressure == 0:
 		failures.append("불변식 13 위반: 어느 시드에서도 골드가 40 아래로 내려가지 않았다. 자원이 제약이 아니다")
 

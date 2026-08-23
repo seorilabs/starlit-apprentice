@@ -9,11 +9,14 @@ extends SceneTree
 const ACTIONS_PATH := "res://data/actions.json"
 const ENDINGS_PATH := "res://data/endings.json"
 const EVENTS_PATH := "res://data/events.json"
+## 설계 팩의 이벤트 저작 목표. 여기에 도달하면 band 3~4 기준을 올린다.
+const EVENT_TARGET := 106
 const SEEDS := [1, 7, 13, 101, 4242, 65537, 999983]
 ## band 별 도달 요구 시드 수.
 ##
 ## band 0~2 는 완전 도달을 요구한다. band 3~4 는 **현재 콘텐츠 성숙도에 맞춘 임시값**이다.
-## 평판이 주로 이벤트·마일스톤에서 오는데 이벤트가 23/106 이라 공급이 얇고 시드 편차가 크다.
+## 평판이 주로 이벤트·마일스톤에서 오는데 이벤트 저작이 아직 목표(106종)에 못 미쳐
+## 공급이 얇고 시드 편차가 크다. 저작이 채워지면 기준을 올린다.
 ## 이 게이트의 목적은 "band 3~4 가 완성됐다" 가 아니라 **현재 수준에서 퇴행하지 않는 것**이다.
 ## 이벤트 저작이 진행되면 이 값과 엔딩의 평판 목표를 함께 올린다.
 const REQUIRED := {0: 0, 1: 7, 2: 6, 3: 1, 4: 1}
@@ -96,7 +99,8 @@ func _initialize() -> void:
 		print(line)
 	print("도달: %d/%d 엔딩 (시드 %d개, 총 %d 시뮬레이션)"
 		% [reached_total, attempted, SEEDS.size(), attempted * SEEDS.size()])
-	print("band 3~4 는 잠정 기준이다. 평판이 이벤트 의존이고 이벤트가 23/106 이라 공급이 얇다.")
+	print("band 3~4 는 잠정 기준이다. 평판이 이벤트 의존이고 이벤트가 %d/%d 라 공급이 얇다."
+		% [events.size(), EVENT_TARGET])
 
 	if failures.is_empty():
 		print("BALANCE PASS")

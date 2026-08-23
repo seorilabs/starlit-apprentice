@@ -10,6 +10,7 @@ var rng: SaRng
 var actions: Array
 var events: Array
 var endings: Array
+var npcs: Array
 
 var last_result: Dictionary = {}
 var pending_event: Dictionary = {}
@@ -21,6 +22,7 @@ func start(seed_value: int, content: Dictionary) -> void:
 	actions = content.get("actions", [])
 	events = content.get("events", [])
 	endings = content.get("endings", [])
+	npcs = content.get("npcs", [])
 
 func turn() -> int:
 	return int(state.get("turn", 1))
@@ -34,6 +36,20 @@ func phase_label() -> String:
 		0: return "상순"
 		1: return "중순"
 		_: return "하순"
+
+## NPC 이름·초상은 data/npcs.json 이 원장이다. UI 에 하드코딩하지 않는다.
+func npc_name(id: String) -> String:
+	return String(_npc(id).get("name", id))
+
+func npc_art(id: String) -> String:
+	return String(_npc(id).get("art_key", ""))
+
+func _npc(id: String) -> Dictionary:
+	for n in npcs:
+		var d: Dictionary = n
+		if String(d.get("id", "")) == id:
+			return d
+	return {}
 
 func is_over() -> bool:
 	return turn() > SaGrowthCurve.TURNS_TOTAL
@@ -62,10 +78,7 @@ func offered_actions(limit: int = 5) -> Array:
 
 ## 이 행동을 고르면 함께할 수 있는 NPC. 런당 2~3턴만 등장하도록 결정론적으로 제한한다.
 func together_candidate(action: Dictionary) -> String:
-	var npc := String(action.get("npc_tag", "")) if action.get("npc_tag") != null else ""
-	if npc == "" or int(state.get("stress", 0)) >= 60:
-		return ""
-	return npc if (turn() * 7 + npc.length()) % 4 == 0 else ""
+	return SaTurn.together_candidate(state, action)
 
 func resolve(action: Dictionary, together: String = "") -> Dictionary:
 	last_result = SaTurn.resolve(state, action, aptitude, rng, together)
