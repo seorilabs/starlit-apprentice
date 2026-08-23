@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+		<title>$GODOT_PROJECT_NAME</title>
+		<style>
+html, body, #canvas {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+body {
+	color: white;
+	background-color: black;
+	overflow: hidden;
+	touch-action: none;
+}
+
+#canvas {
+	display: block;
+}
+
+#canvas:focus {
+	outline: none;
+}
+
+/* ── 로딩 화면 ────────────────────────────────────────────────────────
+   AIT 게임 출시 체크리스트: "미니앱이 10초 이내에 최초 화면까지 정상적으로
+   열려요". 이 화면은 HTML/CSS 파싱만으로 그려지므로 wasm 다운로드와 컴파일을
+   기다리지 않는다. 빈 화면이 보이는 구간을 없애는 것이 목적이다. */
+#boot {
+	position: absolute;
+	inset: 0;
+	z-index: 5;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 18px;
+	background-color: #161B2D;
+	color: #F4F1E8;
+	font-family: system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
+	transition: opacity 320ms ease;
+}
+
+#boot.done {
+	opacity: 0;
+	pointer-events: none;
+}
+
+#boot-title {
+	font-size: 30px;
+	font-weight: 700;
+	color: #F2C75C;
+}
+
+#boot-sub {
+	font-size: 14px;
+	color: #A9B2C7;
+}
+
+#boot-track {
+	width: 62%;
+	max-width: 320px;
+	height: 6px;
+	background-color: #1E2540;
+	border-radius: 3px;
+	overflow: hidden;
+}
+
+#boot-bar {
+	height: 100%;
+	width: 0%;
+	background-color: #F2C75C;
+	border-radius: 3px;
+	transition: width 220ms ease;
+}
+
+#boot-pct {
+	font-size: 13px;
+	color: #A9B2C7;
+	font-variant-numeric: tabular-nums;
+}
+
+#boot-fail {
+	font-size: 13px;
+	color: #D97A7A;
+	max-width: 80%;
+	text-align: center;
+	line-height: 1.5;
+}
+
+/* 기본 오버레이는 스플래시 배경으로 화면을 덮어 위 로딩 화면을 가린다.
+   스플래시와 기본 진행바는 우리 것이 대신하므로 감추고 오류 알림만 남긴다. */
+#status {
+	z-index: 6;
+	background-color: transparent !important;
+}
+
+#status-splash,
+#status-progress {
+	display: none !important;
+}
+
+#status, #status-splash, #status-progress {
+	position: absolute;
+	left: 0;
+	right: 0;
+}
+
+#status, #status-splash {
+	top: 0;
+	bottom: 0;
+}
+
+#status {
+	background-color: $GODOT_SPLASH_COLOR;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	visibility: hidden;
+}
+
+#status-splash {
+	max-height: 100%;
+	max-width: 100%;
+	margin: auto;
+}
+
+#status-splash.show-image--false {
+	display: none;
+}
+
+#status-splash.fullsize--true {
+	height: 100%;
+	width: 100%;
+	object-fit: contain;
+}
+
+#status-splash.use-filter--false {
+	image-rendering: pixelated;
+}
+
+#status-progress, #status-notice {
+	display: none;
+}
+
+#status-progress {
+	bottom: 10%;
+	width: 50%;
+	margin: 0 auto;
+}
+
+#status-notice {
+	background-color: #5b3943;
+	border-radius: 0.5rem;
+	border: 1px solid #9b3943;
+	color: #e0e0e0;
+	font-family: 'Noto Sans', 'Droid Sans', Arial, sans-serif;
+	line-height: 1.3;
+	margin: 0 2rem;
+	overflow: hidden;
+	padding: 1rem;
+	text-align: center;
+	z-index: 1;
+}
+		</style>
+		$GODOT_HEAD_INCLUDE
+	</head>
+	<body>
+		<canvas id="canvas">
+			Your browser does not support the canvas tag.
+		</canvas>
+
+		<noscript>
+			Your browser does not support JavaScript.
+		</noscript>
+
+		<div id="status">
+			<img id="status-splash" class="$GODOT_SPLASH_CLASSES" src="$GODOT_SPLASH" alt="">
+			<progress id="status-progress"></progress>
+			<div id="status-notice"></div>
+		</div>
+
+		<div id="boot">
+			<div id="boot-title">별빛 견습생</div>
+			<div id="boot-sub">열두 달, 서른여섯 번의 선택</div>
+			<div id="boot-track"><div id="boot-bar"></div></div>
+			<div id="boot-pct">0%</div>
+			<div id="boot-fail"></div>
+		</div>
+
+		<script src="$GODOT_URL"></script>
+		<script>
+const GODOT_CONFIG = $GODOT_CONFIG;
+const GODOT_THREADS_ENABLED = $GODOT_THREADS_ENABLED;
+const engine = new Engine(GODOT_CONFIG);
+
+(function () {
+	const statusOverlay = document.getElementById('status');
+	const statusProgress = document.getElementById('status-progress');
+	const statusNotice = document.getElementById('status-notice');
+
+	let initializing = true;
+	let statusMode = '';
+
+	function setStatusMode(mode) {
+		if (statusMode === mode || !initializing) {
+			return;
+		}
+		if (mode === 'hidden') {
+			statusOverlay.remove();
+			initializing = false;
+			return;
+		}
+		statusOverlay.style.visibility = 'visible';
+		statusProgress.style.display = mode === 'progress' ? 'block' : 'none';
+		statusNotice.style.display = mode === 'notice' ? 'block' : 'none';
+		statusMode = mode;
+	}
+
+	function setStatusNotice(text) {
+		while (statusNotice.lastChild) {
+			statusNotice.removeChild(statusNotice.lastChild);
+		}
+		const lines = text.split('\n');
+		lines.forEach((line) => {
+			statusNotice.appendChild(document.createTextNode(line));
+			statusNotice.appendChild(document.createElement('br'));
+		});
+	}
+
+	const bootEl = document.getElementById('boot');
+	const bootBar = document.getElementById('boot-bar');
+	const bootPct = document.getElementById('boot-pct');
+	const bootFail = document.getElementById('boot-fail');
+	let bootShown = 0;
+	let creepTimer = null;
+
+	function bootStopCreep() {
+		if (creepTimer !== null) {
+			clearInterval(creepTimer);
+			creepTimer = null;
+		}
+	}
+
+	function bootPaint(pct) {
+		bootShown = pct;
+		bootBar.style.width = pct + '%';
+		bootPct.textContent = pct + '%';
+	}
+
+	function bootProgress(ratio) {
+		bootStopCreep();
+		bootPaint(Math.max(bootShown, Math.min(99, Math.round(ratio * 100))));
+	}
+
+	function bootCreep() {
+		if (creepTimer !== null) {
+			return;
+		}
+		creepTimer = setInterval(function () {
+			if (bootShown < 95) {
+				bootPaint(bootShown + 1);
+			}
+		}, 400);
+	}
+
+	function bootDone() {
+		bootStopCreep();
+		bootPaint(100);
+		bootEl.classList.add('done');
+		setTimeout(function () { bootEl.remove(); }, 360);
+	}
+
+	function bootFailed(message) {
+		bootStopCreep();
+		bootPct.textContent = '';
+		bootFail.textContent = message;
+	}
+
+	function displayFailureNotice(err) {
+		bootFailed('이 환경에서는 게임을 실행할 수 없습니다. 아래 내용을 확인해 주세요.');
+		console.error(err);
+		if (err instanceof Error) {
+			setStatusNotice(err.message);
+		} else if (typeof err === 'string') {
+			setStatusNotice(err);
+		} else {
+			setStatusNotice('An unknown error occurred.');
+		}
+		setStatusMode('notice');
+		initializing = false;
+	}
+
+	const missing = Engine.getMissingFeatures({
+		threads: GODOT_THREADS_ENABLED,
+	});
+
+	if (missing.length !== 0) {
+		if (GODOT_CONFIG['serviceWorker'] && GODOT_CONFIG['ensureCrossOriginIsolationHeaders'] && 'serviceWorker' in navigator) {
+			let serviceWorkerRegistrationPromise;
+			try {
+				serviceWorkerRegistrationPromise = navigator.serviceWorker.getRegistration();
+			} catch (err) {
+				serviceWorkerRegistrationPromise = Promise.reject(new Error('Service worker registration failed.'));
+			}
+			// There's a chance that installing the service worker would fix the issue
+			Promise.race([
+				serviceWorkerRegistrationPromise.then((registration) => {
+					if (registration != null) {
+						return Promise.reject(new Error('Service worker already exists.'));
+					}
+					return registration;
+				}).then(() => engine.installServiceWorker()),
+				// For some reason, `getRegistration()` can stall
+				new Promise((resolve) => {
+					setTimeout(() => resolve(), 2000);
+				}),
+			]).then(() => {
+				// Reload if there was no error.
+				window.location.reload();
+			}).catch((err) => {
+				console.error('Error while registering service worker:', err);
+			});
+		} else {
+			// Display the message as usual
+			const missingMsg = 'Error\nThe following features required to run Godot projects on the Web are missing:\n';
+			displayFailureNotice(missingMsg + missing.join('\n'));
+		}
+	} else {
+		setStatusMode('progress');
+		engine.startGame({
+			'onProgress': function (current, total) {
+				if (current > 0 && total > 0) {
+					statusProgress.value = current;
+					statusProgress.max = total;
+					bootProgress(current / total);
+				} else {
+					statusProgress.removeAttribute('value');
+					statusProgress.removeAttribute('max');
+					// 길이를 모르는 구간(wasm 컴파일 등)에서도 멈춘 것처럼 보이지
+					// 않게 천천히 밀어 올린다. 100% 에는 닿지 않는다.
+					bootCreep();
+				}
+			},
+		}).then(() => {
+			setStatusMode('hidden');
+			bootDone();
+		}, displayFailureNotice);
+	}
+}());
+		</script>
+	</body>
+</html>

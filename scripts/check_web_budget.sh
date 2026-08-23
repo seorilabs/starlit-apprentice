@@ -14,8 +14,11 @@ project_dir="${1:-.}"
 out_dir="${project_dir}/build/web"
 godot_bin="${GODOT_BIN:-godot}"
 
-TOTAL_BUDGET=$((15 * 1024 * 1024))
-PCK_BUDGET=$((6 * 1024 * 1024))
+# AppsInToss 의 실제 하드 리밋. 이것만 하드 실패다.
+AIT_LIMIT=$((100 * 1024 * 1024))
+# 아래 둘은 참고선이다. 넘어도 실패시키지 않는다 — 근거는 ADR-0010.
+TOTAL_REFERENCE=$((15 * 1024 * 1024))
+PCK_REFERENCE=$((6 * 1024 * 1024))
 
 gz_size() { gzip -6 -c "$1" | wc -c | tr -d ' '; }
 mb() { echo "scale=2; $1/1048576" | bc; }
@@ -36,12 +39,32 @@ for f in "${out_dir}"/*; do
 done
 pck=$(gz_size "${out_dir}/index.pck")
 
-printf "[web-budget] 총 전송량 %.2f MB / 예산 %.2f MB\n" "$(mb $total)" "$(mb $TOTAL_BUDGET)" >&2
-printf "[web-budget] pck        %.2f MB / 예산 %.2f MB\n" "$(mb $pck)" "$(mb $PCK_BUDGET)" >&2
+raw_total=0
+for f in "${out_dir}"/*; do
+  [ -f "$f" ] || continue
+  case "$f" in *.map) continue;; esac
+  raw_total=$((raw_total + $(stat -f%z "$f" 2>/dev/null || stat -c%s "$f")))
+done
+
+printf "[web-budget] 총 전송량 %.2f MB (참고선 %.2f MB)\n" "$(mb $total)" "$(mb $TOTAL_REFERENCE)" >&2
+printf "[web-budget] pck        %.2f MB (참고선 %.2f MB)\n" "$(mb $pck)" "$(mb $PCK_REFERENCE)" >&2
+printf "[web-budget] 비압축      %.2f MB / AIT 상한 %.2f MB\n" "$(mb $raw_total)" "$(mb $AIT_LIMIT)" >&2
 
 fail=0
-[ "$total" -gt "$TOTAL_BUDGET" ] && { echo "[web-budget] 총 전송량 예산 초과" >&2; fail=1; }
-[ "$pck" -gt "$PCK_BUDGET" ] && { echo "[web-budget] pck 예산 초과. 텍스처와 오디오를 먼저 의심한다." >&2; fail=1; }
+# 하드 실패는 플랫폼 상한 하나뿐이다. 나머지는 관측값으로 남긴다.
+[ "$raw_total" -gt "$AIT_LIMIT" ] && {
+  echo "[web-budget] AIT 100MB 상한 초과. 패키징이 실패한다." >&2; fail=1; }
+[ "$total" -gt "$TOTAL_REFERENCE" ] && {
+  echo "[web-budget] 참고: 총 전송량이 참고선을 넘었다. 로딩 화면이 있으므로 차단하지 않는다." >&2; }
+[ "$pck" -gt "$PCK_REFERENCE" ] && {
+  echo "[web-budget] 참고: pck 가 참고선을 넘었다. 텍스처와 오디오를 먼저 본다." >&2; }
+
+# 로딩 화면이 실제로 셸에 들어갔는지 확인한다. 이게 빠지면 다운로드가 끝날
+# 때까지 흰 화면이 남고, AIT 체크리스트의 "10초 이내 최초 화면" 이 위태로워진다.
+if ! grep -q "boot-title" "${out_dir}/index.html"; then
+  echo "[web-budget] 커스텀 로딩 셸이 빌드에 없다. export_presets 의 custom_html_shell 을 확인한다." >&2
+  fail=1
+fi
 
 # 출하되는 pck 를 실제로 구동해 폰트 부착을 확인한다.
 log=$(mktemp)

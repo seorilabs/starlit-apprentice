@@ -22,13 +22,14 @@ asset-manifest.json       에셋 목록
 raw/<name>.png            원본 생성물 (재처리는 무료, 재생성은 유료)
 ```
 
-## 예산
+## 크기
 
-pck gzip 6 MB 상한 중 폰트가 1.11 MB 를 이미 쓴다.
-아트 152종은 오디오·콘텐츠와 남은 약 4.55 MB 를 나눠 쓴다.
-근거: `docs/02-decisions/0006-pck-budget.md`, `docs/02-decisions/0007-font-budget.md`
+**하드 상한은 AppsInToss 패키징 100 MB(비압축) 뿐이다.** gzip 총량과 pck 는 참고선으로
+관측만 한다 — 근거는 `docs/02-decisions/0009-loading-shell-over-size-cap.md`.
+10초 조항은 크기가 아니라 커스텀 로딩 셸(`web/shell.html`)이 만족시킨다.
 
-에셋 추가 후 반드시 실측한다.
+다만 **WebP 는 이미 압축돼 있어 gzip 이 듣지 않는다.** 에셋을 추가하면 그만큼
+그대로 전송량이 된다. 추가 후 반드시 실측해 증가분을 확인한다.
 
 ```bash
 bash scripts/check_web_budget.sh .

@@ -17,7 +17,8 @@
 | DEC-010 | 2026-08-23 | 분기 상한(50/70/88/100, 초과 시 ×0.12)을 도입한다 | 체감 감소만으로는 조기 캡을 막지 못한다. 상한이 있어야 "어떤 스탯도 턴 29 이전에 100에 못 닿는다"가 구조적으로 보장된다 | accepted |
 | DEC-011 | 2026-08-23 | 광고는 Android/iOS만. AIT 빌드는 `ads_available = false` | AppsInToss는 정책상 광고를 허용하나 Godot Web에 네이티브 광고 경로가 없다. 정책이 아니라 기술 제약이므로 AIT 웹 광고 SDK는 후속 과제로 남긴다 | accepted |
 | DEC-012 | 2026-08-23 | AppsInToss 출시를 Play/App Store IARC 등급 취득 이후로 순서 고정 | AIT는 등급분류 주체가 아니라 자체등급분류 정보 입력 창구다. 미입력 시 등급미필 게임물로 간주되어 행정조치 대상 | accepted |
-| DEC-013 | 2026-08-23 | pck 예산을 gzip 6 MB로 고정하고 에셋 매니페스트를 이에 종속시킨다 | Godot Web 엔진 wasm이 gzip 약 9 MB의 고정 바닥값이고 AIT는 10초 내 최초 화면을 요구한다. spiritgate의 pck 44 MB는 gzip이 듣지 않아(42 MB) 텍스처가 로드 시간을 죽인다는 것이 실측됨 | accepted |
+| DEC-013 | 2026-08-23 | pck 예산을 gzip 6 MB로 고정하고 에셋 매니페스트를 이에 종속시킨다 | Godot Web 엔진 wasm이 gzip 약 9 MB의 고정 바닥값이고 AIT는 10초 내 최초 화면을 요구한다. spiritgate의 pck 44 MB는 gzip이 듣지 않아(42 MB) 텍스처가 로드 시간을 죽인다는 것이 실측됨 | superseded |
+| DEC-018 | 2026-08-23 | 크기 상한을 하드 게이트에서 걷어내고 커스텀 로딩 셸로 AIT 10초 조항을 만족시킨다. 하드 실패는 AIT 패키징 100 MB 비압축뿐 | 첫 페인트는 수 KB 짜리 HTML·CSS 가 결정하며 번들 크기와 무관하다 — 41 MB 번들에서 FCP 196 ms, domInteractive 120 ms 실측. Godot Web 은 wasm 컴파일이 다운로드만큼 지배적이라 크기를 깎아도 최초 화면 도달 시간이 비례해 줄지 않는다. ADR-0009 | accepted |
 | DEC-014 | 2026-08-23 | `project.godot`에 `gui/theme/custom_font`를 넣지 않고 autoload가 import 이후 부착한다 | 부팅 시점 폰트 로드가 첫 import보다 앞서 clean 체크아웃마다 `ERROR`를 남기고 required check가 영구히 red가 된다 (jomul ADR 0010 선례) | accepted |
 | DEC-015 | 2026-08-23 | 밸런스 상수를 원격 설정에 두지 않는다 | 밸런스는 CI 하네스가 검증하는 대상이다. 원격으로 바뀌면 검증이 무의미해진다. 원격 설정은 킬 스위치·빈도·버전 게이트에만 쓴다 | accepted |
 | DEC-016 | 2026-08-23 | 아트 방향과 스타일 앵커는 사용자 승인 전까지 `approved`로 표시하지 않는다 | 취향 결정이며, 앵커가 바뀌면 152종 에셋 전체를 다시 만들어야 한다 | accepted |

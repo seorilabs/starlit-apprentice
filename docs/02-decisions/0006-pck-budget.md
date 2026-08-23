@@ -1,6 +1,8 @@
 # ADR-0006 Web pck 예산을 gzip 6MB 로 고정한다
 
-- 상태: `accepted`
+- 상태: `superseded` — 크기 상한 부분은 [ADR-0009](0009-loading-shell-over-size-cap.md) 이 대체한다.
+  엔진 wasm 이 gzip 약 9MB 고정 바닥값이라는 실측과 "로드 시간을 죽이는 것은 텍스처" 라는
+  관측은 유효하다. 무효가 된 것은 그것을 **하드 상한으로 번역한 것**이다.
 - 날짜: 2026-08-23
 
 ## 맥락
