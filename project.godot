@@ -28,6 +28,20 @@ Platform="*res://autoload/platform.gd"
 Profile="*res://autoload/profile.gd"
 Audio="*res://autoload/audio.gd"
 
+[importer_defaults]
+
+; Godot 기본 텍스처 import 는 원본을 자체 .ctex 로 재인코딩해 WebP 압축을 버린다.
+; 실측: WebP 소스 0.48MB 가 .ctex 2.57MB 로 부풀었다.
+; compress/mode=1 (Lossy) 이 WebP 압축을 pck 까지 유지한다.
+; 평면 벡터 아트라 lossy_quality 0.9 에서 눈에 띄는 열화가 없다.
+; docs/02-decisions/0008-texture-import-mode.md
+texture={
+"compress/mode": 1,
+"compress/lossy_quality": 0.9,
+"compress/hdr_compression": 0,
+"mipmaps/generate": false
+}
+
 [display]
 
 window/size/viewport_width=720

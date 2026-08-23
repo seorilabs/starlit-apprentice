@@ -2,18 +2,22 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dc6o7jkrq4ul6"
-valid=false
+uid="uid://f4me66idqbuq"
+path="res://.godot/imported/npc_moran.webp-bac64745da978e41929f5955249c86a6.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
-source_file="res://assets/art/style/anchor.png"
+source_file="res://assets/art/npc_moran.webp"
+dest_files=["res://.godot/imported/npc_moran.webp-bac64745da978e41929f5955249c86a6.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
-compress/lossy_quality=0.7
+compress/lossy_quality=0.9
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
