@@ -394,11 +394,14 @@
             },
             {
               "kind": "failure",
-              "result_text": "표를 잡아채려다 그대로 놓쳤다. 흩어진 종이를 줍는 동안 이든은 팔짱을 낀 채 기다려 주었다. 그게 더 아팠다.",
+              "result_text": "표를 잡아채려다 그대로 놓쳤다. 흩어진 종이를 줍는 동안 이든은 팔짱을 낀 채 기다려 주었다. 그게 더 아팠고, 그날부터 서로를 의식하게 됐다.",
               "effects": {
                 "stress": 10,
                 "affinity": {
                   "eden": -10
+                },
+                "flags": {
+                  "npc.eden_rivalry": 1
                 }
               }
             }
@@ -834,7 +837,7 @@
             "stress": 6
           },
           "check": {
-            "stat": "intellect",
+            "stat": "*best",
             "difficulty": 55
           },
           "outcomes": [
@@ -909,7 +912,7 @@
             "stress": 6
           },
           "check": {
-            "stat": "intellect",
+            "stat": "*best",
             "difficulty": 78
           },
           "outcomes": [
@@ -984,7 +987,7 @@
             "stress": 6
           },
           "check": {
-            "stat": "intellect",
+            "stat": "*best",
             "difficulty": 98
           },
           "outcomes": [
@@ -1059,7 +1062,7 @@
             "stress": 6
           },
           "check": {
-            "stat": "intellect",
+            "stat": "*best",
             "difficulty": 118
           },
           "outcomes": [
@@ -2171,5 +2174,6 @@
         }
       ]
     }
-  ]
+  ],
+  "milestone_note": "계절 심사는 대표 계열 스탯(*best)으로 판정한다. 특정 스탯을 하드코딩하면 그 스탯을 안 키운 빌드가 심사를 통째로 놓치고 평판이 구조적으로 막힌다."
 }
