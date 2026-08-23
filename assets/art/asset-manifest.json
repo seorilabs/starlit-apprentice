@@ -102,7 +102,7 @@
     {
       "name": "icon_drill",
       "size": 256,
-      "prompt": "a simple game icon of a wooden training staff crossed with a rolled towel, single centered object, no background scenery"
+      "prompt": "a simple game icon of a wooden practice dummy post with a training staff leaning on it, single centered object, no scrolls, no background scenery"
     },
     {
       "name": "icon_starlore",
@@ -122,7 +122,7 @@
     {
       "name": "icon_workshop",
       "size": 256,
-      "prompt": "a simple game icon of a blacksmith bellows beside an anvil, single centered object, no background scenery"
+      "prompt": "a simple game icon of a blacksmith anvil with a hammer resting on top and a small bellows beside it, single centered object, no telescope, no background scenery"
     },
     {
       "name": "icon_teahouse",
@@ -137,7 +137,7 @@
     {
       "name": "icon_watch",
       "size": 256,
-      "prompt": "a simple game icon of a lantern on a pole beside a small shield, single centered object, no background scenery"
+      "prompt": "a simple game icon of a tall night watchman's lantern glowing, with a small round shield leaning against its base, single centered object, no background scenery"
     },
     {
       "name": "icon_plaza",

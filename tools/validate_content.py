@@ -71,6 +71,17 @@ def check_actions(data: dict) -> None:
             if not isinstance(cost.get(key), int):
                 err(f"{aid}: cost.{key} 가 정수가 아니다")
 
+    # 모든 액션에 실재하는 아이콘이 있어야 한다. UI 가 빈 칸을 그리지 않게 한다.
+    art_dir = Path(sys.argv[1] if len(sys.argv) > 1 else ".") / "assets" / "art"
+    if art_dir.exists():
+        have = {f.stem for f in art_dir.glob("*.webp")}
+        for a in actions:
+            icon = a.get("icon")
+            if not icon:
+                err(f"{a.get('id','?')}: icon 이 없다")
+            elif icon not in have:
+                err(f"{a.get('id','?')}: 아이콘 '{icon}' 파일이 없다")
+
     # 스탯 병목 금지. 구 구현은 magic/courage 소스가 각각 1개뿐이었다.
     sources: Counter = Counter()
     for a in actions:

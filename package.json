@@ -21,7 +21,8 @@
     "godot:budget": "bash scripts/check_web_budget.sh .",
     "godot:equivalence": "$GODOT_BIN --headless --path . --script res://tests/legacy_equivalence_runner.gd",
     "godot:test": "bash scripts/test_all.sh",
-    "godot:docs": "bash scripts/check_docs.sh ."
+    "godot:docs": "bash scripts/check_docs.sh .",
+    "art:finalize": "bash scripts/finalize_art.sh assets/art"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",
