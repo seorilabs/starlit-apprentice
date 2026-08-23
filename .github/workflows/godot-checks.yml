@@ -43,6 +43,7 @@ jobs:
             && 'seorilabs-rpi-arm64' || 'ubuntu-latest' }}
       check_command: |
         python3 tools/check_core_boundary.py .
+        python3 tools/validate_content.py .
         bash scripts/check_docs.sh
         bash scripts/test_all.sh
         bash scripts/godot_quality_gate.sh --project .
