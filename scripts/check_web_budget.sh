@@ -61,7 +61,7 @@ fail=0
 
 # 로딩 화면이 실제로 셸에 들어갔는지 확인한다. 이게 빠지면 다운로드가 끝날
 # 때까지 흰 화면이 남고, AIT 체크리스트의 "10초 이내 최초 화면" 이 위태로워진다.
-if ! grep -q "boot-title" "${out_dir}/index.html"; then
+if ! grep -q "boot-logo" "${out_dir}/index.html"; then
   echo "[web-budget] 커스텀 로딩 셸이 빌드에 없다. export_presets 의 custom_html_shell 을 확인한다." >&2
   fail=1
 fi

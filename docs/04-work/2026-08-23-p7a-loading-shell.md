@@ -23,7 +23,7 @@
 크기 상한을 하드 게이트에서 걷어내고 **로딩 화면으로 조항을 만족시킨다**(ADR-0009).
 
 `web/shell.html` — Godot 공식 웹 셸을 원본으로 브랜드 로딩 화면을 얹었다.
-제목·부제·진행바·퍼센티지가 **HTML/CSS 파싱만으로** 그려진다.
+서리랩스 공식 `Shared Stem` 한글 심볼·진행바·퍼센티지가 **HTML/CSS 파싱만으로** 그려진다.
 
 **실측: 41MB 번들에서 First Contentful Paint 196 ms, `domInteractive` 120 ms.**
 첫 페인트는 수 KB 짜리 HTML·CSS 가 결정하며 번들 크기와 무관하다.
