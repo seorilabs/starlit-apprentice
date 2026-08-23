@@ -18,7 +18,8 @@
     "godot:smoke": "$GODOT_BIN --headless --path . --script res://tests/test_runner.gd",
     "godot:arch": "python3 tools/check_core_boundary.py .",
     "godot:web": "$GODOT_BIN --headless --path . --export-release Web build/web/index.html",
-    "godot:budget": "bash scripts/check_web_budget.sh ."
+    "godot:budget": "bash scripts/check_web_budget.sh .",
+    "godot:equivalence": "$GODOT_BIN --headless --path . --script res://tests/legacy_equivalence_runner.gd"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",
