@@ -78,6 +78,156 @@
       "transparent": false,
       "aspect_ratio": "9:16",
       "prompt": "Full-bleed scene filling the entire frame edge to edge. No white margin, no border, no frame, no vignette, no rounded corners. Straight-on side view, not isometric. Vertical composition. A quiet town plaza at dusk: a stone fountain, hanging lanterns, low tiled roofs behind. No characters."
+    },
+    {
+      "name": "icon_letters",
+      "size": 256,
+      "prompt": "a simple game icon of an open leather-bound book with a quill pen resting on it, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_music",
+      "size": 256,
+      "prompt": "a simple game icon of a small lyre with three strings and a music note, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_manners",
+      "size": 256,
+      "prompt": "a simple game icon of a folded silk fan beside a teacup, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_crafts",
+      "size": 256,
+      "prompt": "a simple game icon of a hammer and a chisel crossed over a small gear, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_drill",
+      "size": 256,
+      "prompt": "a simple game icon of a wooden training staff crossed with a rolled towel, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_starlore",
+      "size": 256,
+      "prompt": "a simple game icon of a small brass astrolabe with a star above it, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_chores",
+      "size": 256,
+      "prompt": "a simple game icon of a straw broom and a wooden bucket, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_scribe",
+      "size": 256,
+      "prompt": "a simple game icon of a stack of sealed documents with a wax seal, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_workshop",
+      "size": 256,
+      "prompt": "a simple game icon of a blacksmith bellows beside an anvil, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_teahouse",
+      "size": 256,
+      "prompt": "a simple game icon of a teapot pouring into a small cup, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_market",
+      "size": 256,
+      "prompt": "a simple game icon of a merchant scale with two coins, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_watch",
+      "size": 256,
+      "prompt": "a simple game icon of a lantern on a pole beside a small shield, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_plaza",
+      "size": 256,
+      "prompt": "a simple game icon of a stone fountain seen from the front, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_park",
+      "size": 256,
+      "prompt": "a simple game icon of a small tree with a bench under it, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_library",
+      "size": 256,
+      "prompt": "a simple game icon of three books stacked on a shelf bracket, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_ridge",
+      "size": 256,
+      "prompt": "a simple game icon of a stone wall segment with a rope over it, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_bazaar",
+      "size": 256,
+      "prompt": "a simple game icon of a striped market stall awning with a basket, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_rest_home",
+      "size": 256,
+      "prompt": "a simple game icon of a neatly made bed with a folded blanket, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_rest_stars",
+      "size": 256,
+      "prompt": "a simple game icon of a crescent moon with three small stars, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_rest_spring",
+      "size": 256,
+      "prompt": "a simple game icon of a hot spring basin with three steam curls, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_path_star",
+      "size": 256,
+      "prompt": "a simple game icon of a constellation diagram inside a circle, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_path_letters",
+      "size": 256,
+      "prompt": "a simple game icon of a bound manuscript with a ribbon bookmark, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_path_craft",
+      "size": 256,
+      "prompt": "a simple game icon of a finished ornate key on a workbench, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_path_stage",
+      "size": 256,
+      "prompt": "a simple game icon of a theatre mask with a small spotlight, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_path_market",
+      "size": 256,
+      "prompt": "a simple game icon of a ledger book with a coin pouch, single centered object, no background scenery"
+    },
+    {
+      "name": "icon_path_people",
+      "size": 256,
+      "prompt": "a simple game icon of two hands clasped over a folded letter, single centered object, no background scenery"
+    },
+    {
+      "name": "token_gold",
+      "size": 256,
+      "prompt": "a simple game icon of a single gold coin with a star stamped on it, single centered object, no background scenery"
+    },
+    {
+      "name": "token_energy",
+      "size": 256,
+      "prompt": "a simple game icon of a small flame inside a glass lamp, single centered object, no background scenery"
+    },
+    {
+      "name": "token_mind",
+      "size": 256,
+      "prompt": "a simple game icon of a calm water droplet with a ripple ring, single centered object, no background scenery"
+    },
+    {
+      "name": "token_reputation",
+      "size": 256,
+      "prompt": "a simple game icon of a laurel wreath around a small star, single centered object, no background scenery"
     }
   ],
   "final_format": {

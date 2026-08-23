@@ -33,3 +33,30 @@ pck gzip 6 MB 상한 중 폰트가 1.11 MB 를 이미 쓴다.
 ```bash
 bash scripts/check_web_budget.sh .
 ```
+
+## 배치 생성 시 반드시 `--only` 를 쓴다
+
+파이프라인의 "기존 최종본 건너뛰기" 는 `<name>.png` 를 찾는다. 우리는 최종본을
+**WebP** 로 저장하므로(ADR-0008) 그 판정이 항상 빗나가고, `--only` 없이 돌리면
+**이미 승인된 자산까지 전부 재생성한다.**
+
+실제로 겪었다 — 아이콘 배치를 돌렸더니 승인된 `apprentice_bright` 를 다시 만들려
+했고, 중단 시점에 `raw/` 원본 3개가 새 이미지로 덮여 최종본과 어긋났다(git 에서 복원).
+
+```bash
+source ~/.config/seorilabs/gemini-api-key.env
+python3 ~/.claude/skills/game-asset-pipeline/scripts/generate_assets.py \
+  --manifest assets/art/asset-manifest.json \
+  --only <신규 이름들만 나열>
+```
+
+생성 후에는 PNG 최종본을 WebP 로 바꾸고 PNG 를 지운다.
+
+```bash
+python3 - <<'PY'
+from PIL import Image; import pathlib
+for p in pathlib.Path("assets/art").glob("*.png"):
+    Image.open(p).save(p.with_suffix(".webp"), "WEBP", quality=88, method=6); p.unlink()
+PY
+bash scripts/check_web_budget.sh .
+```
