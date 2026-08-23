@@ -1,0 +1,10 @@
+{
+  "style": "style/style-guide.md",
+  "anchor": {
+    "path": "style/anchor.png",
+    "prompt": "a brass astronomy telescope on a wooden tripod beside a small stack of leather-bound books, with a single gold star charm hanging from the tripod"
+  },
+  "model": "gemini-3-pro-image",
+  "out_dir": ".",
+  "assets": []
+}
