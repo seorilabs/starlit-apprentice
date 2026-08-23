@@ -1518,6 +1518,130 @@
    ]
   },
   {
+   "id": "milestone.s1.watched",
+   "category": "milestone",
+   "weight": 100,
+   "once_per_run": true,
+   "title": "주목받는 첫 심사",
+   "art_key": "bg_plaza",
+   "body": "첫 심사인데 마당에 사람이 평소보다 많다. 이미 이름이 알려진 견습생이 나온다는 말이 돌았기 때문이다. 그 이름이 견습생 자신이라는 걸 아는 데 잠깐 걸렸다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 9,
+     "to": 9
+    },
+    {
+     "type": "resource",
+     "resource": "reputation",
+     "target": 20
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "기대에 맞춰 나선다",
+     "requirements": [],
+     "cost": {
+      "stress": 8
+     },
+     "check": {
+      "stat": "*best",
+      "difficulty": 55,
+      "kind": "milestone"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "1분기 심사를 통과했다. 지켜보던 사람들이 예상했다는 듯 고개를 끄덕였고, 그 담담함이 오히려 무거웠다.",
+       "effects": {
+        "reputation": 14,
+        "gold": 50,
+        "flags": {
+         "milestone:s1:pass": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "1분기 심사에서 떨어졌다. 지켜보던 사람이 많았던 만큼 소문도 빨랐다. 이튿날 아무도 그 얘기를 꺼내지 않는 것이 더 견디기 어려웠다.",
+       "effects": {
+        "stress": 18,
+        "reputation": -10,
+        "flags": {
+         "milestone:s1:fail": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "기대를 무시하고 평소대로 한다",
+     "requirements": [],
+     "cost": {
+      "stress": 3
+     },
+     "check": {
+      "stat": "*best",
+      "difficulty": 55,
+      "kind": "milestone"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "1분기 심사를 통과했다. 특별할 것 없이 해내자 오히려 그 담담함이 얘깃거리가 됐다.",
+       "effects": {
+        "reputation": 10,
+        "gold": 40,
+        "stats": {
+         "courage": 5
+        },
+        "flags": {
+         "milestone:s1:pass": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "1분기 심사에서 떨어졌다. 평소대로 했는데 평소가 모자랐다는 뜻이었다. 그 사실만은 분명해서 오히려 다음이 쉬웠다.",
+       "effects": {
+        "stress": 12,
+        "reputation": -4,
+        "stats": {
+         "intellect": 4
+        },
+        "flags": {
+         "milestone:s1:fail": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "물러서서 다음을 기약한다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "모인 사람들 앞에서 심사장에 들어가지 않았다. 등 뒤로 웅성거림이 길게 남았다.",
+       "effects": {
+        "stress": 10,
+        "reputation": -12,
+        "flags": {
+         "milestone:s1:skip": 1
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "id": "milestone.s2",
    "category": "milestone",
    "weight": 100,
@@ -1584,6 +1708,132 @@
        "effects": {
         "stress": 8,
         "reputation": -6,
+        "flags": {
+         "milestone:s2:skip": 1
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "milestone.s2.cornered",
+   "category": "milestone",
+   "weight": 100,
+   "once_per_run": true,
+   "title": "물러설 곳 없는 여름",
+   "art_key": "bg_plaza",
+   "body": "두 번째 심사. 한 번 더 떨어지면 상급 과정은 없다. 규정을 읽어 본 사람은 다 아는 사실인데, 마당에서 그 얘기를 꺼내는 사람은 없다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 18,
+     "to": 18
+    },
+    {
+     "type": "flag",
+     "flag": "milestone:s1:fail",
+     "target": 1
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "이번엔 반드시 넘는다",
+     "requirements": [],
+     "cost": {
+      "stress": 10,
+      "energy": -8
+     },
+     "check": {
+      "stat": "*best",
+      "difficulty": 78,
+      "kind": "milestone"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "2분기 심사를 통과했다. 명패에 이름이 올라간 걸 확인하고 나서야 숨을 쉬었다. 그 자리에 한참 서 있었다.",
+       "effects": {
+        "reputation": 14,
+        "gold": 45,
+        "stats": {
+         "courage": 8
+        },
+        "stress": -10,
+        "flags": {
+         "milestone:s2:pass": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "두 번째로 떨어졌다. 규정은 규정대로 적용됐다. 게시판 앞에서 견습생은 울지 않았고, 그날 밤 방에서도 울지 않았다.",
+       "effects": {
+        "stress": 22,
+        "reputation": -6,
+        "flags": {
+         "milestone:s2:fail": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "안전하게 기본만 보인다",
+     "requirements": [],
+     "cost": {
+      "stress": 4
+     },
+     "check": {
+      "stat": "*best",
+      "difficulty": 70,
+      "kind": "milestone"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "2분기 심사를 낮은 점수로 통과했다. 통과는 통과였다. 심사관 하나가 지나가며 말했다. \"살아남는 것도 실력이지.\"",
+       "effects": {
+        "reputation": 6,
+        "gold": 30,
+        "stats": {
+         "etiquette": 5
+        },
+        "flags": {
+         "milestone:s2:pass": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "안전하게 갔는데도 모자랐다. 두 번째 낙방이 확정됐고, 그게 안전하게 간 탓인지 아닌지는 끝내 알 수 없었다.",
+       "effects": {
+        "stress": 20,
+        "reputation": -5,
+        "flags": {
+         "milestone:s2:fail": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "기권한다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "들어가지 않는 것으로 결과를 정했다. 규정상 기권도 낙방으로 센다는 것은 나중에 알았다.",
+       "effects": {
+        "stress": 12,
+        "reputation": -8,
         "flags": {
          "milestone:s2:skip": 1
         }
@@ -1670,6 +1920,132 @@
    ]
   },
   {
+   "id": "milestone.s3.favorite",
+   "category": "milestone",
+   "weight": 100,
+   "once_per_run": true,
+   "title": "서리 내린 마당의 후보",
+   "art_key": "bg_plaza",
+   "body": "세 번째 심사. 게시판 옆에 배당표 비슷한 것이 붙어 있다. 누가 붙였는지 모르지만 견습생의 이름이 맨 위에 있다. 그런 것을 붙이는 사람들이 늘 있다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 27,
+     "to": 27
+    },
+    {
+     "type": "resource",
+     "resource": "reputation",
+     "target": 50
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "이름값을 한다",
+     "requirements": [],
+     "cost": {
+      "stress": 8,
+      "energy": -6
+     },
+     "check": {
+      "stat": "*best",
+      "difficulty": 98,
+      "kind": "milestone"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "3분기 심사를 통과했다. 배당표를 붙인 사람이 누구든 그날은 맞혔다. 마당을 나오는데 처음 보는 견습생들이 인사를 했다.",
+       "effects": {
+        "reputation": 18,
+        "gold": 60,
+        "flags": {
+         "milestone:s3:pass": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "3분기 심사에서 떨어졌다. 배당표는 다음 날 사라졌고, 누가 뗐는지도 알 수 없었다.",
+       "effects": {
+        "stress": 20,
+        "reputation": -12,
+        "flags": {
+         "milestone:s3:fail": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "배당표를 떼고 들어간다",
+     "requirements": [],
+     "cost": {
+      "stress": 2
+     },
+     "check": {
+      "stat": "*best",
+      "difficulty": 94,
+      "kind": "milestone"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "3분기 심사를 통과했다. 배당표 없이 들어간 마당은 조용했고, 견습생은 그 조용함 속에서 평소만큼 했다.",
+       "effects": {
+        "reputation": 14,
+        "gold": 55,
+        "stats": {
+         "etiquette": 6,
+         "courage": 5
+        },
+        "flags": {
+         "milestone:s3:pass": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "3분기 심사에서 떨어졌다. 배당표를 뗀 것이 잘한 일이었다고 나중에 생각했다.",
+       "effects": {
+        "stress": 16,
+        "reputation": -6,
+        "stats": {
+         "etiquette": 5
+        },
+        "flags": {
+         "milestone:s3:fail": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "물러선다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "맨 위에 이름이 있는 채로 들어가지 않았다. 배당표는 그날 저녁까지 붙어 있었다.",
+       "effects": {
+        "stress": 14,
+        "reputation": -14,
+        "flags": {
+         "milestone:s3:skip": 1
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "id": "milestone.s4",
    "category": "milestone",
    "weight": 100,
@@ -1738,6 +2114,98 @@
         "reputation": -6,
         "flags": {
          "milestone:s4:skip": 1
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "milestone.s4.barred",
+   "category": "milestone",
+   "weight": 110,
+   "once_per_run": true,
+   "title": "들어갈 수 없는 마당",
+   "art_key": "bg_plaza",
+   "body": "마지막 심사 날. 낙제한 견습생은 심사장에 들어갈 수 없다. 마당 밖 담장에 기대어 안쪽 소리를 듣는다. 이름이 하나씩 불린다.",
+   "requirements": [
+    {
+     "type": "turn_range",
+     "from": 36,
+     "to": 36
+    },
+    {
+     "type": "condition",
+     "condition": "failed"
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "끝까지 듣는다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "마지막 이름까지 다 들었다. 아는 이름이 여럿 있었고, 그중 몇은 견습생이 가르쳐 준 것이 있는 사람이었다. 담장 밖에서 손뼉을 쳤다.",
+       "effects": {
+        "stats": {
+         "sensibility": 10,
+         "etiquette": 6
+        },
+        "stress": -12,
+        "flags": {
+         "milestone:s4:witnessed": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "관측탑으로 올라간다",
+     "requirements": [],
+     "cost": {
+      "energy": -8
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "심사 소리가 멀어질 때까지 계단을 올랐다. 낮인데도 접안부를 들여다봤다. 아무것도 안 보였지만 손은 익숙하게 움직였다.",
+       "effects": {
+        "stats": {
+         "starsense": 10
+        },
+        "stress": -8,
+        "flags": {
+         "milestone:s4:withdrew": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "짐을 싸러 간다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "심사가 끝나기 전에 방으로 돌아갔다. 짐은 생각보다 빨리 쌌고, 남은 시간에는 창틀의 별자리를 봤다.",
+       "effects": {
+        "stats": {
+         "sensibility": 8
+        },
+        "stress": -6,
+        "flags": {
+         "milestone:s4:withdrew": 1
         }
        }
       }
@@ -2367,6 +2835,134 @@
    ]
   },
   {
+   "id": "npc.gu.yun",
+   "category": "npc",
+   "weight": 100,
+   "once_per_run": true,
+   "title": "오래된 연장",
+   "art_key": "npc_gu",
+   "body": "윤이 배낭에서 낡은 각도기를 꺼내 공방에 내려놓는다. 구 노인이 그것을 보더니 손이 멈춘다. \"이거 내가 만든 거다. 사십 년 전에.\" 윤이 말한다. \"아버지 물건이에요.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "gu",
+     "target": 40
+    },
+    {
+     "type": "affinity",
+     "npc": "yun",
+     "target": 40
+    },
+    {
+     "type": "turn_range",
+     "from": 20,
+     "to": 35
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "두 사람을 앉히고 이야기를 듣는다",
+     "requirements": [],
+     "cost": {
+      "energy": -8,
+      "stress": -8
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "밤새 두 사람의 이야기가 이어졌다. 사십 년 전 한 사람은 만들고 한 사람은 썼고, 그 사이에 무슨 일이 있었는지 견습생은 그날 다 들었다.",
+       "effects": {
+        "stats": {
+         "sensibility": 14
+        },
+        "affinity": {
+         "gu": 14,
+         "yun": 14
+        },
+        "flags": {
+         "npc.gu_yun_bridge": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "각도기를 함께 손본다",
+     "requirements": [],
+     "cost": {
+      "energy": -14
+     },
+     "check": {
+      "stat": "craft",
+      "difficulty": 54,
+      "npc_id": "gu"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "셋이 붙어 사십 년 된 각도기를 되살렸다. 윤은 그것으로 고원에서 잰 값을 다시 확인했고, 값은 맞았다. 구 노인은 그 자리에서 아무 말도 하지 않았다.",
+       "effects": {
+        "stats": {
+         "craft": 14,
+         "starsense": 6
+        },
+        "affinity": {
+         "gu": 16,
+         "yun": 16
+        },
+        "reputation": 10,
+        "flags": {
+         "npc.gu_yun_bridge": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "눈금판이 삭아 손을 대자 부서졌다. 구 노인이 조각을 쓸어 담으며 말했다. \"사십 년이면 됐다.\" 윤은 그 조각을 배낭에 넣었다.",
+       "effects": {
+        "stats": {
+         "craft": 6,
+         "sensibility": 8
+        },
+        "affinity": {
+         "gu": 8,
+         "yun": 8
+        },
+        "stress": 6
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "두 사람만 두고 나온다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "공방 문을 닫고 나왔다. 안에서 두 사람의 목소리가 늦게까지 들렸고, 무슨 얘기였는지는 끝내 묻지 않았다.",
+       "effects": {
+        "stats": {
+         "etiquette": 6
+        },
+        "affinity": {
+         "gu": 6,
+         "yun": 6
+        },
+        "stress": -6
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "id": "npc.harin.01",
    "category": "npc",
    "weight": 9,
@@ -2933,6 +3529,128 @@
    ]
   },
   {
+   "id": "npc.harin.moran",
+   "category": "npc",
+   "weight": 100,
+   "once_per_run": true,
+   "title": "두 사람 사이",
+   "art_key": "npc_moran",
+   "body": "모란의 상단이 하린의 국밥집이 있는 골목을 통째로 사들이려 한다. 모란은 견습생에게 하린을 설득해 달라고 한다. 값은 후하고, 하린은 그 골목에서 태어났다.",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "moran",
+     "target": 45
+    },
+    {
+     "type": "affinity",
+     "npc": "harin",
+     "target": 45
+    },
+    {
+     "type": "turn_range",
+     "from": 18,
+     "to": 34
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "하린 편에 선다",
+     "requirements": [],
+     "cost": {
+      "stress": 8
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "모란에게 못 하겠다고 말했다. 모란은 부채를 접고 한참 있다가 \"그럴 줄 알았다\"고 했다. 골목은 팔리지 않았고, 그해 겨울 견습생의 수업료는 스스로 냈다.",
+       "effects": {
+        "affinity": {
+         "harin": 20,
+         "moran": -8
+        },
+        "stats": {
+         "courage": 10
+        },
+        "reputation": 8
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "값을 올려 협상한다",
+     "requirements": [],
+     "cost": {
+      "energy": -10,
+      "stress": 6
+     },
+     "check": {
+      "stat": "commerce",
+      "difficulty": 56
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "골목을 사되 국밥집은 그대로 두고 임차료를 면제하는 조건을 만들었다. 양쪽 다 이겼다고 생각했고, 실제로 양쪽 다 이겼다.",
+       "effects": {
+        "stats": {
+         "commerce": 14,
+         "eloquence": 8
+        },
+        "affinity": {
+         "harin": 14,
+         "moran": 14
+        },
+        "reputation": 16,
+        "gold": 80
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "양쪽을 오가다 양쪽 다 화나게 했다. 골목은 결국 팔렸고 국밥집은 두 골목 건너로 옮겼다. 하린은 원망하지 않았고 그게 더 오래갔다.",
+       "effects": {
+        "stats": {
+         "commerce": 6
+        },
+        "affinity": {
+         "harin": -8,
+         "moran": -4
+        },
+        "stress": 14
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "관여하지 않는다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "두 사람 사이의 일이라고 말하고 빠졌다. 골목은 반년 뒤에 팔렸고, 두 사람 다 견습생에게 그 얘기를 다시 꺼내지 않았다.",
+       "effects": {
+        "stats": {
+         "etiquette": 5
+        },
+        "affinity": {
+         "harin": -4,
+         "moran": -4
+        },
+        "stress": 4
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "id": "npc.mentor.sera.01",
    "category": "npc",
    "weight": 10,
@@ -3472,6 +4190,93 @@
         "flags": {
          "sera.successor": 1
         }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.mentor.sera.slump",
+   "category": "npc",
+   "weight": 105,
+   "once_per_run": true,
+   "title": "스승도 막힌다",
+   "art_key": "npc_sera",
+   "body": "세라의 책상에 같은 계산이 나흘째 펼쳐져 있다. 진도가 없다. 세라는 그 사실을 숨기지 않고, 대신 견습생에게 종이를 밀어 준다. \"봐라. 나도 이런다.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "sera",
+     "target": 45
+    },
+    {
+     "type": "turn_range",
+     "from": 13,
+     "to": 33
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "함께 붙는다",
+     "requirements": [],
+     "cost": {
+      "energy": -12
+     },
+     "check": {
+      "stat": "intellect",
+      "difficulty": 56,
+      "npc_id": "sera"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "나흘 막힌 것이 두 사람이 붙자 반나절에 풀렸다. 세라는 결과보다 그 사실 자체에 오래 놀란 듯했다.",
+       "effects": {
+        "stats": {
+         "intellect": 12,
+         "starsense": 6
+        },
+        "affinity": {
+         "sera": 14
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "둘이 붙어도 풀리지 않았다. 세라는 종이를 접으며 말했다. \"둘이 못 푸는 건 하나가 못 푸는 것과 다르다. 이건 문제가 잘못된 거야.\"",
+       "effects": {
+        "stats": {
+         "intellect": 6
+        },
+        "affinity": {
+         "sera": 10
+        },
+        "stress": 6
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"쉬시는 게 낫겠습니다\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "세라는 잠깐 웃더니 책상을 정리했다. 그날 수업은 없었고, 두 사람은 마당을 두 바퀴 돌았다. 다음 날 세라가 그 계산을 풀었다.",
+       "effects": {
+        "stats": {
+         "sensibility": 8
+        },
+        "affinity": {
+         "sera": 12
+        },
+        "stress": -10
        }
       }
      ]
@@ -4029,6 +4834,103 @@
       }
      ],
      "locked_reason": "금화 200 이상이어야 한다"
+    }
+   ]
+  },
+  {
+   "id": "npc.moran.yun",
+   "category": "npc",
+   "weight": 100,
+   "once_per_run": true,
+   "title": "후원할 수 없는 사람",
+   "art_key": "npc_moran",
+   "body": "모란이 윤의 관측 기록을 보고 후원을 제안했다. 윤은 거절했다. \"어디에도 안 적히려고 이러는 건데요.\" 모란은 부채 너머로 견습생을 본다. \"설득해 보렴. 저 아이가 아까워서.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "moran",
+     "target": 50
+    },
+    {
+     "type": "affinity",
+     "npc": "yun",
+     "target": 50
+    },
+    {
+     "type": "turn_range",
+     "from": 22,
+     "to": 35
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "윤의 뜻을 그대로 전한다",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "모란은 부채를 접고 오래 있다가 말했다. \"그것도 하나의 답이구나.\" 그 뒤로 모란은 윤의 기록을 값 없이 사들여 서고에 넣었다. 이름은 적지 않고.",
+       "effects": {
+        "stats": {
+         "etiquette": 10,
+         "sensibility": 8
+        },
+        "affinity": {
+         "moran": 12,
+         "yun": 16
+        },
+        "reputation": 8
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "이름 없는 후원을 제안한다",
+     "requirements": [],
+     "cost": {
+      "stress": 6
+     },
+     "check": {
+      "stat": "commerce",
+      "difficulty": 54
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "기록에는 이름을 안 넣고 비용만 대는 형태를 만들었다. 모란은 얻을 것을 얻었고 윤은 잃을 것을 잃지 않았다. 그런 계약서는 처음이라 서식을 새로 썼다.",
+       "effects": {
+        "stats": {
+         "commerce": 12,
+         "eloquence": 8
+        },
+        "affinity": {
+         "moran": 16,
+         "yun": 16
+        },
+        "reputation": 14,
+        "gold": 70
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "양쪽 다 그런 건 없다고 했다. 모란은 값이 없는 후원은 후원이 아니라 했고, 윤은 값이 있으면 이름이 남는다고 했다. 둘 다 맞는 말이었다.",
+       "effects": {
+        "stats": {
+         "commerce": 5
+        },
+        "stress": 8,
+        "affinity": {
+         "moran": 4,
+         "yun": 4
+        }
+       }
+      }
+     ]
     }
    ]
   },
@@ -4595,6 +5497,234 @@
         "affinity": {
          "eden": -4
         }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.rival.eden.rivalry",
+   "category": "npc",
+   "weight": 110,
+   "once_per_run": true,
+   "title": "이름을 지운다",
+   "art_key": "npc_eden",
+   "body": "관측 기록 공동 명의에서 이든이 자기 이름을 뺐다. \"같이 한 걸로 하면 누가 뭘 했는지 아무도 모르잖아.\" 팔짱을 낀 채 말한다. \"각자 이름으로 가자. 그게 공평해.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "eden",
+     "target": 25,
+     "direction": "at-most"
+    },
+    {
+     "type": "flag",
+     "flag": "npc.eden_rivalry",
+     "target": 2
+    },
+    {
+     "type": "turn_range",
+     "from": 20,
+     "to": 36
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"그래. 각자 가자\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "그날부터 두 사람의 기록은 나란히 붙되 절대 섞이지 않았다. 서로를 인용하지 않았고, 그래서 누가 무엇을 했는지가 아주 분명해졌다.",
+       "effects": {
+        "stats": {
+         "courage": 10,
+         "starsense": 8
+        },
+        "reputation": 14,
+        "flags": {
+         "npc.eden_rivalry": 2,
+         "eden.separate_names": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"공평한 게 항상 옳진 않아\"",
+     "requirements": [],
+     "cost": {
+      "stress": 6
+     },
+     "check": {
+      "stat": "eloquence",
+      "difficulty": 52,
+      "npc_id": "eden"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "이든은 오래 서 있다가 팔짱을 풀었다. \"네 말이 맞을 수도 있고.\" 명의는 그대로 뒀지만 그 뒤로 두 사람은 서로의 기록을 더 꼼꼼히 봤다.",
+       "effects": {
+        "stats": {
+         "eloquence": 12
+        },
+        "affinity": {
+         "eden": 16
+        },
+        "reputation": 8
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "\"옳고 그름 얘기가 아니야.\" 이든은 그대로 나갔다. 명의는 갈렸고, 견습생은 그날 저녁 자기 이름만 적힌 기록지를 오래 봤다.",
+       "effects": {
+        "stats": {
+         "courage": 6
+        },
+        "stress": 10,
+        "affinity": {
+         "eden": -6
+        },
+        "flags": {
+         "npc.eden_rivalry": 2
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "npc.sera.eden",
+   "category": "npc",
+   "weight": 100,
+   "once_per_run": true,
+   "title": "둘 중 하나",
+   "art_key": "npc_sera",
+   "body": "세라가 왕립 관측단 추천서를 한 장만 쓸 수 있다고 한다. 후보는 둘이고, 세라는 견습생에게 먼저 물었다. \"네가 아니라 이든이라면, 너는 뭐라고 하겠나.\"",
+   "requirements": [
+    {
+     "type": "affinity",
+     "npc": "sera",
+     "target": 55
+    },
+    {
+     "type": "affinity",
+     "npc": "eden",
+     "target": 40
+    },
+    {
+     "type": "turn_range",
+     "from": 22,
+     "to": 35
+    }
+   ],
+   "exclusions": [],
+   "choices": [
+    {
+     "id": "a",
+     "label": "\"이든이 낫습니다\"",
+     "requirements": [],
+     "cost": {
+      "stress": 10
+     },
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "세라는 추천서를 이든에게 썼다. 그리고 견습생에게는 다른 것을 썼다 — 추천서가 아니라 자기 이름으로 된 소개장이었다. 그쪽이 더 무거웠다.",
+       "effects": {
+        "stats": {
+         "etiquette": 10,
+         "sensibility": 8
+        },
+        "affinity": {
+         "sera": 16,
+         "eden": 14
+        },
+        "reputation": 10,
+        "flags": {
+         "sera.letter": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "label": "\"제가 받고 싶습니다\"",
+     "requirements": [],
+     "cost": {},
+     "check": null,
+     "outcomes": [
+      {
+       "kind": "only",
+       "result_text": "세라는 고개를 끄덕이고 그대로 썼다. \"원한다고 말하는 것도 자격이다.\" 이든은 그 사실을 알고도 축하한다고 했고, 그 말이 진심인지는 알 수 없었다.",
+       "effects": {
+        "stats": {
+         "courage": 10
+        },
+        "reputation": 16,
+        "affinity": {
+         "sera": 8,
+         "eden": -8
+        },
+        "flags": {
+         "sera.letter": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "label": "\"두 사람 다 쓰실 수 없습니까\"",
+     "requirements": [],
+     "cost": {
+      "stress": 6
+     },
+     "check": {
+      "stat": "eloquence",
+      "difficulty": 58,
+      "npc_id": "sera"
+     },
+     "outcomes": [
+      {
+       "kind": "success",
+       "result_text": "세라는 규정을 다시 읽어 보더니 학장에게 갔다. 그해 아카데미는 두 장을 냈고, 그런 전례는 없었다.",
+       "effects": {
+        "stats": {
+         "eloquence": 14
+        },
+        "reputation": 18,
+        "affinity": {
+         "sera": 14,
+         "eden": 16
+        },
+        "flags": {
+         "sera.letter": 1,
+         "eden.both_passed": 1
+        }
+       }
+      },
+      {
+       "kind": "failure",
+       "result_text": "규정은 한 장이었다. 세라는 결국 이든에게 썼고, 견습생이 물어봤다는 사실만 이든에게 전해졌다. 이든은 그 얘기를 꺼내지 않았다.",
+       "effects": {
+        "stats": {
+         "eloquence": 6
+        },
+        "affinity": {
+         "eden": 10
+        },
+        "stress": 10
        }
       }
      ]

@@ -112,6 +112,14 @@ func _initialize() -> void:
 	if not bool(neglect.get("in_debt", false)):
 		failures.append("방치 플레이가 빚을 지지 않는다. 수업료 압박이 작동하지 않는다")
 
+	# 신중한 플레이는 상태이상에 걸리지 않는다 — 그게 맞다. 그러면 조건 이벤트
+	# 12종이 아무 경로로도 검증되지 않으므로 쉬지 않는 플레이를 따로 돌린다.
+	var grind := _grind_run(actions, events)
+	print("무리한 플레이: %s" % str(grind))
+	var got: Array = grind.get("conditions_seen", [])
+	if got.is_empty():
+		failures.append("쉬지 않는 플레이에서도 상태이상이 하나도 걸리지 않는다. 리스크가 작동하지 않는다")
+
 	if failures.is_empty():
 		print("BALANCE PASS")
 		quit(0)
@@ -170,6 +178,47 @@ func _neglect_run(actions: Array, events: Array) -> Dictionary:
 		"gold": state.get("gold", 0),
 		"softlock": false,
 	}
+
+## 쉬지 않는 플레이. 마음이 쌓이도록 성장 행동만 고른다.
+func _grind_run(actions: Array, events: Array) -> Dictionary:
+	var rng := SaRng.new(31337)
+	var apt := SaAptitude.assign(SaRng.new(7717))
+	var state := SaResources.new_state(31337)
+	var seen := {}
+	var guard := 0
+	while int(state.get("turn", 1)) <= SaGrowthCurve.TURNS_TOTAL and guard < 200:
+		guard += 1
+		var pool := SaResources.selectable(state, actions)
+		if pool.is_empty():
+			break
+		var pick: Dictionary = pool[0]
+		for a in pool:
+			var ad: Dictionary = a
+			var cat := String(ad.get("category", ""))
+			if cat == "rest":
+				continue
+			# 골드가 없으면 일, 아니면 수업. 어느 쪽이든 쉬지는 않는다.
+			var want := "work" if int(state.get("gold", 0)) < 40 else "lesson"
+			if cat == want:
+				pick = ad
+				break
+			if cat != "rest":
+				pick = ad
+		var result := SaTurn.resolve(state, pick, apt, rng)
+		state = result["state"]
+		for c in (result["entered_conditions"] as Array):
+			seen[c] = int(seen.get(c, 0)) + 1
+		var beat := SaEventResolution.beat_state(state, int(result["played_turn"]))
+		for ev in SaEventResolution.draw_beats(beat, events, rng):
+			var evd: Dictionary = ev
+			for c2 in (evd.get("choices", []) as Array):
+				var cd: Dictionary = c2
+				if bool(SaEventResolution.choice_availability(beat, cd).get("ok", false)):
+					state = (SaEventResolution.apply(state, evd, cd, rng))["state"]
+					break
+			break
+	return {"conditions_seen": seen.keys(), "counts": seen,
+		"end_stress": state.get("stress", 0), "end_energy": state.get("energy", 0)}
 
 func _load(path: String) -> Dictionary:
 	if not FileAccess.file_exists(path):

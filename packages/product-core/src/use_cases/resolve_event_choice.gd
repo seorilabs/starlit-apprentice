@@ -219,8 +219,20 @@ static func _pick_outcome(outcomes: Array, kind: String) -> Dictionary:
 
 static func _apply_effects(out: Dictionary, effects: Dictionary) -> void:
 	var stats: Dictionary = out.get("stats", {})
+	# 이벤트 스탯 획득도 분기 상한을 지킨다. 행동에만 상한을 걸면 이벤트로
+	# 그냥 새어 나가고, "턴 29 이전에는 어떤 스탯도 100 에 못 간다"는
+	# 구조적 보장이 튜닝 문제로 전락한다 — 실제로 턴 28 에 뚫렸다.
+	var ceiling := float(SaGrowthCurve.term_ceiling(int(out.get("turn", 1))))
 	for key in (effects.get("stats", {}) as Dictionary).keys():
-		stats[key] = int(stats.get(key, 0)) + int((effects["stats"] as Dictionary)[key])
+		var before := float(stats.get(key, 0))
+		var raw := float((effects["stats"] as Dictionary)[key])
+		var applied := raw
+		if raw > 0.0 and before >= ceiling:
+			applied = raw * SaGrowthCurve.OVER_CEILING_FACTOR
+		elif raw > 0.0 and before + raw > ceiling:
+			# 상한을 걸치는 획득은 넘는 부분만 감쇠한다.
+			applied = (ceiling - before) + (before + raw - ceiling) * SaGrowthCurve.OVER_CEILING_FACTOR
+		stats[key] = int(roundf(before + applied))
 	out["gold"] = int(out.get("gold", 0)) + int(effects.get("gold", 0))
 	out["energy"] = int(out.get("energy", 0)) + int(effects.get("energy", 0))
 	out["stress"] = int(out.get("stress", 0)) + int(effects.get("stress", 0))
