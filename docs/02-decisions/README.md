@@ -13,3 +13,4 @@
 | 0005 | GA4 Measurement Protocol Web 스트림의 구조적 한계를 수용한다 |
 | 0006 | Web pck 예산을 gzip 6MB 로 고정한다 |
 | 0007 | 한국어 폰트는 Pretendard 정적 Regular 하나만 번들한다 |
+| 0008 | 아트는 WebP 로 저장하고 텍스처 import 를 Lossy 로 고정한다 |

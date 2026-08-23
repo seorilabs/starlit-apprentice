@@ -30,3 +30,6 @@ config/android_runtime.json
 AGENT.local.md
 AGENTS.local.md
 .DS_Store
+
+# QA 콘택트시트는 재생성 가능한 산출물이다
+assets/art/qa_sheet.png

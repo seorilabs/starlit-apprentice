@@ -6,5 +6,84 @@
   },
   "model": "gemini-3-pro-image",
   "out_dir": ".",
-  "assets": []
+  "assets": [
+    {
+      "name": "apprentice",
+      "size": 512,
+      "prompt": "a young apprentice in a star-embroidered navy robe, standing calmly with hands clasped, neutral gentle expression, short dark hair, front facing"
+    },
+    {
+      "name": "apprentice_tired",
+      "size": 512,
+      "refs": [
+        "raw/apprentice.png"
+      ],
+      "prompt": "the exact same apprentice character from the reference image: identical short dark bob hair, identical deep navy robe with small gold star embroidery, identical full-body front-facing framing, identical proportions and colors. Do not change the hair, the robe color, or the framing. Only the pose changes: shoulders slumped, eyes half closed, visibly exhausted."
+    },
+    {
+      "name": "apprentice_bright",
+      "size": 512,
+      "refs": [
+        "raw/apprentice.png"
+      ],
+      "prompt": "the exact same apprentice character from the reference image: identical short dark bob hair, identical deep navy robe with small gold star embroidery, identical full-body front-facing framing, identical proportions and colors. Do not change the hair, the robe color, or the framing. Only the pose changes: standing straight, small confident smile, bright open eyes."
+    },
+    {
+      "name": "npc_sera",
+      "size": 512,
+      "prompt": "a calm silver-haired mentor woman in a deep navy scholar robe, holding a rolled star chart, gentle authoritative expression"
+    },
+    {
+      "name": "npc_eden",
+      "size": 512,
+      "prompt": "a sharp-eyed young rival with a red hair tie and a short cape, arms folded, slight challenging smirk"
+    },
+    {
+      "name": "npc_harin",
+      "size": 512,
+      "prompt": "a cheerful young bookkeeper with round glasses and an apron, holding a small abacus"
+    },
+    {
+      "name": "npc_moran",
+      "size": 512,
+      "prompt": "an elegant older patron woman in a gold-embroidered shawl, holding a folding fan, composed expression"
+    },
+    {
+      "name": "npc_gu",
+      "size": 512,
+      "prompt": "a white-bearded old craftsman in a leather apron with soot-marked hands, holding a small chisel"
+    },
+    {
+      "name": "npc_yun",
+      "size": 512,
+      "prompt": "a wandering traveler with a wide-brimmed hat and a worn backpack, relaxed easy posture"
+    },
+    {
+      "name": "bg_room",
+      "size": 1536,
+      "transparent": false,
+      "aspect_ratio": "9:16",
+      "prompt": "Full-bleed scene filling the entire frame edge to edge. No white margin, no border, no frame, no vignette, no rounded corners. Straight-on side view, not isometric. Vertical composition. A small cozy apprentice bedroom at night: a wooden desk with an open book and a lit candle, a bed, a narrow arched window showing a starry sky. No characters."
+    },
+    {
+      "name": "bg_tower",
+      "size": 1536,
+      "transparent": false,
+      "aspect_ratio": "9:16",
+      "prompt": "Full-bleed scene filling the entire frame edge to edge. No white margin, no border, no frame, no vignette, no rounded corners. Straight-on side view, not isometric. Vertical composition. The top chamber of a stone observatory tower at night: a large brass telescope, stacked books, a tall arched window full of stars. No characters."
+    },
+    {
+      "name": "bg_plaza",
+      "size": 1536,
+      "transparent": false,
+      "aspect_ratio": "9:16",
+      "prompt": "Full-bleed scene filling the entire frame edge to edge. No white margin, no border, no frame, no vignette, no rounded corners. Straight-on side view, not isometric. Vertical composition. A quiet town plaza at dusk: a stone fountain, hanging lanterns, low tiled roofs behind. No characters."
+    }
+  ],
+  "final_format": {
+    "ext": "webp",
+    "quality": 88,
+    "method": 6,
+    "note": "평면 벡터 아트는 WebP q88 에서 PNG 대비 약 9배 작다. pck 예산이 6MB gzip 이라 PNG 로는 152종을 담을 수 없다."
+  }
 }

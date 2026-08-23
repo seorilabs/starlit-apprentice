@@ -15,6 +15,12 @@ func run_all() -> Array[String]:
 	_test_no_early_cap()
 	_test_requirements()
 	_test_judgement_prefers_specificity()
+	_test_rng_deterministic()
+	_test_aptitude_multiset()
+	_test_rng_shape_failure_weighted()
+	_test_no_softlock()
+	_test_burnout_consumes_turns()
+	_test_mastery_bank_on_ceiling()
 	# 빈 스위트가 초록으로 통과하지 않게 한다.
 	if _executed == 0:
 		_failures.append("실행된 검사가 0개다. 스위트가 비었거나 러너가 깨졌다.")
@@ -87,6 +93,94 @@ func _test_judgement_prefers_specificity() -> void:
 		"특이도는 요건 강도에 비례해야 한다.")
 	_check(SaEndingJudgement.judge({"stats":{},"gold":0,"stress":0,"flags":{}}, endings) == SaEndingJudgement.FALLBACK_CODE,
 		"자격 엔딩이 없으면 폴백이어야 한다.")
+
+func _test_rng_deterministic() -> void:
+	var a := SaRng.new(12345)
+	var b := SaRng.new(12345)
+	var same := true
+	for i in 200:
+		if a.next_uint() != b.next_uint():
+			same = false
+			break
+	_check(same, "같은 시드는 같은 수열을 내야 한다.")
+	var c := SaRng.new(999)
+	_check(SaRng.new(12345).next_uint() != c.next_uint(), "다른 시드는 다른 수열을 내야 한다.")
+	var zero := SaRng.new(0)
+	_check(zero.next_uint() != 0, "시드 0 은 xorshift 고정점이라 회피해야 한다.")
+
+func _test_aptitude_multiset() -> void:
+	# 고정 multiset 이라 항상 강점 1개와 약점 1개가 보장된다.
+	for seed_value in [1, 7, 13, 101, 4242]:
+		var grades := SaAptitude.assign(SaRng.new(seed_value))
+		_check(grades.size() == 9, "재능은 9스탯 전부에 배정돼야 한다.")
+		var counts := {}
+		for key in grades.keys():
+			var g := String(grades[key])
+			counts[g] = int(counts.get(g, 0)) + 1
+		_check(int(counts.get("S", 0)) == 1, "S 등급은 정확히 1개여야 한다. seed=%d" % seed_value)
+		_check(int(counts.get("D", 0)) == 1, "D 등급은 정확히 1개여야 한다. seed=%d" % seed_value)
+		_check(int(counts.get("A", 0)) == 2, "A 등급은 정확히 2개여야 한다. seed=%d" % seed_value)
+		_check(int(counts.get("B", 0)) == 4, "B 등급은 정확히 4개여야 한다. seed=%d" % seed_value)
+
+## 불변식 15: 중앙값 상황에서 실패가 대성공보다 잦아야 한다.
+## 구 구현은 336롤에서 실패 4.2% / 대성공 28% 로 크리티컬이 6.7배 잦았다.
+func _test_rng_shape_failure_weighted() -> void:
+	var f := SaRisk.fail_chance(40, 60, "basic", 0.0)
+	var c := SaRisk.crit_chance(40, 60, 0, 0.0)
+	_check(f > c, "중앙값에서 실패율(%.3f)이 대성공률(%.3f)보다 높아야 한다." % [f, c])
+	_check(f >= 0.12 and f <= 0.24, "중앙값 실패율이 [0.12, 0.24] 안이어야 한다. 실제 %.3f" % f)
+
+	# 관리를 잘하면 상승으로 뒤집힌다.
+	var f_good := SaRisk.fail_chance(15, 85, "basic", 0.03)
+	var c_good := SaRisk.crit_chance(15, 85, 0, 0.03)
+	_check(c_good > f_good, "관리 우수 상황에서는 대성공이 실패보다 잦아야 한다.")
+
+	# 티어가 높을수록 위험하다. 상위호환이 아니라 결정이 되게 한다.
+	_check(SaRisk.fail_chance(40, 60, "arcane", 0.0) > SaRisk.fail_chance(40, 60, "basic", 0.0),
+		"비전 티어는 기초보다 위험해야 한다.")
+
+## 자원이 바닥나도 항상 최소 2개 행동을 고를 수 있어야 한다.
+func _test_no_softlock() -> void:
+	var actions: Array = [
+		{"id":"a","cost":{"gold":-40,"energy":-12,"stress":8},"tier":"basic","stat":"intellect"},
+		{"id":"chores","cost":{"gold":18,"energy":-12,"stress":8},"tier":"basic","always_available":true},
+		{"id":"home","cost":{"gold":0,"energy":0,"stress":-16},"tier":"basic","always_available":true},
+	]
+	var broke := {"gold": 0, "energy": 0, "stress": 100, "conditions": [], "stats": {}}
+	var pick := SaResources.selectable(broke, actions)
+	_check(pick.size() >= 2, "자원이 0이어도 최소 2개는 선택 가능해야 한다. 실제 %d" % pick.size())
+	var slumped := {"gold": 999, "energy": 99, "stress": 0, "conditions": [SaRisk.COND_SLUMP], "stats": {}}
+	_check(SaResources.selectable(slumped, actions).size() >= 2,
+		"슬럼프 중에도 최소 2개는 선택 가능해야 한다.")
+
+## 번아웃은 플레이어의 선택권을 빼앗는다. 36턴 중 2턴을 소모한다.
+func _test_burnout_consumes_turns() -> void:
+	var state := SaResources.new_state(1)
+	state["stress"] = 99
+	(state["conditions"] as Array).append(SaRisk.COND_BURNOUT)
+	var before := int(state["turn"])
+	var result := SaTurn.resolve(state, {"id":"x","cost":{},"tier":"basic"}, {}, SaRng.new(1))
+	var after := int((result["state"] as Dictionary)["turn"])
+	_check(after - before == 2, "번아웃은 2턴을 소모해야 한다. 실제 %d" % (after - before))
+	_check(not ((result["state"] as Dictionary)["conditions"] as Array).has(SaRisk.COND_BURNOUT),
+		"번아웃은 자동 해제돼야 한다.")
+
+## 분기 상한을 넘기면 초과분 40% 가 숙련도로 적립된다.
+func _test_mastery_bank_on_ceiling() -> void:
+	var state := SaResources.new_state(1)
+	(state["stats"] as Dictionary)[SaStatKeys.INTELLECT] = 49
+	state["turn"] = 5  # 1분기, 상한 50
+	var action := {"id":"l","cost":{"gold":-20,"energy":-8,"stress":5},
+		"tier":"basic","stat":SaStatKeys.INTELLECT,"npc_tag":"","flag":"lesson:x"}
+	var apt := {}
+	for k in SaStatKeys.ALL: apt[k] = "B"
+	var result := SaTurn.resolve(state, action, apt, SaRng.new(1))
+	var s: Dictionary = result["state"]
+	_check(int((s["stats"] as Dictionary)[SaStatKeys.INTELLECT]) <= 50,
+		"1분기에는 상한 50 을 넘을 수 없다.")
+	var bank: Dictionary = s["mastery_bank"]
+	_check(float(bank.get(SaStatKeys.INTELLECT, 0.0)) > 0.0,
+		"상한 초과분이 숙련도로 적립돼야 한다.")
 
 ## 설계의 핵심 주장: 어떤 스탯도 턴 29 이전에 100 에 도달할 수 없다.
 ## 최대 집중 플레이어(재능 B, 전부 성공, 보통 컨디션, 비전 최단 해금)를 시뮬레이션한다.
