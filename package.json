@@ -12,7 +12,13 @@
     "legacy:save-contract": "node legacy/scripts/check-save-contract.mjs",
     "legacy:target-guidance": "node legacy/scripts/check-target-guidance.mjs",
     "legacy:public-url": "node legacy/scripts/check-public-url-guard.mjs",
-    "legacy:all": "pnpm legacy:build && pnpm legacy:test && pnpm legacy:balance && pnpm legacy:pacing && pnpm legacy:content && pnpm legacy:save-contract && pnpm legacy:target-guidance && pnpm legacy:public-url"
+    "legacy:all": "pnpm legacy:build && pnpm legacy:test && pnpm legacy:balance && pnpm legacy:pacing && pnpm legacy:content && pnpm legacy:save-contract && pnpm legacy:target-guidance && pnpm legacy:public-url",
+    "godot:gate": "bash scripts/godot_quality_gate.sh --project .",
+    "godot:core": "$GODOT_BIN --headless --path . --script res://tests/core_test_runner.gd",
+    "godot:smoke": "$GODOT_BIN --headless --path . --script res://tests/test_runner.gd",
+    "godot:arch": "python3 tools/check_core_boundary.py .",
+    "godot:web": "$GODOT_BIN --headless --path . --export-release Web build/web/index.html",
+    "godot:budget": "bash scripts/check_web_budget.sh ."
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",
