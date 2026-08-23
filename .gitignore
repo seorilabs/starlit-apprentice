@@ -1,24 +1,33 @@
-AGENT.local.md
+# Node (legacy 밸런스 원장 전용 — 이식 완료 시 함께 제거)
 node_modules/
-dist/
-coverage/
-playwright-report/
-test-results/
-.vite/
-.DS_Store
-android/.gradle/
-android/app/build/
-ios/App/Pods/
-ios/App/build/
-apps/starlit-apprentice/android/local.properties
-apps/starlit-apprentice/android/keystore.properties
-apps/starlit-apprentice/android/.gradle/
-apps/starlit-apprentice/android/app/build/
-apps/starlit-apprentice/ios/App/Pods/
-apps/starlit-apprentice/ios/App/build/
-apps-in-toss/build/
+legacy/**/dist/
+legacy/**/coverage/
+
+# Godot
+.godot/
+/build/
+export_presets.cfg
+*.translation
+
+# 빌드 산출물 — CI 아티팩트로만 다룬다. 저장소에 커밋하지 않는다.
+apps/ait/dist/
+apps/ait/node_modules/
+*.ait
+
+# 자격증명 — 절대 커밋하지 않는다
 *.jks
 *.keystore
 *.p12
+*.mobileprovision
+analytics.config.json
+firebase/*service-account*.json
 play-store/*service-account*.json
-play-store/google-play-service-account.json
+app-store/*.p8
+android/local.properties
+android/keystore.properties
+config/android_runtime.json
+
+# 로컬 전용
+AGENT.local.md
+AGENTS.local.md
+.DS_Store

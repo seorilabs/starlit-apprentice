@@ -13,29 +13,28 @@
     }
   },
   "build": {
-    "viteDistSource": "apps/starlit-apprentice/dist",
-    "source": "apps-in-toss/build/webview-dist",
-    "candidateArchive": "apps-in-toss/build/starlit-apprentice-webview-candidate.zip",
-    "uploadableAit": "apps-in-toss/build/starlit-apprentice.ait",
+    "note": "구 Vite 웹 빌드는 제거됐다. Godot Web export + apps/ait 래퍼로 재구성한다.",
+    "source": "확정 필요",
+    "uploadableAit": "확정 필요",
     "unpackedSizeLimitBytes": 104857600,
-    "isUploadableAit": true,
-    "uploadableAitStatus": "local-ait-built-pending-console-upload"
+    "gzipTransferBudgetBytes": 15728640,
+    "pckGzipBudgetBytes": 6291456,
+    "isUploadableAit": false,
+    "uploadableAitStatus": "godot-rebuild-pending"
   },
   "assets": {
-    "logo": "apps/starlit-apprentice/public/starlit-apprentice-icon-600.png",
-    "thumbnail": "apps/starlit-apprentice/public/starlit-apprentice-thumbnail-1932x828.png",
-    "screenshots": [
-      "apps/starlit-apprentice/public/screenshots/starlit-apprentice-start-636x1048.png",
-      "apps/starlit-apprentice/public/screenshots/starlit-apprentice-main-636x1048.png",
-      "apps/starlit-apprentice/public/screenshots/starlit-apprentice-result-636x1048.png"
-    ]
+    "note": "구 게임 화면 자산이라 전부 무효다. 신규 아트로 재생성한다.",
+    "logo": "확정 필요",
+    "thumbnail": "확정 필요",
+    "screenshots": "확정 필요"
   },
   "manualEvidence": {
     "consoleGameCategoryAndExposure": "확정 필요",
     "gameRatingEvidence": "확정 필요",
     "aitBundleUpload": "확정 필요",
     "qrTossAppTest": "확정 필요",
-    "deploymentApproval": "확정 필요"
+    "deploymentApproval": "확정 필요",
+    "selfRatedGameInfo": "확정 필요 — Play/App Store IARC 취득 후 콘솔 입력"
   },
   "sourceUrls": {
     "consoleRegistration": "https://developers-apps-in-toss.toss.im/prepare/console-workspace.md",
