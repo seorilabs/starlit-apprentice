@@ -1,0 +1,48 @@
+# ⚠ required status check 컨텍스트는 아래 job 의 이름에서 파생된다.
+#   워크플로우 name 이나 job 키를 바꾸면 브랜치 보호 규칙이 조용히 풀려서
+#   아무 검사도 통과하지 않은 PR 이 merge 가능해진다. 바꾸지 마라.
+#   실제 컨텍스트 문자열은 첫 실행 후 아래 명령으로 확인해 등록한다.
+#     gh api repos/seorilabs/starlit-apprentice/commits/<sha>/check-runs --jq '.check_runs[].name'
+#
+# ⚠ paths: 필터를 두지 않는다. 필터에 안 걸리는 PR 에서 required check 가
+#   영영 보고되지 않아 merge 가 영구히 막힌다.
+#
+# ⚠ 로그 게이트는 org 재사용 워크플로우가 아니라 scripts/ 에 있다.
+#   재사용 워크플로우는 넘긴 check_command 를 실행할 뿐 로그를 검사하지 않는다.
+#   Godot 은 GDScript 파스 에러에도 exit 0 을 내므로 scripts/test_all.sh 가
+#   ANSI 를 제거한 뒤 ^(SCRIPT ERROR|ERROR): 를 찾아 실패시킨다.
+name: Godot Checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: godot-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  godot:
+    name: Godot Compile
+    uses: seorilabs/.github/.github/workflows/godot-checks.yml@main
+    secrets: inherit
+    with:
+      godot_version: "4.7.1"
+      godot_status: stable
+      project_dir: "."
+      with_export_templates: false
+      timeout_minutes: 25
+      runs_on: >-
+        ${{ (github.event.repository.private && !github.event.pull_request.head.repo.fork)
+            && 'seorilabs-rpi-arm64' || 'ubuntu-latest' }}
+      check_command: |
+        python3 tools/check_core_boundary.py .
+        bash scripts/check_docs.sh
+        bash scripts/test_all.sh
+        bash scripts/godot_quality_gate.sh --project .
