@@ -18,7 +18,7 @@ const ENERGY_MAX_INJURED := 70
 const STRESS_MAX := 100
 
 ## 월납 수업료. 12개월 = 480금화의 필수 지출.
-const MONTHLY_TUITION := 40
+const MONTHLY_TUITION := 28
 
 ## 빚: 미납 시 발생. 매 턴 평판을 깎고 일 수입을 줄인다.
 const DEBT_REPUTATION_PENALTY := 1

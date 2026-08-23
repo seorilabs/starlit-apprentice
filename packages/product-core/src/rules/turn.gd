@@ -69,6 +69,11 @@ static func resolve(
 	if together_npc != "":
 		_bump_affinity(out, together_npc, 10)
 
+	# ── 평판: 공개 업무만 기여한다. 스탯이 아니라 사회 지표다.
+	var rep_gain := int(action.get("reputation", 0))
+	if rep_gain > 0 and outcome != SaRisk.OUTCOME_FAIL:
+		out["reputation"] = int(out.get("reputation", 0)) + rep_gain
+
 	# ── 플래그 ────────────────────────────────────────────────────────
 	var flag := _text(action.get("flag", ""))
 	if flag != "":

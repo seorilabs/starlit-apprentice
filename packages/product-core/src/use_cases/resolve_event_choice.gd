@@ -58,11 +58,22 @@ static func choice_availability(state: Dictionary, choice: Dictionary) -> Dictio
 	return {"ok": true, "reason": ""}
 
 ## 선택지 판정 성공 확률. 스탯 대비 난이도 + NPC 호감 보정.
+## check.stat 이 "*best" 면 현재 최고 스탯을 쓴다.
+## 계절 심사는 "대표 계열 스탯" 으로 판정한다 — 특정 스탯을 하드코딩하면
+## 그 스탯을 안 키운 빌드가 심사를 통째로 놓치고 평판이 막힌다.
+static func best_stat_value(state: Dictionary) -> float:
+	var stats: Dictionary = state.get("stats", {})
+	var best := 0.0
+	for k in stats.keys():
+		best = maxf(best, float(stats[k]))
+	return best
+
 static func success_chance(state: Dictionary, check: Dictionary) -> float:
 	if check.is_empty():
 		return 1.0
 	var stats: Dictionary = state.get("stats", {})
-	var value := float(stats.get(_text(check.get("stat", "")), 0))
+	var key := _text(check.get("stat", ""))
+	var value := best_stat_value(state) if key == "*best" else float(stats.get(key, 0))
 	var difficulty := float(check.get("difficulty", 50))
 	var aff := 0.0
 	var npc := _text(check.get("npc_id", ""))

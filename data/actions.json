@@ -84,7 +84,7 @@
       "stat": "sensibility",
       "npc_tag": "yun",
       "cost": {
-        "gold": -25,
+        "gold": -22,
         "energy": -10,
         "stress": 6
       },
@@ -104,7 +104,7 @@
       "stat": "sensibility",
       "npc_tag": "yun",
       "cost": {
-        "gold": -50,
+        "gold": -44,
         "energy": -15,
         "stress": 11
       },
@@ -127,7 +127,7 @@
       "stat": "sensibility",
       "npc_tag": "yun",
       "cost": {
-        "gold": -85,
+        "gold": -75,
         "energy": -22,
         "stress": 17
       },
@@ -151,7 +151,7 @@
       "stat": "etiquette",
       "npc_tag": "moran",
       "cost": {
-        "gold": -30,
+        "gold": -24,
         "energy": -7,
         "stress": 6
       },
@@ -171,7 +171,7 @@
       "stat": "etiquette",
       "npc_tag": "moran",
       "cost": {
-        "gold": -60,
+        "gold": -48,
         "energy": -10,
         "stress": 11
       },
@@ -194,7 +194,7 @@
       "stat": "etiquette",
       "npc_tag": "moran",
       "cost": {
-        "gold": -102,
+        "gold": -82,
         "energy": -15,
         "stress": 17
       },
@@ -218,7 +218,7 @@
       "stat": "craft",
       "npc_tag": "gu",
       "cost": {
-        "gold": -22,
+        "gold": -21,
         "energy": -14,
         "stress": 5
       },
@@ -238,7 +238,7 @@
       "stat": "craft",
       "npc_tag": "gu",
       "cost": {
-        "gold": -44,
+        "gold": -42,
         "energy": -21,
         "stress": 9
       },
@@ -261,7 +261,7 @@
       "stat": "craft",
       "npc_tag": "gu",
       "cost": {
-        "gold": -75,
+        "gold": -71,
         "energy": -31,
         "stress": 14
       },
@@ -283,9 +283,9 @@
       "place": "연무장",
       "description": "몸을 쓰는 법을 배운다. 기초 과정이다.",
       "stat": "stamina",
-      "npc_tag": "gu",
+      "npc_tag": "eden",
       "cost": {
-        "gold": -10,
+        "gold": -16,
         "energy": -18,
         "stress": 3
       },
@@ -303,9 +303,9 @@
       "place": "연무장",
       "description": "몸을 쓰는 법을 배운다. 심화 과정이다.",
       "stat": "stamina",
-      "npc_tag": "gu",
+      "npc_tag": "eden",
       "cost": {
-        "gold": -20,
+        "gold": -32,
         "energy": -27,
         "stress": 5
       },
@@ -326,9 +326,9 @@
       "place": "연무장",
       "description": "몸을 쓰는 법을 배운다. 비전 과정이다.",
       "stat": "stamina",
-      "npc_tag": "gu",
+      "npc_tag": "eden",
       "cost": {
-        "gold": -34,
+        "gold": -54,
         "energy": -40,
         "stress": 8
       },
@@ -352,7 +352,7 @@
       "stat": "starsense",
       "npc_tag": "sera",
       "cost": {
-        "gold": -35,
+        "gold": -26,
         "energy": -12,
         "stress": 8
       },
@@ -372,7 +372,7 @@
       "stat": "starsense",
       "npc_tag": "sera",
       "cost": {
-        "gold": -70,
+        "gold": -52,
         "energy": -18,
         "stress": 14
       },
@@ -395,7 +395,7 @@
       "stat": "starsense",
       "npc_tag": "sera",
       "cost": {
-        "gold": -119,
+        "gold": -88,
         "energy": -26,
         "stress": 22
       },
@@ -419,7 +419,7 @@
       "stat": "commerce",
       "npc_tag": "harin",
       "cost": {
-        "gold": 18,
+        "gold": 22,
         "energy": -12,
         "stress": 8
       },
@@ -427,7 +427,8 @@
       "always_available": true,
       "flag": "work:chores",
       "secondary": "stamina",
-      "icon": "icon_chores"
+      "icon": "icon_chores",
+      "reputation": 3
     },
     {
       "id": "work.scribe",
@@ -440,7 +441,7 @@
       "stat": "intellect",
       "npc_tag": "sera",
       "cost": {
-        "gold": 45,
+        "gold": 52,
         "energy": -14,
         "stress": 10
       },
@@ -448,7 +449,8 @@
       "always_available": false,
       "flag": "work:scribe",
       "secondary": "etiquette",
-      "icon": "icon_scribe"
+      "icon": "icon_scribe",
+      "reputation": 3
     },
     {
       "id": "work.workshop",
@@ -461,7 +463,7 @@
       "stat": "craft",
       "npc_tag": "gu",
       "cost": {
-        "gold": 38,
+        "gold": 46,
         "energy": -18,
         "stress": 7
       },
@@ -469,7 +471,8 @@
       "always_available": false,
       "flag": "work:workshop",
       "secondary": "stamina",
-      "icon": "icon_workshop"
+      "icon": "icon_workshop",
+      "reputation": 3
     },
     {
       "id": "work.teahouse",
@@ -482,7 +485,7 @@
       "stat": "etiquette",
       "npc_tag": "moran",
       "cost": {
-        "gold": 34,
+        "gold": 44,
         "energy": -11,
         "stress": 9
       },
@@ -490,7 +493,8 @@
       "always_available": false,
       "flag": "work:teahouse",
       "secondary": "eloquence",
-      "icon": "icon_teahouse"
+      "icon": "icon_teahouse",
+      "reputation": 3
     },
     {
       "id": "work.market",
@@ -503,7 +507,7 @@
       "stat": "commerce",
       "npc_tag": "harin",
       "cost": {
-        "gold": 42,
+        "gold": 50,
         "energy": -13,
         "stress": 11
       },
@@ -511,7 +515,8 @@
       "always_available": false,
       "flag": "work:market",
       "secondary": "eloquence",
-      "icon": "icon_market"
+      "icon": "icon_market",
+      "reputation": 3
     },
     {
       "id": "work.watch",
@@ -524,7 +529,7 @@
       "stat": "courage",
       "npc_tag": "eden",
       "cost": {
-        "gold": 40,
+        "gold": 48,
         "energy": -20,
         "stress": 9
       },
@@ -532,7 +537,8 @@
       "always_available": false,
       "flag": "work:watch",
       "secondary": "stamina",
-      "icon": "icon_watch"
+      "icon": "icon_watch",
+      "reputation": 3
     },
     {
       "id": "outing.plaza",
@@ -603,7 +609,7 @@
       "place": "북쪽 성벽",
       "description": "높은 데서 도시를 내려다본다.",
       "stat": "courage",
-      "npc_tag": "eden",
+      "npc_tag": "yun",
       "cost": {
         "gold": -10,
         "energy": -12,
@@ -663,7 +669,7 @@
       "place": "지붕 위",
       "description": "말없이 하늘을 올려다본다.",
       "stat": null,
-      "npc_tag": null,
+      "npc_tag": "yun",
       "cost": {
         "gold": 0,
         "energy": 0,
@@ -705,7 +711,7 @@
       "place": "천문탑 첨탑",
       "description": "별의 운행을 스스로 기록한다. 별의 길을 선언해야 열린다.",
       "stat": "starsense",
-      "npc_tag": "sera",
+      "npc_tag": "eden",
       "cost": {
         "gold": -70,
         "energy": -22,
@@ -877,5 +883,7 @@
     "primary": 1.0,
     "secondary": 0.5
   },
-  "icon_note": "수업은 계열 3티어가 아이콘 하나를 공유하고 티어는 UI 배지로 표시한다. 아이콘 18개 대신 6개."
+  "icon_note": "수업은 계열 3티어가 아이콘 하나를 공유하고 티어는 UI 배지로 표시한다. 아이콘 18개 대신 6개.",
+  "reputation_note": "평판은 스탯이 아니다. 이벤트·마일스톤·NPC·공개 업무(work)로만 오른다. 단일 행동 반복으로는 오르지 않게 work 기여를 작게 둔다.",
+  "economy_note": "학비 28x12=336. 일 12턴(평균 45)이면 학비와 수업 18턴을 충당하고 24턴이 성장에 남는다. 골드는 여전히 구속되지만 특정 스탯을 구조적으로 봉쇄하지는 않는다."
 }

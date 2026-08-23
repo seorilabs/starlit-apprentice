@@ -44,6 +44,7 @@ run_godot import "${godot_bin}" --headless --path "${project_dir}" --import --qu
 run_godot core        "${godot_bin}" --headless --path "${project_dir}" --script res://tests/core_test_runner.gd
 run_godot equivalence "${godot_bin}" --headless --path "${project_dir}" --script res://tests/legacy_equivalence_runner.gd
 run_godot endings     "${godot_bin}" --headless --path "${project_dir}" --script res://tests/endings_lint_runner.gd
+run_godot balance     "${godot_bin}" --headless --path "${project_dir}" --script res://tests/balance_runner.gd
 run_godot simulation  "${godot_bin}" --headless --path "${project_dir}" --script res://tests/simulation_runner.gd
 run_godot smoke       "${godot_bin}" --headless --path "${project_dir}" --script res://tests/test_runner.gd
 

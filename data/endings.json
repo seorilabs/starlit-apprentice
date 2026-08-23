@@ -74,7 +74,7 @@
         {
           "type": "stat",
           "stat": "sensibility",
-          "target": 50
+          "target": 46
         }
       ]
     },
@@ -139,7 +139,7 @@
         {
           "type": "stat",
           "stat": "starsense",
-          "target": 60
+          "target": 48
         },
         {
           "type": "flag",
@@ -186,12 +186,12 @@
         {
           "type": "stat",
           "stat": "sensibility",
-          "target": 68
+          "target": 50
         },
         {
           "type": "stat",
           "stat": "eloquence",
-          "target": 58
+          "target": 52
         },
         {
           "type": "flag",
@@ -394,22 +394,22 @@
         {
           "type": "stat",
           "stat": "starsense",
-          "target": 78
+          "target": 46
         },
         {
           "type": "stat",
           "stat": "intellect",
-          "target": 72
+          "target": 56
         },
         {
           "type": "stat",
           "stat": "courage",
-          "target": 60
+          "target": 44
         },
         {
           "type": "resource",
           "resource": "reputation",
-          "target": 45
+          "target": 18
         },
         {
           "type": "declared",
@@ -428,22 +428,22 @@
         {
           "type": "stat",
           "stat": "intellect",
-          "target": 80
+          "target": 66
         },
         {
           "type": "stat",
           "stat": "etiquette",
-          "target": 70
+          "target": 56
         },
         {
           "type": "stat",
           "stat": "eloquence",
-          "target": 62
+          "target": 44
         },
         {
           "type": "resource",
           "resource": "reputation",
-          "target": 50
+          "target": 18
         },
         {
           "type": "declared",
@@ -462,22 +462,22 @@
         {
           "type": "stat",
           "stat": "craft",
-          "target": 78
-        },
-        {
-          "type": "stat",
-          "stat": "commerce",
           "target": 70
         },
         {
           "type": "stat",
+          "stat": "commerce",
+          "target": 56
+        },
+        {
+          "type": "stat",
           "stat": "stamina",
-          "target": 62
+          "target": 44
         },
         {
           "type": "resource",
           "resource": "reputation",
-          "target": 45
+          "target": 18
         },
         {
           "type": "declared",
@@ -496,22 +496,22 @@
         {
           "type": "stat",
           "stat": "sensibility",
-          "target": 78
+          "target": 66
         },
         {
           "type": "stat",
           "stat": "eloquence",
-          "target": 72
+          "target": 56
         },
         {
           "type": "stat",
           "stat": "etiquette",
-          "target": 60
+          "target": 44
         },
         {
           "type": "resource",
           "resource": "reputation",
-          "target": 48
+          "target": 18
         },
         {
           "type": "declared",
@@ -530,22 +530,22 @@
         {
           "type": "stat",
           "stat": "commerce",
-          "target": 78
+          "target": 70
         },
         {
           "type": "stat",
           "stat": "eloquence",
-          "target": 74
+          "target": 58
         },
         {
           "type": "stat",
           "stat": "courage",
-          "target": 60
+          "target": 44
         },
         {
           "type": "resource",
           "resource": "reputation",
-          "target": 52
+          "target": 18
         },
         {
           "type": "declared",
@@ -564,22 +564,22 @@
         {
           "type": "stat",
           "stat": "etiquette",
-          "target": 78
+          "target": 68
         },
         {
           "type": "stat",
           "stat": "eloquence",
-          "target": 72
+          "target": 58
         },
         {
           "type": "stat",
           "stat": "intellect",
-          "target": 62
+          "target": 44
         },
         {
           "type": "resource",
           "resource": "reputation",
-          "target": 55
+          "target": 18
         },
         {
           "type": "declared",
@@ -593,27 +593,27 @@
       "title": "공동 관측자",
       "summary": "견습생은 라이벌과 함께 이름을 올린 기록을 남긴다.",
       "shareText": "내 견습생은 공동 관측자가 됐어요.",
-      "hint": "star 선언 후 starsense 74 · intellect 68 · courage 62",
+      "hint": "이든과 동맹(호감 65) 후 별의 길 선언",
       "requirements": [
         {
           "type": "stat",
           "stat": "starsense",
-          "target": 74
+          "target": 56
         },
         {
           "type": "stat",
           "stat": "intellect",
-          "target": 68
+          "target": 54
         },
         {
           "type": "stat",
           "stat": "courage",
-          "target": 62
+          "target": 44
         },
         {
           "type": "resource",
           "resource": "reputation",
-          "target": 42
+          "target": 18
         },
         {
           "type": "declared",
@@ -624,6 +624,11 @@
           "flag": "npc.eden_ally",
           "target": 1,
           "label": "이든과의 동맹"
+        },
+        {
+          "type": "affinity",
+          "npc": "eden",
+          "target": 65
         }
       ]
     },
@@ -633,27 +638,27 @@
       "title": "단독 명성",
       "summary": "견습생은 혼자 힘으로 이름을 세운다.",
       "shareText": "내 견습생은 단독 명성가 됐어요.",
-      "hint": "star 선언 후 starsense 76 · courage 70 · eloquence 60",
+      "hint": "이든과 겨루며 별의 길 선언",
       "requirements": [
         {
           "type": "stat",
           "stat": "starsense",
-          "target": 76
+          "target": 66
         },
         {
           "type": "stat",
           "stat": "courage",
-          "target": 70
+          "target": 56
         },
         {
           "type": "stat",
           "stat": "eloquence",
-          "target": 60
+          "target": 32
         },
         {
           "type": "resource",
           "resource": "reputation",
-          "target": 48
+          "target": 18
         },
         {
           "type": "declared",
@@ -664,6 +669,11 @@
           "flag": "npc.eden_rivalry",
           "target": 1,
           "label": "이든과의 경쟁"
+        },
+        {
+          "type": "affinity",
+          "npc": "eden",
+          "target": 30
         }
       ]
     },
@@ -678,12 +688,12 @@
         {
           "type": "stat",
           "stat": "starsense",
-          "target": 88
+          "target": 56
         },
         {
           "type": "stat",
           "stat": "intellect",
-          "target": 78
+          "target": 58
         },
         {
           "type": "affinity",
@@ -702,7 +712,7 @@
         {
           "type": "resource",
           "resource": "reputation",
-          "target": 60
+          "target": 20
         }
       ]
     },
@@ -717,12 +727,12 @@
         {
           "type": "stat",
           "stat": "etiquette",
-          "target": 88
+          "target": 84
         },
         {
           "type": "stat",
           "stat": "eloquence",
-          "target": 80
+          "target": 66
         },
         {
           "type": "affinity",
@@ -741,7 +751,7 @@
         {
           "type": "resource",
           "resource": "reputation",
-          "target": 60
+          "target": 24
         }
       ]
     },
@@ -756,12 +766,12 @@
         {
           "type": "stat",
           "stat": "craft",
-          "target": 88
+          "target": 84
         },
         {
           "type": "stat",
           "stat": "stamina",
-          "target": 78
+          "target": 66
         },
         {
           "type": "affinity",
@@ -780,7 +790,7 @@
         {
           "type": "resource",
           "resource": "reputation",
-          "target": 60
+          "target": 24
         }
       ]
     },
@@ -795,12 +805,12 @@
         {
           "type": "stat",
           "stat": "sensibility",
-          "target": 86
+          "target": 64
         },
         {
           "type": "stat",
           "stat": "courage",
-          "target": 78
+          "target": 64
         },
         {
           "type": "affinity",
@@ -819,9 +829,10 @@
         {
           "type": "resource",
           "resource": "reputation",
-          "target": 60
+          "target": 24
         }
       ]
     }
-  ]
+  ],
+  "balance_note": "요건은 실측 상한 위에서 정했다. 스탯 단일 최대 88~100, 평판 48(집중 시), 호감 100(함께 수식). 평판은 부수적으로 쌓이는 사회 지표라 목표를 낮게 둔다. 이벤트가 23/106 이라 평판 소스가 아직 덜 공급됐다 — 106종 저작 후 재조정한다."
 }
