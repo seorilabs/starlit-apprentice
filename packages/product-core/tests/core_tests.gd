@@ -27,6 +27,7 @@ func run_all() -> Array[String]:
 	_test_declared_path_is_recorded()
 	_test_failed_locks_legendary()
 	_test_debt_is_repayable()
+	_test_skipped_turns_still_pay_tuition()
 	# 빈 스위트가 초록으로 통과하지 않게 한다.
 	if _executed == 0:
 		_failures.append("실행된 검사가 0개다. 스위트가 비었거나 러너가 깨졌다.")
@@ -513,3 +514,80 @@ func _test_debt_is_repayable() -> void:
 		"남은 미납분이 밀린 금액으로 이월돼야 한다. 실제: %d"
 			% int(partial_state.get("debt_amount", 0)))
 	_check(bool(partial_state.get("in_debt", false)), "다 갚지 못했으면 빚 상태가 유지된다.")
+
+## 턴을 건너뛰어도 월말 수업료는 청구된다.
+##
+## 번아웃은 resolve() 초입에서 조기 반환해 월말 블록을 건너뛰었고, turn + 2 가
+## 월말 턴을 뛰어넘으면 그 달 수업료가 통째로 사라졌다. 스트레스를 높게 유지하는
+## 플레이가 지출을 줄이는 보상을 받아 12개월 480금화 설계에 구멍이 났다.
+func _test_skipped_turns_still_pay_tuition() -> void:
+	var apt := {}
+	for k in SaStatKeys.ALL: apt[k] = "B"
+	var rest := {"id": "r", "cost": {}, "category": "rest", "tier": "basic"}
+
+	# 턴 5 에서 번아웃 → 턴 7 도착. 건너뛴 턴 6 의 수업료가 청구된다.
+	var burnt := SaResources.new_state(1)
+	burnt["turn"] = 5
+	burnt["gold"] = 200
+	(burnt["conditions"] as Array).append(SaRisk.COND_BURNOUT)
+	var jumped := SaTurn.resolve(burnt, rest, apt, SaRng.new(1))
+	var after: Dictionary = jumped["state"]
+	_check(int(after["turn"]) == 7, "번아웃은 2턴을 소모한다. 실제 도착 턴: %d" % int(after["turn"]))
+	_check(bool(jumped["tuition_charged"]),
+		"건너뛴 구간에 월말이 있으면 tuition_charged 가 참이어야 한다.")
+	_check(int(after["gold"]) == 200 - SaResources.MONTHLY_TUITION,
+		"턴 6 의 수업료가 청구돼야 한다. 실제 골드: %d" % int(after["gold"]))
+
+	# 월말 턴에서 번아웃해도 그 달 수업료는 청구된다.
+	var burnt_at_month_end := SaResources.new_state(1)
+	burnt_at_month_end["turn"] = 6
+	burnt_at_month_end["gold"] = 200
+	(burnt_at_month_end["conditions"] as Array).append(SaRisk.COND_BURNOUT)
+	var at_end: Dictionary = SaTurn.resolve(burnt_at_month_end, rest, apt, SaRng.new(2))["state"]
+	_check(int(at_end["gold"]) == 200 - SaResources.MONTHLY_TUITION,
+		"월말 번아웃도 청구돼야 한다. 실제 골드: %d" % int(at_end["gold"]))
+
+	# 골드가 없으면 번아웃 경로에서도 빚으로 넘어간다.
+	var broke := SaResources.new_state(1)
+	broke["turn"] = 5
+	broke["gold"] = 0
+	(broke["conditions"] as Array).append(SaRisk.COND_BURNOUT)
+	var indebted: Dictionary = SaTurn.resolve(broke, rest, apt, SaRng.new(3))["state"]
+	_check(bool(indebted.get("in_debt", false)), "번아웃 경로에서도 미납은 빚이 된다.")
+	_check(int(indebted.get("debt_amount", 0)) == SaResources.MONTHLY_TUITION,
+		"밀린 금액이 수업료와 같아야 한다. 실제: %d" % int(indebted.get("debt_amount", 0)))
+
+	# 이벤트의 cost.turn_skip 도 같은 정산을 탄다.
+	var event_state := SaResources.new_state(1)
+	event_state["turn"] = 6
+	event_state["gold"] = 200
+	var skipping := {"id": "c", "requirements": [], "cost": {"turn_skip": 2}, "check": null,
+		"outcomes": [{"kind": "only", "result_text": "앓아누웠다", "effects": {}}]}
+	var skipped: Dictionary = SaEventResolution.apply(
+		event_state, {"id": "e", "choices": []}, skipping, SaRng.new(4))["state"]
+	_check(int(skipped["turn"]) == 8, "turn_skip 2 는 두 턴을 건너뛴다.")
+	_check(int(skipped["gold"]) == 200 - SaResources.MONTHLY_TUITION,
+		"건너뛴 턴 6 의 수업료가 청구돼야 한다. 실제 골드: %d" % int(skipped["gold"]))
+
+	# 같은 월말이 두 번 청구되지 않는다 — 정상 해석이 청구한 턴 6 을
+	# 뒤따르는 이벤트가 다시 청구하면 안 된다.
+	var normal := SaResources.new_state(1)
+	normal["turn"] = 6
+	normal["gold"] = 200
+	var played: Dictionary = SaTurn.resolve(normal, rest, apt, SaRng.new(5))["state"]
+	var after_event: Dictionary = SaEventResolution.apply(
+		played, {"id": "e2", "choices": []},
+		{"id": "c2", "requirements": [], "cost": {"turn_skip": 1}, "check": null,
+		"outcomes": [{"kind": "only", "result_text": "하루가 갔다", "effects": {}}]},
+		SaRng.new(6))["state"]
+	_check(int(after_event["gold"]) == 200 - SaResources.MONTHLY_TUITION,
+		"턴 6 은 한 번만 청구돼야 한다. 실제 골드: %d" % int(after_event["gold"]))
+
+	# 번아웃 없이 정상 진행하면 12개월 동안 11회(마지막 턴 제외) 청구된다.
+	var run := SaResources.new_state(1)
+	run["gold"] = 9999
+	while int(run.get("turn", 1)) <= SaGrowthCurve.TURNS_TOTAL:
+		run = SaTurn.resolve(run, rest, apt, SaRng.new(7))["state"]
+	var spent := 9999 - int(run["gold"])
+	_check(spent == SaResources.MONTHLY_TUITION * 11,
+		"정상 런의 총 수업료는 11회분이어야 한다. 실제: %d" % spent)

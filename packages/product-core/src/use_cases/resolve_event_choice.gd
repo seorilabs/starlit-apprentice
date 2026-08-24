@@ -188,8 +188,13 @@ static func apply(state: Dictionary, event: Dictionary, choice: Dictionary, rng:
 	out["energy"] = int(out.get("energy", 0)) + int(cost.get("energy", 0))
 	out["stress"] = int(out.get("stress", 0)) + int(cost.get("stress", 0))
 	var skip := int(cost.get("turn_skip", 0))
+	var settled := {"charged": false, "paid": 0}
 	if skip > 0:
-		out["turn"] = int(out.get("turn", 1)) + skip
+		var from_turn := int(out.get("turn", 1))
+		out["turn"] = from_turn + skip
+		# 건너뛴 턴에 든 월말도 정산한다. 이 경로만 빠지면 turn_skip 이 붙은
+		# 선택지가 수업료 회피 수단이 된다.
+		settled = SaTurn.settle_tuition(out, from_turn, from_turn + skip - 1)
 
 	var effects: Dictionary = outcome.get("effects", {}) if not outcome.is_empty() else {}
 	_apply_effects(out, effects)
@@ -208,6 +213,8 @@ static func apply(state: Dictionary, event: Dictionary, choice: Dictionary, rng:
 		"kind": kind,
 		"result_text": _text(outcome.get("result_text", "")),
 		"effects": effects,
+		"tuition_charged": bool(settled["charged"]),
+		"tuition_paid": int(settled["paid"]),
 	}
 
 static func _pick_outcome(outcomes: Array, kind: String) -> Dictionary:
