@@ -24,6 +24,7 @@ func run_all() -> Array[String]:
 	_test_event_choice_gating()
 	_test_event_check_branches()
 	_test_every_condition_has_exit()
+	_test_declared_path_is_recorded()
 	# 빈 스위트가 초록으로 통과하지 않게 한다.
 	if _executed == 0:
 		_failures.append("실행된 검사가 0개다. 스위트가 비었거나 러너가 깨졌다.")
@@ -294,3 +295,67 @@ func _test_no_early_cap() -> void:
 			reached_at = turn
 	_check(reached_at == 0 or reached_at >= 29,
 		"턴 29 이전에 100 도달은 불가능해야 한다. 실제 도달 턴: %d" % reached_at)
+
+## 진로 선언이 상태에 남아야 후반 콘텐츠 전체가 열린다.
+##
+## 선언 이벤트가 플래그만 남기던 시절에는 state.declared_path 가 런 내내 빈
+## 문자열이었다. 그래서 진로 전용 액션 6종이 영구 잠김이고, declared 요건
+## 엔딩 12건이 도달 불가였으며, 계절 심사의 진로 보너스가 한 번도 안 붙었다.
+func _test_declared_path_is_recorded() -> void:
+	var state := SaResources.new_state(1)
+	state["turn"] = 19
+	var event := {"id": "path.declaration", "choices": []}
+	var choice := {
+		"id": "star", "requirements": [], "cost": {}, "check": null,
+		"outcomes": [{"kind": "only", "result_text": "별의 길이라 적었다",
+			"effects": {"flags": {"path:star": 1}, "declared_path": "star"}}],
+	}
+	var star_action := {"id": "path.star", "stat": SaStatKeys.STARSENSE, "tier": "arcane",
+		"cost": {}, "unlock": {"declared_path": "star", "month_min": 7}}
+	var craft_action := {"id": "path.craft", "stat": SaStatKeys.CRAFT, "tier": "arcane",
+		"cost": {}, "unlock": {"declared_path": "craft", "month_min": 7}}
+	var star_ending := {"code": "observatory-director", "band": 3, "requirements": [
+		{"type": "stat", "stat": SaStatKeys.STARSENSE, "target": 46},
+		{"type": "declared", "path": "star"}]}
+
+	_check(not bool(SaResources.unlock_status(state, star_action)["ok"]),
+		"선언 전에는 진로 전용 액션이 잠겨 있어야 한다.")
+	_check(not SaEndingRequirements.all_satisfied(state, star_ending["requirements"]),
+		"선언 전에는 declared 요건 엔딩이 충족되면 안 된다.")
+
+	var after: Dictionary = SaEventResolution.apply(state, event, choice, SaRng.new(1))["state"]
+	_check(String(after.get("declared_path", "")) == "star",
+		"선언 선택지는 state.declared_path 에 기록돼야 한다. 실제: '%s'"
+			% String(after.get("declared_path", "")))
+	_check(int((after["flags"] as Dictionary).get("path:star", 0)) == 1,
+		"서사·엔딩 호환용 플래그도 함께 남아야 한다.")
+
+	_check(bool(SaResources.unlock_status(after, star_action)["ok"]),
+		"선언한 진로의 전용 액션은 열려야 한다.")
+	_check(not bool(SaResources.unlock_status(after, craft_action)["ok"]),
+		"선언하지 않은 진로의 전용 액션은 계속 잠겨야 한다.")
+
+	(after["stats"] as Dictionary)[SaStatKeys.STARSENSE] = 50
+	_check(SaEndingRequirements.all_satisfied(after, star_ending["requirements"]),
+		"선언 후에는 declared 요건 엔딩이 충족될 수 있어야 한다.")
+
+	# 계절 심사 보너스는 선언 여부로만 갈린다.
+	# 난이도는 양쪽 다 클램프([0.05, 0.95]) 밖으로 나가지 않는 값을 쓴다.
+	var check := {"kind": "milestone", "stat": SaStatKeys.STARSENSE, "difficulty": 60}
+	var before_state := state.duplicate(true)
+	(before_state["stats"] as Dictionary)[SaStatKeys.STARSENSE] = 50
+	var gap := SaEventResolution.success_chance(after, check) \
+		- SaEventResolution.success_chance(before_state, check)
+	_check(is_equal_approx(gap, SaEventResolution.MILESTONE_PATH_BONUS / 20.0),
+		"심사 확률이 선언 전후로 진로 보너스만큼 차이나야 한다. 실제 차이: %.3f" % gap)
+
+	# 진로→엔딩 표는 코드가 아니라 엔딩 데이터에서 나온다.
+	var endings := [star_ending,
+		{"code": "quiet-life", "band": 0, "requirements": [{"type": "stat", "stat": SaStatKeys.STARSENSE, "target": 1}]},
+		{"code": "master-of-forge", "band": 4, "requirements": [{"type": "declared", "path": "craft"}]}]
+	_check(SaEndingJudgement.declared_ending_code(after, endings, "star") == "observatory-director",
+		"선언한 진로의 엔딩 코드는 엔딩 데이터에서 유도돼야 한다.")
+	_check(SaEndingJudgement.declared_ending_code(after, endings, "craft") == "",
+		"충족하지 못한 진로 엔딩은 보너스 대상이 아니다.")
+	_check(SaEndingJudgement.declared_ending_code(after, endings, "") == "",
+		"선언하지 않았으면 진로 엔딩 코드가 없다.")

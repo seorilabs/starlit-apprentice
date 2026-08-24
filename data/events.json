@@ -9056,7 +9056,8 @@
         },
         "affinity": {
          "sera": 8
-        }
+        },
+        "declared_path": "star"
        }
       }
      ]
@@ -9084,7 +9085,8 @@
         },
         "affinity": {
          "sera": 5
-        }
+        },
+        "declared_path": "letters"
        }
       }
      ]
@@ -9112,7 +9114,8 @@
         },
         "affinity": {
          "gu": 8
-        }
+        },
+        "declared_path": "craft"
        }
       }
      ]
@@ -9140,7 +9143,8 @@
         },
         "affinity": {
          "yun": 8
-        }
+        },
+        "declared_path": "stage"
        }
       }
      ]
@@ -9168,7 +9172,8 @@
         },
         "affinity": {
          "harin": 8
-        }
+        },
+        "declared_path": "market"
        }
       }
      ]
@@ -9196,7 +9201,8 @@
         },
         "affinity": {
          "moran": 8
-        }
+        },
+        "declared_path": "people"
        }
       }
      ]
