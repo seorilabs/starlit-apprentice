@@ -141,6 +141,7 @@ static func resolve(
 		out["reputation"] = int(out["reputation"]) - SaResources.DEBT_REPUTATION_PENALTY
 
 	out["turn"] = turn + 1
+	var released := _release_mastery(out, turn)
 	out = SaResources.clamp_state(out)
 
 	return {
@@ -153,6 +154,7 @@ static func resolve(
 		"entered_conditions": entered,
 		"tuition_charged": tuition_charged,
 		"promoted_talent": promoted,
+		"mastery_released": released,
 	}
 
 static func _apply_gain(
@@ -186,6 +188,34 @@ static func _apply_gain(
 		gains[key] = applied
 	return gains
 
+## 분기 상한 초과분으로 적립된 숙련도를 새 분기 첫 턴에 지급한다.
+##
+## 적립만 하고 지급하지 않으면 상한 근처의 고티어 행동이 손해가 되어
+## "상한 직전에는 저티어를 반복하라"가 최적 플레이가 된다. 조기 캡을 막으려던
+## 상한 설계가 정반대로 뒤집힌다.
+static func _release_mastery(out: Dictionary, from_turn: int) -> Dictionary:
+	var released := {}
+	var turn := int(out.get("turn", 1))
+	if SaGrowthCurve.term_index(turn) == SaGrowthCurve.term_index(from_turn):
+		return released
+	var bank: Dictionary = out.get("mastery_bank", {})
+	var stats: Dictionary = out["stats"]
+	var ceiling := float(SaGrowthCurve.term_ceiling(turn))
+	for key in bank.keys():
+		var amount := float(bank[key])
+		# 지급 여부와 무관하게 비운다. 상한에 막힌 몫을 다시 적립하면
+		# 영원히 이월돼 분기 상한이 유예에 지나지 않게 된다.
+		bank[key] = 0.0
+		if amount <= 0.0:
+			continue
+		var current := float(stats.get(key, 0))
+		var applied := int(roundf(minf(current + amount, ceiling) - current))
+		if applied <= 0:
+			continue
+		stats[key] = int(current) + applied
+		released[key] = applied
+	return released
+
 static func _bump_affinity(out: Dictionary, npc: String, delta: int) -> void:
 	var affinity: Dictionary = out["affinity"]
 	affinity[npc] = clampi(int(affinity.get(npc, 0)) + delta, 0, 100)
@@ -197,9 +227,11 @@ static func _resolve_burnout(out: Dictionary) -> Dictionary:
 	out["reputation"] = int(out["reputation"]) - 8
 	(out["conditions"] as Array).erase(SaRisk.COND_BURNOUT)
 	out["turn"] = turn + 2  # 강제로 2턴을 소모한다
+	# 강제 소모가 분기 경계를 건너뛸 수 있다(예: 턴 8 -> 10). 적립분은 그때도 지급한다.
+	var released := _release_mastery(out, turn)
 	out = SaResources.clamp_state(out)
 	return {
 		"state": out, "played_turn": turn, "outcome": SaRisk.OUTCOME_FAIL, "gains": {},
 		"entered_conditions": [], "tuition_charged": false, "promoted_talent": false,
-		"burnout_skipped": true,
+		"burnout_skipped": true, "mastery_released": released,
 	}

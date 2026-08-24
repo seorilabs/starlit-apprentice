@@ -109,6 +109,16 @@ func _show_resolution(action: Dictionary, result: Dictionary) -> void:
 		col.add_child(SaUiKit.label("%s %s" % [_stat_name(String(k)), SaUiKit.format_delta(v)],
 			SaUiKit.FONT_BODY, SaUiKit.delta_color(v)))
 
+	# 분기가 바뀌는 턴에는 적립된 숙련도가 함께 들어온다. 표시하지 않으면
+	# 플레이어에게는 상한에서 사라진 성장이 영영 돌아오지 않은 것처럼 보인다.
+	var released: Dictionary = result.get("mastery_released", {})
+	for k in released.keys():
+		var rv := int(released[k])
+		if rv == 0:
+			continue
+		col.add_child(SaUiKit.label("숙련 개방 · %s %s" % [_stat_name(String(k)), SaUiKit.format_delta(rv)],
+			SaUiKit.FONT_BODY, SaUiKit.GOLD))
+
 	for c in (result.get("entered_conditions", []) as Array):
 		col.add_child(SaUiKit.label("· %s" % _condition_name(String(c)), SaUiKit.FONT_BODY, SaUiKit.ROSE))
 	if bool(result.get("tuition_charged", false)):
