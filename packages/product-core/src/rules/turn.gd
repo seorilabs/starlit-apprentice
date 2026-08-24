@@ -135,19 +135,9 @@ static func resolve(
 		(out["conditions"] as Array).append(c)
 
 	# ── 월말 수업료 ───────────────────────────────────────────────────
-	var tuition_charged := false
-	var tuition_paid := 0
-	if SaResources.is_month_end(turn) and turn < SaGrowthCurve.TURNS_TOTAL:
-		tuition_charged = true
-		# 당월 수업료와 밀린 금액을 함께 청구한다. 낼 수 있는 만큼 내는
-		# 부분 상환을 허용한다. 전액이 아니면 한 푼도 못 갚게 하면 밀린 금액이
-		# 커질수록 청산 문턱이 계단식으로 멀어져, 이 수정이 없애려는
-		# 단방향 데스 스파이럴이 형태만 바꿔 그대로 남는다.
-		var due := SaResources.MONTHLY_TUITION + int(out.get("debt_amount", 0))
-		tuition_paid = mini(int(out["gold"]), due)
-		out["gold"] = int(out["gold"]) - tuition_paid
-		out["debt_amount"] = due - tuition_paid
-		out["in_debt"] = int(out["debt_amount"]) > 0
+	var settled := settle_tuition(out, turn, turn)
+	var tuition_charged := bool(settled["charged"])
+	var tuition_paid := int(settled["paid"])
 	# 청산된 턴부터는 평판을 깎지 않는다.
 	if bool(out.get("in_debt", false)):
 		out["reputation"] = int(out["reputation"]) - SaResources.DEBT_REPUTATION_PENALTY
@@ -230,6 +220,33 @@ static func _release_mastery(out: Dictionary, from_turn: int) -> Dictionary:
 		released[key] = applied
 	return released
 
+## from_turn~to_turn(양끝 포함) 구간에 든 월말을 전부 정산한다.
+##
+## 번아웃의 강제 2턴 소모와 이벤트의 cost.turn_skip 이 턴을 건너뛰는데,
+## 정산이 resolve() 본문에만 있던 시절에는 건너뛴 구간의 월말 수업료가
+## 통째로 사라졌다. 스트레스를 높게 유지하는 플레이가 지출을 줄이는 방향으로
+## 보상받아, 12개월 480금화라는 필수 지출 설계에 회피 구멍이 났다.
+##
+## 각 호출자는 자기가 실제로 소모한 턴 구간만 넘긴다. 구간이 겹치지 않으므로
+## 같은 월말이 두 번 청구되지 않는다.
+static func settle_tuition(out: Dictionary, from_turn: int, to_turn: int) -> Dictionary:
+	var charged := false
+	var paid := 0
+	for t in range(maxi(1, from_turn), to_turn + 1):
+		if not SaResources.is_month_end(t) or t >= SaGrowthCurve.TURNS_TOTAL:
+			continue
+		charged = true
+		# 당월 수업료와 밀린 금액을 함께 청구한다. 낼 수 있는 만큼 내는
+		# 부분 상환을 허용한다. 전액이 아니면 한 푼도 못 갚게 하면 밀린 금액이
+		# 커질수록 청산 문턱이 계단식으로 멀어져, 단방향 데스 스파이럴이 된다.
+		var due := SaResources.MONTHLY_TUITION + int(out.get("debt_amount", 0))
+		var pay := mini(int(out.get("gold", 0)), due)
+		out["gold"] = int(out.get("gold", 0)) - pay
+		out["debt_amount"] = due - pay
+		out["in_debt"] = int(out["debt_amount"]) > 0
+		paid += pay
+	return {"charged": charged, "paid": paid}
+
 static func _bump_affinity(out: Dictionary, npc: String, delta: int) -> void:
 	var affinity: Dictionary = out["affinity"]
 	affinity[npc] = clampi(int(affinity.get(npc, 0)) + delta, 0, 100)
@@ -240,12 +257,16 @@ static func _resolve_burnout(out: Dictionary) -> Dictionary:
 	out["energy"] = int(out["energy"]) + 30
 	out["reputation"] = int(out["reputation"]) - 8
 	(out["conditions"] as Array).erase(SaRisk.COND_BURNOUT)
+	# 소모한 두 턴(turn, turn + 1)에 든 월말은 그대로 청구된다. 건너뛴다고
+	# 수업료가 면제되면 고스트레스 플레이가 지출을 회피하는 보상을 받는다.
+	var settled := settle_tuition(out, turn, turn + 1)
 	out["turn"] = turn + 2  # 강제로 2턴을 소모한다
 	# 강제 소모가 분기 경계를 건너뛸 수 있다(예: 턴 8 -> 10). 적립분은 그때도 지급한다.
 	var released := _release_mastery(out, turn)
 	out = SaResources.clamp_state(out)
 	return {
 		"state": out, "played_turn": turn, "outcome": SaRisk.OUTCOME_FAIL, "gains": {},
-		"entered_conditions": [], "tuition_charged": false, "promoted_talent": false,
-		"burnout_skipped": true, "mastery_released": released,
+		"entered_conditions": [], "tuition_charged": bool(settled["charged"]),
+		"tuition_paid": int(settled["paid"]), "debt_amount": int(out.get("debt_amount", 0)),
+		"promoted_talent": false, "burnout_skipped": true, "mastery_released": released,
 	}

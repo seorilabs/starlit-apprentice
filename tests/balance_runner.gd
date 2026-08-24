@@ -127,6 +127,11 @@ func _initialize() -> void:
 	var got: Array = grind.get("conditions_seen", [])
 	if got.is_empty():
 		failures.append("쉬지 않는 플레이에서도 상태이상이 하나도 걸리지 않는다. 리스크가 작동하지 않는다")
+	# 번아웃의 강제 소모가 월말을 건너뛰면 고스트레스 플레이가 지출을 회피한다.
+	var months := SaGrowthCurve.TURNS_TOTAL / SaGrowthCurve.TURNS_PER_MONTH - 1
+	if int(grind.get("tuition_charges", 0)) != months:
+		failures.append("무리한 플레이의 수업료 청구가 %d회다(기대 %d회). 번아웃이 지출을 건너뛴다"
+			% [int(grind.get("tuition_charges", 0)), months])
 
 	if failures.is_empty():
 		print("BALANCE PASS")
@@ -208,6 +213,7 @@ func _grind_run(actions: Array, events: Array) -> Dictionary:
 	var state := SaResources.new_state(31337)
 	var seen := {}
 	var guard := 0
+	var tuition_charges := 0
 	while int(state.get("turn", 1)) <= SaGrowthCurve.TURNS_TOTAL and guard < 200:
 		guard += 1
 		var pool := SaResources.selectable(state, actions)
@@ -228,6 +234,8 @@ func _grind_run(actions: Array, events: Array) -> Dictionary:
 				pick = ad
 		var result := SaTurn.resolve(state, pick, apt, rng)
 		state = result["state"]
+		if bool(result.get("tuition_charged", false)):
+			tuition_charges += 1
 		for c in (result["entered_conditions"] as Array):
 			seen[c] = int(seen.get(c, 0)) + 1
 		var beat := SaEventResolution.beat_state(state, int(result["played_turn"]))
@@ -236,11 +244,16 @@ func _grind_run(actions: Array, events: Array) -> Dictionary:
 			for c2 in (evd.get("choices", []) as Array):
 				var cd: Dictionary = c2
 				if bool(SaEventResolution.choice_availability(beat, cd).get("ok", false)):
-					state = (SaEventResolution.apply(state, evd, cd, rng))["state"]
+					var applied := SaEventResolution.apply(state, evd, cd, rng)
+					state = applied["state"]
+					# turn_skip 이 월말을 건너뛰면 정산도 이 경로에서 일어난다.
+					if bool(applied.get("tuition_charged", false)):
+						tuition_charges += 1
 					break
 			break
 	return {"conditions_seen": seen.keys(), "counts": seen,
-		"end_stress": state.get("stress", 0), "end_energy": state.get("energy", 0)}
+		"end_stress": state.get("stress", 0), "end_energy": state.get("energy", 0),
+		"tuition_charges": tuition_charges, "debt_amount": int(state.get("debt_amount", 0))}
 
 func _load(path: String) -> Dictionary:
 	if not FileAccess.file_exists(path):
