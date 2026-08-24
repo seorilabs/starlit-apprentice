@@ -181,8 +181,52 @@ func _test_mastery_bank_on_ceiling() -> void:
 	_check(int((s["stats"] as Dictionary)[SaStatKeys.INTELLECT]) <= 50,
 		"1분기에는 상한 50 을 넘을 수 없다.")
 	var bank: Dictionary = s["mastery_bank"]
-	_check(float(bank.get(SaStatKeys.INTELLECT, 0.0)) > 0.0,
-		"상한 초과분이 숙련도로 적립돼야 한다.")
+	var banked := float(bank.get(SaStatKeys.INTELLECT, 0.0))
+	_check(banked > 0.0, "상한 초과분이 숙련도로 적립돼야 한다.")
+
+	# 적립분은 다음 분기 첫 턴에 지급된다. 지급이 없으면 상한 근처의 고티어
+	# 행동이 손해가 되어 "상한 직전에는 저티어를 반복하라"가 최적 플레이가 된다.
+	var rest := {"id": "r", "cost": {}, "category": "rest", "tier": "basic"}
+	var same_term := s.duplicate(true)
+	same_term["turn"] = 5
+	var stay := SaTurn.resolve(same_term, rest, apt, SaRng.new(2))
+	_check((stay["mastery_released"] as Dictionary).is_empty(),
+		"분기 경계가 아닌 턴에는 지급이 없어야 한다.")
+	_check(is_equal_approx(float(((stay["state"] as Dictionary)["mastery_bank"] as Dictionary)
+		.get(SaStatKeys.INTELLECT, 0.0)), banked),
+		"분기 안에서는 적립분이 그대로 남아 있어야 한다.")
+
+	var crossing := s.duplicate(true)
+	crossing["turn"] = 9  # 1분기 마지막 턴. 다음 턴이 2분기다.
+	var before_stat := int((crossing["stats"] as Dictionary)[SaStatKeys.INTELLECT])
+	var crossed := SaTurn.resolve(crossing, rest, apt, SaRng.new(3))
+	var after: Dictionary = crossed["state"]
+	var released: Dictionary = crossed["mastery_released"]
+	_check(int(released.get(SaStatKeys.INTELLECT, 0)) == int(roundf(banked)),
+		"분기 경계에서 적립분이 지급돼야 한다. 적립 %.2f, 지급 %d"
+			% [banked, int(released.get(SaStatKeys.INTELLECT, 0))])
+	_check(int((after["stats"] as Dictionary)[SaStatKeys.INTELLECT])
+		== before_stat + int(roundf(banked)),
+		"지급분이 스탯에 실제로 더해져야 한다.")
+	_check(is_equal_approx(float((after["mastery_bank"] as Dictionary)
+		.get(SaStatKeys.INTELLECT, 0.0)), 0.0),
+		"지급 후 적립분은 0 이 돼야 한다.")
+
+	# 새 분기 상한을 넘는 몫은 버린다. 재적립하면 영원히 이월돼 분기 상한이
+	# 유예에 지나지 않게 된다.
+	var overflowing := SaResources.new_state(1)
+	overflowing["turn"] = 9
+	(overflowing["stats"] as Dictionary)[SaStatKeys.INTELLECT] = 69
+	(overflowing["mastery_bank"] as Dictionary)[SaStatKeys.INTELLECT] = 12.0
+	var capped: Dictionary = SaTurn.resolve(overflowing, rest, apt, SaRng.new(4))
+	var capped_state: Dictionary = capped["state"]
+	_check(int((capped_state["stats"] as Dictionary)[SaStatKeys.INTELLECT])
+		== SaGrowthCurve.term_ceiling(10),
+		"지급은 새 분기 상한 70 을 넘지 못한다. 실제: %d"
+			% int((capped_state["stats"] as Dictionary)[SaStatKeys.INTELLECT]))
+	_check(is_equal_approx(float((capped_state["mastery_bank"] as Dictionary)
+		.get(SaStatKeys.INTELLECT, 0.0)), 0.0),
+		"상한에 막힌 몫은 버려지고 재적립되지 않아야 한다.")
 
 ## 미충족 선택지는 숨기지 않고 사유와 함께 노출한다.
 func _test_event_choice_gating() -> void:
