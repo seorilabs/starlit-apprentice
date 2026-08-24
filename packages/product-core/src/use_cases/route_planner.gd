@@ -144,6 +144,16 @@ static func _best_choice(state: Dictionary, event: Dictionary, reqs: Array) -> D
 					SaEndingRequirements.TYPE_FLAG:
 						if (eff.get("flags", {}) as Dictionary).has(_text(req.get("flag", ""))):
 							s += 14.0 * w
+			# 진로 선언은 한 번뿐이고 되돌릴 수 없다. 목표와 다른 길을 적으면
+			# 그 런의 declared 요건이 통째로 깨진다 — 요건 점수에는 이 비용이
+			# 전혀 보이지 않는다(선언 요건은 이미 충족으로 보여 건너뛴다).
+			var declared := _text(eff.get("declared_path", ""))
+			if declared != "":
+				for r2 in reqs:
+					var req3: Dictionary = r2
+					if _text(req3.get("type", "")) != SaEndingRequirements.TYPE_DECLARED:
+						continue
+					s += (60.0 if _text(req3.get("path", "")) == declared else -120.0) * w
 			# 심사 기권·낙방은 낙제로 이어져 band >= 4 엔딩을 영구히 닫는다.
 			# 요건 점수만으로는 이 비용이 전혀 보이지 않는다.
 			for f in (eff.get("flags", {}) as Dictionary).keys():

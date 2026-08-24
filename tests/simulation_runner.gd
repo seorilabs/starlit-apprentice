@@ -5,6 +5,7 @@ extends SceneTree
 
 const ACTIONS_PATH := "res://data/actions.json"
 const EVENTS_PATH := "res://data/events.json"
+const ENDINGS_PATH := "res://data/endings.json"
 const SEEDS := [1, 7, 13, 101, 4242, 65537, 999983]
 
 func _initialize() -> void:
@@ -12,6 +13,9 @@ func _initialize() -> void:
 	var data := _load(ACTIONS_PATH)
 	var actions: Array = data.get("actions", [])
 	var events: Array = _load(EVENTS_PATH).get("events", [])
+	var endings: Array = _load(ENDINGS_PATH).get("endings", [])
+	if endings.is_empty():
+		failures.append("엔딩이 비었다")
 	if events.is_empty():
 		failures.append("이벤트가 비었다")
 	if actions.size() != 38:
@@ -28,6 +32,9 @@ func _initialize() -> void:
 	var together_used := 0
 	var npc_events := 0
 	var peak_affinity := {}
+	var declared_runs := 0
+	var declared_endings := 0
+	var ending_codes := {}
 
 	var seed_index := -1
 	for seed_value in SEEDS:
@@ -108,6 +115,16 @@ func _initialize() -> void:
 			peak_affinity[npc_id] = maxi(int(peak_affinity.get(npc_id, 0)), v)
 		if int(state.get("turn", 1)) > SaGrowthCurve.TURNS_TOTAL:
 			completed += 1
+		# 진로 선언은 후반 콘텐츠 전체의 관문이다. 선언이 상태에 남지 않으면
+		# 진로 전용 액션 6종과 declared 요건 엔딩 12건이 통째로 죽는다.
+		var declared_path := String(state.get("declared_path", ""))
+		if declared_path != "":
+			declared_runs += 1
+		var code := SaEndingJudgement.judge(state, endings,
+			SaEndingJudgement.declared_ending_code(state, endings, declared_path))
+		ending_codes[code] = int(ending_codes.get(code, 0)) + 1
+		if _has_declared_requirement(_ending_of(endings, code)):
+			declared_endings += 1
 		if min_gold < 40:
 			gold_pressure += 1
 		if min_energy < 30:
@@ -124,6 +141,8 @@ func _initialize() -> void:
 	print("고유 이벤트 분포: %s" % str(by_cat))
 	print("함께 사용 %d회 | NPC 이벤트 %d회 | 시드별 최고 호감 %s"
 		% [together_used, npc_events, str(peak_affinity)])
+	print("진로 선언 %d/%d 시드 | declared 요건 엔딩 도달 %d회 | 도달 엔딩 %s"
+		% [declared_runs, SEEDS.size(), declared_endings, str(ending_codes)])
 	print("턴 29 이전 캡 도달: %s" % ("없음" if earliest_cap == 99 else "턴 %d" % earliest_cap))
 
 	if completed != SEEDS.size():
@@ -151,6 +170,10 @@ func _initialize() -> void:
 		failures.append("함께 수식이 한 번도 사용되지 않았다. 호감의 주 채널이 죽었다")
 	if npc_events < SEEDS.size() * 3:
 		failures.append("NPC 이벤트가 시드당 3회 미만이다: %d/%d" % [npc_events, SEEDS.size()])
+	if declared_runs == 0:
+		failures.append("어느 시드에서도 진로가 선언되지 않았다. state.declared_path 가 죽었다")
+	if declared_endings == 0:
+		failures.append("declared 요건 엔딩에 한 번도 도달하지 못했다. 진로 엔딩 12건이 사문화됐다")
 	if gold_pressure == 0:
 		failures.append("불변식 13 위반: 어느 시드에서도 골드가 40 아래로 내려가지 않았다. 자원이 제약이 아니다")
 
@@ -161,6 +184,18 @@ func _initialize() -> void:
 	for f in failures:
 		printerr("FAIL: %s" % f)
 	quit(1)
+
+func _ending_of(endings: Array, code: String) -> Dictionary:
+	for e in endings:
+		if String((e as Dictionary).get("code", "")) == code:
+			return e
+	return {}
+
+func _has_declared_requirement(ending: Dictionary) -> bool:
+	for r in (ending.get("requirements", []) as Array):
+		if String((r as Dictionary).get("type", "")) == SaEndingRequirements.TYPE_DECLARED:
+			return true
+	return false
 
 ## 탐욕적이지 않은 대표 플레이: 자원이 급하면 회복·수입, 아니면 성장.
 func _choose(state: Dictionary, actions: Array, rng: SaRng) -> Dictionary:

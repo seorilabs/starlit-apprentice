@@ -84,3 +84,42 @@ static func judge(state: Dictionary, endings: Array, declared_path_ending: Strin
 			best_band = bd
 			best_code = code
 	return best_code if not best.is_empty() else FALLBACK_CODE
+
+## 선언한 진로의 대표 엔딩 코드를 콘텐츠에서 유도한다.
+##
+## 진로→엔딩 표를 코드에 박으면 엔딩을 추가할 때마다 표가 썩는다. 엔딩 목록에서
+## declared 요건의 path 가 일치하는 것만 후보로 두고, 그중 지금 상태가 실제로
+## 충족한 엔딩을 고른다. 충족하지 못한 엔딩에 보너스를 줘 봐야 judge() 가
+## 어차피 걸러내므로 선언 보너스가 통째로 사라진다.
+## 정렬은 judge() 와 같은 규칙이다 — 특이도 desc → band desc → 코드 asc.
+static func declared_ending_code(state: Dictionary, endings: Array, declared_path: String) -> String:
+	if declared_path == "":
+		return ""
+	var best_code := ""
+	var best_spec := -1.0
+	var best_band := -1.0
+	for ending in endings:
+		var e: Dictionary = ending
+		var matches := false
+		for req in (e.get("requirements", []) as Array):
+			var r: Dictionary = req
+			if String(r.get("type", "")) == SaEndingRequirements.TYPE_DECLARED \
+				and String(r.get("path", "")) == declared_path:
+				matches = true
+				break
+		if not matches:
+			continue
+		if not SaEndingRequirements.all_satisfied(state, e.get("requirements", [])):
+			continue
+		var code := String(e.get("code", ""))
+		var sp := specificity(e)
+		var bd := float(e.get("band", 0))
+		var better := false
+		if sp > best_spec: better = true
+		elif sp == best_spec and bd > best_band: better = true
+		elif sp == best_spec and bd == best_band and (best_code == "" or code < best_code): better = true
+		if better:
+			best_code = code
+			best_spec = sp
+			best_band = bd
+	return best_code

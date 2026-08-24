@@ -243,6 +243,11 @@ static func _apply_effects(out: Dictionary, effects: Dictionary) -> void:
 	var aff: Dictionary = out.get("affinity", {})
 	for key in (effects.get("affinity", {}) as Dictionary).keys():
 		aff[key] = clampi(int(aff.get(key, 0)) + int((effects["affinity"] as Dictionary)[key]), 0, 100)
+	# 진로 선언은 플래그가 아니라 상태 필드가 원장이다. 플래그만 남기면
+	# 진로 전용 액션·declared 엔딩·심사 보너스가 통째로 사문화된다.
+	var declared := _text(effects.get("declared_path", ""))
+	if declared != "":
+		out["declared_path"] = declared
 	var enter := _text(effects.get("condition", ""))
 	if enter != "" and not (out.get("conditions", []) as Array).has(enter):
 		(out["conditions"] as Array).append(enter)

@@ -107,7 +107,11 @@ func apply_event_choice(choice: Dictionary) -> Dictionary:
 	return outcome
 
 func judge() -> Dictionary:
-	var code := SaEndingJudgement.judge(state, endings, "")
+	# 선언한 진로의 엔딩 코드는 엔딩 데이터에서 유도한다. 빈 문자열을 넘기면
+	# 선언 보너스가 실제 런에서 한 번도 붙지 않는다.
+	var declared := SaEndingJudgement.declared_ending_code(
+		state, endings, String(state.get("declared_path", "")))
+	var code := SaEndingJudgement.judge(state, endings, declared)
 	for e in endings:
 		if String((e as Dictionary).get("code", "")) == code:
 			return e
