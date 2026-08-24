@@ -34,6 +34,7 @@ func _initialize() -> void:
 	var peak_affinity := {}
 	var declared_runs := 0
 	var declared_endings := 0
+	var failed_runs := 0
 	var ending_codes := {}
 
 	var seed_index := -1
@@ -123,8 +124,16 @@ func _initialize() -> void:
 		var code := SaEndingJudgement.judge(state, endings,
 			SaEndingJudgement.declared_ending_code(state, endings, declared_path))
 		ending_codes[code] = int(ending_codes.get(code, 0)) + 1
-		if _has_declared_requirement(_ending_of(endings, code)):
+		var ending := _ending_of(endings, code)
+		if _has_declared_requirement(ending):
 			declared_endings += 1
+		# 낙제는 band 4 를 영구히 닫는다. 닫히지 않으면 계절 심사 낙방이
+		# 서사에만 남고 판정에는 아무것도 걸지 않는다.
+		if (state.get("conditions", []) as Array).has(SaRisk.COND_FAILED):
+			failed_runs += 1
+			if int(ending.get("band", 0)) >= SaEndingJudgement.LEGENDARY_BAND:
+				failures.append("낙제한 시드 %d 가 band %d 엔딩 '%s' 을 받았다"
+					% [seed_value, int(ending.get("band", 0)), code])
 		if min_gold < 40:
 			gold_pressure += 1
 		if min_energy < 30:
@@ -141,8 +150,8 @@ func _initialize() -> void:
 	print("고유 이벤트 분포: %s" % str(by_cat))
 	print("함께 사용 %d회 | NPC 이벤트 %d회 | 시드별 최고 호감 %s"
 		% [together_used, npc_events, str(peak_affinity)])
-	print("진로 선언 %d/%d 시드 | declared 요건 엔딩 도달 %d회 | 도달 엔딩 %s"
-		% [declared_runs, SEEDS.size(), declared_endings, str(ending_codes)])
+	print("진로 선언 %d/%d 시드 | declared 요건 엔딩 도달 %d회 | 낙제 %d시드 | 도달 엔딩 %s"
+		% [declared_runs, SEEDS.size(), declared_endings, failed_runs, str(ending_codes)])
 	print("턴 29 이전 캡 도달: %s" % ("없음" if earliest_cap == 99 else "턴 %d" % earliest_cap))
 
 	if completed != SEEDS.size():

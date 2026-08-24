@@ -24,6 +24,8 @@ const SEEDS := [1, 7, 13, 101, 4242, 65537, 999983]
 const REQUIRED := {0: 0, 1: 7, 2: 7, 3: 7, 4: 6}
 const PROVISIONAL_BANDS := []   ## 잠정 기준 없음. 전 band 가 설계 기준을 충족한다.
 
+var _endings: Array = []
+
 func _initialize() -> void:
 	var failures: Array[String] = []
 	var actions: Array = _load(ACTIONS_PATH).get("actions", [])
@@ -105,12 +107,18 @@ func _initialize() -> void:
 
 	# band 0 은 성공을 노리는 계획기가 결코 만들지 않는다. 방치 플레이를
 	# 따로 돌려야 실패 엔딩 3종이 죽은 콘텐츠가 아님을 증명할 수 있다.
+	_endings = endings
 	var neglect := _neglect_run(actions, events)
 	print("방치 플레이: %s" % str(neglect))
 	if not bool(neglect.get("failed", false)):
 		failures.append("방치 플레이가 낙제하지 않는다. 실패 상태가 실제로 작동하지 않는다")
 	if not bool(neglect.get("in_debt", false)):
 		failures.append("방치 플레이가 빚을 지지 않는다. 수업료 압박이 작동하지 않는다")
+	# 낙제는 band 4 를 영구히 닫는다. 이 게이트가 없으면 심사 낙방이 서사에만
+	# 남고 판정에는 아무것도 걸지 않는다.
+	if bool(neglect.get("failed", false)) and int(neglect.get("ending_band", 0)) >= SaEndingJudgement.LEGENDARY_BAND:
+		failures.append("낙제한 런이 band %d 엔딩 '%s' 을 받았다"
+			% [int(neglect["ending_band"]), String(neglect.get("ending", ""))])
 
 	# 신중한 플레이는 상태이상에 걸리지 않는다 — 그게 맞다. 그러면 조건 이벤트
 	# 12종이 아무 경로로도 검증되지 않으므로 쉬지 않는 플레이를 따로 돌린다.
@@ -172,12 +180,23 @@ func _neglect_run(actions: Array, events: Array) -> Dictionary:
 					state = (SaEventResolution.apply(state, evd, cd, rng))["state"]
 					break
 			break
+	var ending := _ending_of(_endings, SaEndingJudgement.judge(state, _endings,
+		SaEndingJudgement.declared_ending_code(state, _endings,
+			String(state.get("declared_path", "")))))
 	return {
 		"failed": (state.get("conditions", []) as Array).has(SaRisk.COND_FAILED),
 		"in_debt": bool(state.get("in_debt", false)),
 		"gold": state.get("gold", 0),
 		"softlock": false,
+		"ending": String(ending.get("code", SaEndingJudgement.FALLBACK_CODE)),
+		"ending_band": int(ending.get("band", 0)),
 	}
+
+func _ending_of(endings: Array, code: String) -> Dictionary:
+	for e in endings:
+		if String((e as Dictionary).get("code", "")) == code:
+			return e
+	return {}
 
 ## 쉬지 않는 플레이. 마음이 쌓이도록 성장 행동만 고른다.
 func _grind_run(actions: Array, events: Array) -> Dictionary:
