@@ -25,6 +25,7 @@ func run_all() -> Array[String]:
 	_test_event_check_branches()
 	_test_every_condition_has_exit()
 	_test_declared_path_is_recorded()
+	_test_failed_locks_legendary()
 	# 빈 스위트가 초록으로 통과하지 않게 한다.
 	if _executed == 0:
 		_failures.append("실행된 검사가 0개다. 스위트가 비었거나 러너가 깨졌다.")
@@ -403,3 +404,39 @@ func _test_declared_path_is_recorded() -> void:
 		"충족하지 못한 진로 엔딩은 보너스 대상이 아니다.")
 	_check(SaEndingJudgement.declared_ending_code(after, endings, "") == "",
 		"선언하지 않았으면 진로 엔딩 코드가 없다.")
+
+## 낙제한 런은 band 4 엔딩을 받을 수 없다.
+##
+## SaRisk.locks_legendary() 는 선언만 돼 있고 호출하는 곳이 없었다. 그래서
+## 계절 심사 2회 낙방으로 낙제한 런도 스탯만 채우면 최상위 엔딩을 받았다.
+func _test_failed_locks_legendary() -> void:
+	var endings := [
+		{"code": "legend", "band": 4, "requirements": [
+			{"type": "stat", "stat": SaStatKeys.INTELLECT, "target": 60}]},
+		{"code": "solid", "band": 3, "requirements": [
+			{"type": "stat", "stat": SaStatKeys.INTELLECT, "target": 50}]},
+	]
+	var clean := SaResources.new_state(1)
+	(clean["stats"] as Dictionary)[SaStatKeys.INTELLECT] = 70
+	_check(SaEndingJudgement.judge(clean, endings) == "legend",
+		"낙제가 아니면 band 4 엔딩이 그대로 나와야 한다.")
+
+	var failed := clean.duplicate(true)
+	(failed["conditions"] as Array).append(SaRisk.COND_FAILED)
+	_check(SaEndingJudgement.judge(failed, endings) == "solid",
+		"낙제 상태에서는 band 4 가 후보에서 빠지고 band 3 이 나와야 한다.")
+
+	# band 4 만 남은 목록이면 걸러진 뒤 폴백으로 떨어진다.
+	_check(SaEndingJudgement.judge(failed, [endings[0]]) == SaEndingJudgement.FALLBACK_CODE,
+		"낙제 상태에서 후보가 전부 걸러지면 폴백을 돌려줘야 한다.")
+
+	# 낙제가 아닌 상태의 판정은 수정 전과 같아야 한다 — 잠금이 band 3 이하를
+	# 건드리면 기존 엔딩 26종의 판정이 통째로 흔들린다.
+	var low := SaResources.new_state(1)
+	(low["stats"] as Dictionary)[SaStatKeys.INTELLECT] = 55
+	var low_failed := low.duplicate(true)
+	(low_failed["conditions"] as Array).append(SaRisk.COND_FAILED)
+	_check(SaEndingJudgement.judge(low, endings) == SaEndingJudgement.judge(low_failed, endings),
+		"band 3 이하만 충족한 상태는 낙제 여부와 무관하게 같은 엔딩이어야 한다.")
+	_check(SaEndingJudgement.LEGENDARY_BAND == 4,
+		"잠금 임계값은 band 4 다.")

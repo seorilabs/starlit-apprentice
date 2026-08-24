@@ -7,6 +7,9 @@ extends RefCounted
 ## docs/game-design/02-gdd.md 엔딩 판정
 
 const FALLBACK_CODE := "quiet-life"
+## 낙제(SaRisk.COND_FAILED)가 잠그는 band 하한. SaRisk.locks_legendary() 의
+## "band 4 엔딩을 영구 잠근다"를 판정 쪽에서 실행하는 값이다.
+const LEGENDARY_BAND := 4
 
 # ── 새 설계: 특이도 점수 ────────────────────────────────────────────────────
 ## 배열 위치와 무관하게 콘텐츠에서 유도되는 점수로 정렬한다.
@@ -56,6 +59,9 @@ static func score(state: Dictionary, ending: Dictionary, declared_path_ending: S
 ## 정렬: score desc → specificity desc → band desc → code asc
 ## 최종 타이브레이크가 코드 사전순이라 시드와 배열 위치 양쪽에서 독립이다.
 static func judge(state: Dictionary, endings: Array, declared_path_ending: String = "") -> String:
+	# 낙제는 최상위 엔딩을 영구히 닫는다. 개별 엔딩의 condition 요건에 맡기면
+	# band 4 엔딩을 새로 저작할 때마다 요건 한 줄을 잊는 것으로 규칙이 샌다.
+	var legendary_locked := SaRisk.locks_legendary(state.get("conditions", []))
 	var best: Dictionary = {}
 	var best_score := -1.0
 	var best_spec := -1.0
@@ -65,6 +71,8 @@ static func judge(state: Dictionary, endings: Array, declared_path_ending: Strin
 		var e: Dictionary = ending
 		var reqs: Array = e.get("requirements", [])
 		if reqs.is_empty():
+			continue
+		if legendary_locked and int(e.get("band", 0)) >= LEGENDARY_BAND:
 			continue
 		if not SaEndingRequirements.all_satisfied(state, reqs):
 			continue
@@ -108,6 +116,11 @@ static func declared_ending_code(state: Dictionary, endings: Array, declared_pat
 				matches = true
 				break
 		if not matches:
+			continue
+		# judge() 가 어차피 거르는 엔딩에 보너스를 주면, 실제 후보인 band 3
+		# 진로 엔딩이 선언 보너스를 잃는다.
+		if SaRisk.locks_legendary(state.get("conditions", [])) \
+			and int(e.get("band", 0)) >= LEGENDARY_BAND:
 			continue
 		if not SaEndingRequirements.all_satisfied(state, e.get("requirements", [])):
 			continue
