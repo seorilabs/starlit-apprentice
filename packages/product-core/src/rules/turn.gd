@@ -50,7 +50,12 @@ static func resolve(
 
 	# ── 자원 ──────────────────────────────────────────────────────────
 	var cost: Dictionary = action.get("cost", {})
-	out["gold"] = int(out["gold"]) + int(cost.get("gold", 0))
+	var gold_delta := int(cost.get("gold", 0))
+	# 빚은 평판만이 아니라 벌이도 깎는다. 수입에만 곱한다 — 지출에 곱하면
+	# 빚진 견습생이 물건을 더 싸게 사는 셈이 된다.
+	if gold_delta > 0 and bool(out.get("in_debt", false)):
+		gold_delta = int(floor(float(gold_delta) * SaResources.DEBT_WORK_MULTIPLIER))
+	out["gold"] = int(out["gold"]) + gold_delta
 	var recovery := _text(action.get("recovery", ""))
 	if recovery == "stamina_scaled":
 		out["energy"] = int(out["energy"]) + SaResources.rest_recovery(int((out["stats"] as Dictionary).get(SaStatKeys.STAMINA, 10)))
@@ -131,12 +136,19 @@ static func resolve(
 
 	# ── 월말 수업료 ───────────────────────────────────────────────────
 	var tuition_charged := false
+	var tuition_paid := 0
 	if SaResources.is_month_end(turn) and turn < SaGrowthCurve.TURNS_TOTAL:
 		tuition_charged = true
-		if int(out["gold"]) >= SaResources.MONTHLY_TUITION:
-			out["gold"] = int(out["gold"]) - SaResources.MONTHLY_TUITION
-		else:
-			out["in_debt"] = true
+		# 당월 수업료와 밀린 금액을 함께 청구한다. 낼 수 있는 만큼 내는
+		# 부분 상환을 허용한다. 전액이 아니면 한 푼도 못 갚게 하면 밀린 금액이
+		# 커질수록 청산 문턱이 계단식으로 멀어져, 이 수정이 없애려는
+		# 단방향 데스 스파이럴이 형태만 바꿔 그대로 남는다.
+		var due := SaResources.MONTHLY_TUITION + int(out.get("debt_amount", 0))
+		tuition_paid = mini(int(out["gold"]), due)
+		out["gold"] = int(out["gold"]) - tuition_paid
+		out["debt_amount"] = due - tuition_paid
+		out["in_debt"] = int(out["debt_amount"]) > 0
+	# 청산된 턴부터는 평판을 깎지 않는다.
 	if bool(out.get("in_debt", false)):
 		out["reputation"] = int(out["reputation"]) - SaResources.DEBT_REPUTATION_PENALTY
 
@@ -153,6 +165,8 @@ static func resolve(
 		"gains": gains,
 		"entered_conditions": entered,
 		"tuition_charged": tuition_charged,
+		"tuition_paid": tuition_paid,
+		"debt_amount": int(out.get("debt_amount", 0)),
 		"promoted_talent": promoted,
 		"mastery_released": released,
 	}

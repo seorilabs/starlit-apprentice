@@ -186,6 +186,9 @@ func _neglect_run(actions: Array, events: Array) -> Dictionary:
 	return {
 		"failed": (state.get("conditions", []) as Array).has(SaRisk.COND_FAILED),
 		"in_debt": bool(state.get("in_debt", false)),
+		"debt_amount": int(state.get("debt_amount", 0)),
+		"reputation": int(state.get("reputation", 0)),
+		"reputation_peak": int(state.get("reputation_peak", 0)),
 		"gold": state.get("gold", 0),
 		"softlock": false,
 		"ending": String(ending.get("code", SaEndingJudgement.FALLBACK_CODE)),

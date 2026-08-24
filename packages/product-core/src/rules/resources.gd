@@ -52,6 +52,7 @@ static func new_state(seed_value: int, deck: int = 0) -> Dictionary:
 		"mastery_bank": {},
 		"declared_path": "",
 		"in_debt": false,
+		"debt_amount": 0,
 		"awakened": false,
 		"consecutive_fails": 0,
 		"high_stress_turns": 0,

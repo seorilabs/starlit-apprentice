@@ -26,6 +26,7 @@ func run_all() -> Array[String]:
 	_test_every_condition_has_exit()
 	_test_declared_path_is_recorded()
 	_test_failed_locks_legendary()
+	_test_debt_is_repayable()
 	# 빈 스위트가 초록으로 통과하지 않게 한다.
 	if _executed == 0:
 		_failures.append("실행된 검사가 0개다. 스위트가 비었거나 러너가 깨졌다.")
@@ -440,3 +441,75 @@ func _test_failed_locks_legendary() -> void:
 		"band 3 이하만 충족한 상태는 낙제 여부와 무관하게 같은 엔딩이어야 한다.")
 	_check(SaEndingJudgement.LEGENDARY_BAND == 4,
 		"잠금 임계값은 band 4 다.")
+
+## 빚은 갚을 수 있어야 한다.
+##
+## 예전에는 in_debt 를 true 로 만드는 코드만 있고 false 로 되돌리는 경로가
+## 없었다. 3개월차에 한 번 미납하면 남은 33턴 동안 매 턴 평판 -1 이 확정돼
+## 평판 추락으로 이어지는 단방향 데스 스파이럴이 됐다.
+## DEBT_WORK_MULTIPLIER 도 정의만 되고 어디서도 곱해지지 않았다.
+func _test_debt_is_repayable() -> void:
+	var apt := {}
+	for k in SaStatKeys.ALL: apt[k] = "B"
+	var work := {"id": "w", "cost": {"gold": 40, "energy": -8}, "category": "work",
+		"tier": "basic", "stat": SaStatKeys.COMMERCE}
+	var rest := {"id": "r", "cost": {}, "category": "rest", "tier": "basic"}
+
+	# 골드 0 으로 월말을 지나면 빚이 생기고 밀린 금액은 수업료와 같다.
+	var broke := SaResources.new_state(1)
+	broke["turn"] = 3  # 월말
+	broke["gold"] = 0
+	var after: Dictionary = SaTurn.resolve(broke, rest, apt, SaRng.new(1))["state"]
+	_check(bool(after.get("in_debt", false)), "골드 0 으로 월말을 지나면 빚이 생겨야 한다.")
+	_check(int(after.get("debt_amount", 0)) == SaResources.MONTHLY_TUITION,
+		"밀린 금액은 수업료와 같아야 한다. 실제: %d" % int(after.get("debt_amount", 0)))
+
+	# 빚 상태의 수입은 DEBT_WORK_MULTIPLIER 만큼 깎인다. 지출은 그대로다.
+	var earning := after.duplicate(true)
+	earning["turn"] = 4
+	earning["gold"] = 0
+	earning["energy"] = 80
+	var earned: Dictionary = SaTurn.resolve(earning, work, apt, SaRng.new(2))["state"]
+	var expected := int(floor(40.0 * SaResources.DEBT_WORK_MULTIPLIER))
+	_check(int(earned.get("gold", 0)) == expected,
+		"빚 상태의 수입은 x%.2f 여야 한다. 기대 %d, 실제 %d"
+			% [SaResources.DEBT_WORK_MULTIPLIER, expected, int(earned.get("gold", 0))])
+	var spending := earning.duplicate(true)
+	spending["gold"] = 100
+	var spent: Dictionary = SaTurn.resolve(spending,
+		{"id": "s", "cost": {"gold": -30}, "category": "lesson", "tier": "basic",
+		"stat": SaStatKeys.INTELLECT}, apt, SaRng.new(3))["state"]
+	_check(int(spent.get("gold", 0)) == 70, "지출에는 배수가 붙지 않아야 한다. 실제: %d"
+		% int(spent.get("gold", 0)))
+
+	# 다음 월말에 당월 수업료 + 밀린 금액을 낼 수 있으면 빚이 청산된다.
+	var solvent := after.duplicate(true)
+	solvent["turn"] = 6
+	solvent["gold"] = SaResources.MONTHLY_TUITION * 3
+	var cleared_result := SaTurn.resolve(solvent, rest, apt, SaRng.new(4))
+	var cleared: Dictionary = cleared_result["state"]
+	_check(not bool(cleared.get("in_debt", true)), "전액을 내면 빚이 청산돼야 한다.")
+	_check(int(cleared.get("debt_amount", -1)) == 0, "청산 후 밀린 금액은 0 이어야 한다.")
+	_check(int(cleared_result["tuition_paid"]) == SaResources.MONTHLY_TUITION * 2,
+		"청산 턴에는 당월 수업료와 밀린 금액을 함께 낸다.")
+
+	# 청산 이후 턴에는 빚 때문에 평판이 깎이지 않는다.
+	var quiet := cleared.duplicate(true)
+	quiet["reputation"] = 30
+	var next_turn: Dictionary = SaTurn.resolve(quiet, rest, apt, SaRng.new(5))["state"]
+	_check(int(next_turn.get("reputation", 0)) >= 30,
+		"청산 이후에는 빚 페널티가 붙지 않아야 한다. 실제: %d" % int(next_turn.get("reputation", 0)))
+
+	# 부분 상환: 낼 수 있는 만큼 내고 나머지가 남는다. 전액이 아니면 한 푼도
+	# 못 갚게 하면 밀린 금액이 커질수록 청산 문턱이 계단식으로 멀어진다.
+	var partial := after.duplicate(true)
+	partial["turn"] = 6
+	partial["gold"] = 20
+	var partial_result := SaTurn.resolve(partial, rest, apt, SaRng.new(6))
+	var partial_state: Dictionary = partial_result["state"]
+	_check(int(partial_result["tuition_paid"]) == 20, "가진 골드 전액이 상환에 쓰여야 한다.")
+	_check(int(partial_state.get("gold", -1)) == 0, "부분 상환 후 골드는 0 이다.")
+	_check(int(partial_state.get("debt_amount", 0)) == SaResources.MONTHLY_TUITION * 2 - 20,
+		"남은 미납분이 밀린 금액으로 이월돼야 한다. 실제: %d"
+			% int(partial_state.get("debt_amount", 0)))
+	_check(bool(partial_state.get("in_debt", false)), "다 갚지 못했으면 빚 상태가 유지된다.")

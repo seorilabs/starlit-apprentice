@@ -122,8 +122,13 @@ func _show_resolution(action: Dictionary, result: Dictionary) -> void:
 	for c in (result.get("entered_conditions", []) as Array):
 		col.add_child(SaUiKit.label("· %s" % _condition_name(String(c)), SaUiKit.FONT_BODY, SaUiKit.ROSE))
 	if bool(result.get("tuition_charged", false)):
-		col.add_child(SaUiKit.label("월말 수업료 %d금화" % SaResources.MONTHLY_TUITION,
+		# 밀린 금액이 있으면 청구액도 실제 납부액도 월 수업료와 다르다.
+		col.add_child(SaUiKit.label("월말 수업료 %d금화 납부" % int(result.get("tuition_paid", 0)),
 			SaUiKit.FONT_SMALL, SaUiKit.INK_DIM))
+	var owed := int(result.get("debt_amount", 0))
+	if owed > 0:
+		col.add_child(SaUiKit.label("밀린 수업료 %d금화 · 매 턴 평판 -%d"
+			% [owed, SaResources.DEBT_REPUTATION_PENALTY], SaUiKit.FONT_SMALL, SaUiKit.ROSE))
 
 	col.add_child(_next_button("계속", func():
 		if not _run.pending_events.is_empty():
