@@ -73,6 +73,17 @@ func _show_title() -> void:
 		resume_wrap.add_child(resume)
 		col.add_child(resume_wrap)
 
+	# SRC-001: 사운드 On/Off 는 사용자 설정 필수다.
+	var sound := Button.new()
+	sound.custom_minimum_size = Vector2(280, SaUiKit.TOUCH_MIN)
+	sound.add_theme_font_size_override("font_size", SaUiKit.FONT_BODY)
+	sound.text = _sound_label()
+	sound.pressed.connect(func():
+		Audio.toggle_sound()
+		sound.text = _sound_label())
+	var sound_wrap := CenterContainer.new()
+	sound_wrap.add_child(sound)
+
 	var start := Button.new()
 	start.text = "새로 시작"
 	start.custom_minimum_size = Vector2(280, SaUiKit.TOUCH_MIN)
@@ -81,7 +92,12 @@ func _show_title() -> void:
 	var wrap := CenterContainer.new()
 	wrap.add_child(start)
 	col.add_child(wrap)
+	col.add_child(sound_wrap)
 	add_child(col)
+	Audio.play_bgm("bgm_main")
+
+func _sound_label() -> String:
+	return "소리 켬" if Audio.sound_enabled else "소리 끔"
 
 func _start_run() -> void:
 	# 코어는 Time 을 모른다. 시드는 여기서 만들어 주입한다.
@@ -108,6 +124,7 @@ func _show_turn() -> void:
 	if _run.is_over():
 		_show_ending()
 		return
+	Audio.play_bgm("bgm_main")
 	_clear()
 	_turn_screen = SaTurnScreen.new()
 	_turn_screen.anchor_right = 1.0
@@ -118,6 +135,7 @@ func _show_turn() -> void:
 	_turn_screen.portrait_tapped.connect(_show_constellation)
 
 func _on_action(action: Dictionary, together: String) -> void:
+	Audio.play_sfx("sfx_confirm")
 	var result := _run.resolve(action, together)
 	_save_run()
 	_show_resolution(action, result)
@@ -179,6 +197,9 @@ func _show_resolution(action: Dictionary, result: Dictionary) -> void:
 func _show_event() -> void:
 	var ev: Dictionary = _run.pending_events[0]
 	Events.event_shown.emit(String(ev.get("id", "")))
+	# 계절 심사는 장면이 다르다. 배경음도 따라간다.
+	Audio.play_bgm("bgm_milestone" if String(ev.get("category", "")) == "milestone" else "bgm_event")
+	Audio.play_sfx("sfx_page")
 	var card := _panel_overlay()
 	var col := card.get_child(0) as VBoxContainer
 	col.add_child(SaUiKit.heading(String(ev.get("title", ""))))
@@ -203,6 +224,7 @@ func _show_event() -> void:
 		col.add_child(btn)
 
 func _on_event_choice(choice: Dictionary) -> void:
+	Audio.play_sfx("sfx_tap")
 	var outcome := _run.apply_event_choice(choice)
 	_save_run()
 	var card := _panel_overlay()

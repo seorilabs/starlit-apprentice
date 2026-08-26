@@ -30,6 +30,32 @@ file_size() {
   fi
 }
 
+# 오디오 예산. docs/game-design/04-art-audio-bible.md
+#   BGM 3종 합계 1.6MB, 각 550KB. 스테레오나 mp3 로 새면 여기서 잡는다.
+BGM_TOTAL_LIMIT=$((1600 * 1024))
+BGM_EACH_LIMIT=$((550 * 1024))
+audio_dir="${project_dir}/assets/audio"
+audio_fail=0
+if [ -d "${audio_dir}" ]; then
+  bgm_total=0
+  for f in "${audio_dir}"/bgm_*.ogg; do
+    [ -f "$f" ] || continue
+    sz=$(file_size "$f"); bgm_total=$((bgm_total + sz))
+    printf "  %-34s %7.2f MB\n" "audio/$(basename "$f")" "$(mb "$sz")" >&2
+    if [ "$sz" -gt "$BGM_EACH_LIMIT" ]; then
+      echo "::error::BGM $(basename "$f") 가 550KB 를 넘는다" >&2; audio_fail=1
+    fi
+  done
+  printf "[web-budget] BGM 합계  %.2f MB / 상한 %.2f MB\n" "$(mb $bgm_total)" "$(mb $BGM_TOTAL_LIMIT)" >&2
+  if [ "$bgm_total" -gt "$BGM_TOTAL_LIMIT" ]; then
+    echo "::error::BGM 합계가 1.6MB 를 넘는다" >&2; audio_fail=1
+  fi
+  # mp3 는 인코더 지연이 루프 시작에 공백을 만든다. 아예 금지한다.
+  if ls "${audio_dir}"/*.mp3 >/dev/null 2>&1; then
+    echo "::error::assets/audio 에 mp3 가 있다. BGM 은 .ogg 로만 출하한다" >&2; audio_fail=1
+  fi
+fi
+
 # 낡은 산출물을 재면 예산도 폰트 검증도 거짓이 된다. 항상 새로 만든다.
 # SKIP_EXPORT=1 은 방금 export 한 것을 다시 재고 싶을 때만 쓴다.
 if [ "${SKIP_EXPORT:-0}" != "1" ]; then
@@ -58,6 +84,7 @@ printf "[web-budget] pck        %.2f MB (참고선 %.2f MB)\n" "$(mb $pck)" "$(m
 printf "[web-budget] 비압축      %.2f MB / AIT 상한 %.2f MB\n" "$(mb $raw_total)" "$(mb $AIT_LIMIT)" >&2
 
 fail=0
+if [ "$audio_fail" -ne 0 ]; then fail=1; fi
 # 하드 실패는 플랫폼 상한 하나뿐이다. 나머지는 관측값으로 남긴다.
 [ "$raw_total" -gt "$AIT_LIMIT" ] && {
   echo "[web-budget] AIT 100MB 상한 초과. 패키징이 실패한다." >&2; fail=1; }
