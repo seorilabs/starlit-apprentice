@@ -24,6 +24,13 @@ func _ready() -> void:
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(bg)
 	_content = _load_content()
+	# 컨트롤러의 계측 신호를 전역 버스로 중계한다. 컨트롤러는 씬 트리를
+	# 모르고, 버스 구독자(Analytics 어댑터)는 컨트롤러를 모른다.
+	_run.turn_resolved.connect(func(p): Events.turn_resolved.emit(p))
+	_run.condition_entered.connect(func(c): Events.condition_entered.emit(c))
+	_run.event_choice_made.connect(func(e, c): Events.event_choice_made.emit(e, c))
+	_run.milestone_result.connect(func(s, g): Events.milestone_result.emit(s, g))
+	_run.run_completed.connect(func(code): Events.run_completed.emit(code))
 	_show_title()
 
 func _load_content() -> Dictionary:
@@ -171,6 +178,7 @@ func _show_resolution(action: Dictionary, result: Dictionary) -> void:
 # ── 이벤트 ─────────────────────────────────────────────────────────
 func _show_event() -> void:
 	var ev: Dictionary = _run.pending_events[0]
+	Events.event_shown.emit(String(ev.get("id", "")))
 	var card := _panel_overlay()
 	var col := card.get_child(0) as VBoxContainer
 	col.add_child(SaUiKit.heading(String(ev.get("title", ""))))
