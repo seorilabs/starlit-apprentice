@@ -28,6 +28,68 @@ func start(seed_value: int, content: Dictionary, deck: int = 0) -> void:
 	endings = content.get("endings", [])
 	npcs = content.get("npcs", [])
 
+## 이어하기용 직렬화. RNG 내부 상태까지 담아야 복원 이후의 판정이
+## 저장 없이 계속했을 때와 같아진다 — 그러지 않으면 저장이 곧 리롤이 된다.
+func to_save() -> Dictionary:
+	var queued: Array = []
+	for e in pending_events:
+		queued.append(String((e as Dictionary).get("id", "")))
+	return {
+		"state": state,
+		"aptitude": aptitude,
+		"rng": rng.state() if rng != null else 1,
+		"pending_events": queued,
+		"beat": beat,
+	}
+
+## 저장본에서 런을 되살린다. 콘텐츠는 파일에서 다시 읽는다 — 저장본에 이벤트
+## 본문을 통째로 넣으면 콘텐츠 수정이 기존 저장을 화석으로 만든다.
+func restore(data: Dictionary, content: Dictionary) -> bool:
+	if data.is_empty():
+		return false
+	var saved: Dictionary = _numeric(data.get("state", {}))
+	if saved.is_empty() or not saved.has("turn"):
+		return false
+	state = saved
+	aptitude = data.get("aptitude", {})
+	# SaRng 는 생성자가 곧 상태 주입이다. 저장된 내부 상태를 그대로 넣으면
+	# 다음 난수가 저장 시점의 다음 난수와 같다.
+	rng = SaRng.new(int(data.get("rng", 1)))
+	actions = content.get("actions", [])
+	events = content.get("events", [])
+	endings = content.get("endings", [])
+	npcs = content.get("npcs", [])
+	beat = _numeric(data.get("beat", {}))
+	pending_events = []
+	for id in (data.get("pending_events", []) as Array):
+		var found := _event(String(id))
+		if not found.is_empty():
+			pending_events.append(found)
+	return true
+
+func _event(id: String) -> Dictionary:
+	for e in events:
+		if String((e as Dictionary).get("id", "")) == id:
+			return e
+	return {}
+
+## JSON 은 정수와 실수를 구분하지 않아 왕복하면 turn 이 5.0 이 된다.
+## 정수로 되돌려 놓지 않으면 저장 전후로 코어에 들어가는 값의 타입이 달라진다.
+static func _numeric(value: Variant) -> Variant:
+	if value is Dictionary:
+		var out := {}
+		for k in (value as Dictionary).keys():
+			out[k] = _numeric((value as Dictionary)[k])
+		return out
+	if value is Array:
+		var arr: Array = []
+		for v in (value as Array):
+			arr.append(_numeric(v))
+		return arr
+	if value is float and is_equal_approx(float(value), roundf(float(value))):
+		return int(roundf(float(value)))
+	return value
+
 func turn() -> int:
 	return int(state.get("turn", 1))
 
