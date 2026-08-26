@@ -15,7 +15,6 @@ var _run := SaRunController.new()
 var _content := {}
 var _turn_screen: SaTurnScreen
 var _overlay: Control
-var _run_count := 0
 
 func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -55,6 +54,18 @@ func _show_title() -> void:
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	col.add_child(sub)
 
+	# 저장된 런이 있을 때만 이어하기를 연다. 빈 버튼을 눌러 아무 일도
+	# 일어나지 않는 화면이 이어하기 없음보다 나쁘다.
+	if Profile.has_saved_run():
+		var resume := Button.new()
+		resume.text = "이어하기"
+		resume.custom_minimum_size = Vector2(280, SaUiKit.TOUCH_MIN)
+		resume.add_theme_font_size_override("font_size", SaUiKit.FONT_HEAD)
+		resume.pressed.connect(_continue_run)
+		var resume_wrap := CenterContainer.new()
+		resume_wrap.add_child(resume)
+		col.add_child(resume_wrap)
+
 	var start := Button.new()
 	start.text = "새로 시작"
 	start.custom_minimum_size = Vector2(280, SaUiKit.TOUCH_MIN)
@@ -67,11 +78,23 @@ func _show_title() -> void:
 
 func _start_run() -> void:
 	# 코어는 Time 을 모른다. 시드는 여기서 만들어 주입한다.
-	# 회차마다 다른 기회 덱을 연다. 연속 두 회차의 기회 이벤트가 겹치지 않는다.
-	# 회차 수 영속화는 별빛 기록(메타 진행)에서 붙는다 — 지금은 세션 안에서만 센다.
-	_run.start(int(Time.get_unix_time_from_system()) & 0x7FFFFFFF, _content, _run_count)
-	_run_count += 1
+	# 회차마다 다른 기회 덱을 연다. 덱 인덱스는 별빛 기록의 완주 회차에서
+	# 유도하므로 앱을 껐다 켜도 0 으로 되돌아가지 않는다.
+	_run.start(int(Time.get_unix_time_from_system()) & 0x7FFFFFFF, _content, Profile.next_deck())
+	_save_run()
 	_show_turn()
+
+func _continue_run() -> void:
+	if not _run.restore(Profile.load_run(), _content):
+		# 저장이 깨졌으면 조용히 새 런으로 떨어지지 않는다. 타이틀로 돌려보내
+		# 플레이어가 무엇을 시작하는지 알게 한다.
+		Profile.clear_run()
+		_show_title()
+		return
+	_show_turn()
+
+func _save_run() -> void:
+	Profile.save_run(_run.to_save())
 
 # ── 턴 ─────────────────────────────────────────────────────────────
 func _show_turn() -> void:
@@ -89,6 +112,7 @@ func _show_turn() -> void:
 
 func _on_action(action: Dictionary, together: String) -> void:
 	var result := _run.resolve(action, together)
+	_save_run()
 	_show_resolution(action, result)
 
 # ── 해석 비트: 화면 전환 없이 장면 위에 겹친다 ──────────────────────
@@ -164,6 +188,7 @@ func _show_event() -> void:
 
 func _on_event_choice(choice: Dictionary) -> void:
 	var outcome := _run.apply_event_choice(choice)
+	_save_run()
 	var card := _panel_overlay()
 	var col := card.get_child(0) as VBoxContainer
 	var text := SaUiKit.label(String(outcome.get("result_text", "")), SaUiKit.FONT_BODY)
@@ -203,6 +228,9 @@ func _show_constellation() -> void:
 func _show_ending() -> void:
 	_clear()
 	var ending := _run.judge()
+	# 완주한 런은 이어할 것이 없다. 회차를 올리고 저장을 지운다 —
+	# 지우지 않으면 타이틀의 이어하기가 끝난 런을 계속 되살린다.
+	Profile.record_completion(String(ending.get("code", "")))
 	var col := VBoxContainer.new()
 	col.set_anchors_preset(Control.PRESET_FULL_RECT)
 	col.alignment = BoxContainer.ALIGNMENT_CENTER
