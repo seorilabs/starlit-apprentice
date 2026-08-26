@@ -180,6 +180,9 @@ static func run(
 	var state := SaResources.new_state(rng.state())
 	var reqs: Array = target.get("requirements", [])
 	var picks: Array[String] = []
+	# 각성은 재능을 영구히 올린다. 계획기가 이걸 반영하지 않으면 하네스가
+	# 검증하는 게임과 플레이어가 하는 게임이 갈린다.
+	var grades := aptitude.duplicate()
 
 	while int(state.get("turn", 1)) <= SaGrowthCurve.TURNS_TOTAL:
 		var turn := int(state.get("turn", 1))
@@ -199,7 +202,7 @@ static func run(
 			if _text(ad.get("category", "")) == "path":
 				if _text((ad.get("unlock", {}) as Dictionary).get("declared_path", "")) != declared_path:
 					continue
-			var s := _score(state, ad, reqs, aptitude)
+			var s := _score(state, ad, reqs, grades)
 			if s > best_score:
 				best_score = s
 				best = ad
@@ -220,8 +223,9 @@ static func run(
 					together = _text(req2.get("npc", ""))
 					break
 
-		var result := SaTurn.resolve(state, best, aptitude, rng, together)
+		var result := SaTurn.resolve(state, best, grades, rng, together)
 		state = result["state"]
+		grades = result.get("aptitude", grades)
 		picks.append(_text(best.get("id", "")))
 
 		# 이벤트를 발동시킨다. 평판·NPC 호감은 주로 여기서 온다.
