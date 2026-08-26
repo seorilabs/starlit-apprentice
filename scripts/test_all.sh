@@ -48,6 +48,7 @@ run_godot simulation  "${godot_bin}" --headless --path "${project_dir}" --script
 run_godot smoke       "${godot_bin}" --headless --path "${project_dir}" --script res://tests/test_runner.gd
 run_godot saveload    "${godot_bin}" --headless --path "${project_dir}" --script res://tests/save_load_runner.gd
 run_godot analytics   "${godot_bin}" --headless --path "${project_dir}" --script res://tests/analytics_runner.gd
+run_godot audio       "${godot_bin}" --headless --path "${project_dir}" --script res://tests/audio_runner.gd
 run_godot layout      "${godot_bin}" --headless --path "${project_dir}" --resolution 720x1280 --script res://tests/layout_probe.gd
 
 echo "[test-all] $([ "$fail" -eq 0 ] && echo 통과 || echo 실패)" >&2

@@ -52,7 +52,8 @@ func clear_run() -> void:
 func meta() -> Dictionary:
 	var raw := _store().read_meta()
 	if int(raw.get("schema", 0)) != SAVE_SCHEMA_VERSION:
-		return {"schema": SAVE_SCHEMA_VERSION, "runs_completed": 0, "endings": []}
+		return {"schema": SAVE_SCHEMA_VERSION, "runs_completed": 0, "endings": [],
+		"sound_enabled": true}
 	return raw
 
 func runs_completed() -> int:
@@ -61,6 +62,16 @@ func runs_completed() -> int:
 ## 이번에 열 기회 덱. 회차 수에서 유도하므로 앱을 껐다 켜도 이어진다.
 func next_deck() -> int:
 	return posmod(runs_completed(), SaResources.DECK_COUNT)
+
+## 사운드 설정. 런이 아니라 메타에 둔다 — 런을 폐기해도 남아야 한다.
+func sound_enabled() -> bool:
+	return bool(meta().get("sound_enabled", true))
+
+func set_sound_enabled(enabled: bool) -> void:
+	var m := meta()
+	m["sound_enabled"] = enabled
+	m["schema"] = SAVE_SCHEMA_VERSION
+	_store().write_meta(m)
 
 ## 런 완주. 회차를 올리고 도달한 엔딩을 남긴 뒤 런 저장을 지운다.
 func record_completion(ending_code: String) -> void:

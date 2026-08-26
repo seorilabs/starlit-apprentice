@@ -20,6 +20,11 @@ func _process(_d: float) -> bool:
 		_press_first(root)   # 새로 시작 → 턴 화면
 	if _f == 45:
 		_check()
+		# 오디오 스트림을 붙든 채 끝나면 "resources still in use" 가 남아
+		# 로그 게이트가 이 프로브를 실패로 처리한다.
+		var audio := root.get_node_or_null(^"Audio")
+		if audio != null:
+			audio.release()
 		if _failures.is_empty():
 			print("LAYOUT PASS")
 			quit(0)
