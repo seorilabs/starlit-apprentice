@@ -88,7 +88,9 @@ func _build() -> void:
 	scroll.add_child(_band)
 
 func refresh() -> void:
-	_nameplate.text = "%d월 %s" % [_run.month(), _run.phase_label()]
+	# 컨디션은 성장 배율을 직접 바꾼다. 초상 표정만으로는 배율이 붙는다는
+	# 사실을 알 수 없어 명패에 함께 적는다.
+	_nameplate.text = "%d월 %s · %s" % [_run.month(), _run.phase_label(), _run.condition_label()]
 	_bg.texture = _tex(_run.scene_art())
 	_figure.texture = _tex(_run.apprentice_art())
 	_rebuild_pips()

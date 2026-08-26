@@ -37,6 +37,8 @@ func _initialize() -> void:
 	var failed_runs := 0
 	var debt_runs := 0
 	var awakened_runs := 0
+	var band_counts := {}
+	var final_stat_total := 0
 	var awakened_stat_total := 0
 	var plain_stat_total := 0
 	var plain_runs := 0
@@ -151,6 +153,10 @@ func _initialize() -> void:
 		var code := SaEndingJudgement.judge(state, endings,
 			SaEndingJudgement.declared_ending_code(state, endings, declared_path))
 		ending_codes[code] = int(ending_codes.get(code, 0)) + 1
+		var band := int(_ending_of(endings, code).get("band", 0))
+		band_counts[band] = int(band_counts.get(band, 0)) + 1
+		for v in (state.get("stats", {}) as Dictionary).values():
+			final_stat_total += int(v)
 		var ending := _ending_of(endings, code)
 		if _has_declared_requirement(ending):
 			declared_endings += 1
@@ -184,6 +190,8 @@ func _initialize() -> void:
 		% [awakened_seeds,
 		   (float(awakened_stat_total) / float(maxi(1, awakened_seeds))),
 		   (float(plain_stat_total) / float(maxi(1, plain_runs)))])
+	print("엔딩 밴드 분포 %s | 종료 스탯 총합 평균 %.1f"
+		% [str(band_counts), float(final_stat_total) / float(SEEDS.size())])
 	print("빚 경험 %d시드 · 그중 청산 %d시드 | 종료 평판 평균 %.1f"
 		% [debt_runs, debt_cleared, float(end_reputation) / float(SEEDS.size())])
 	print("턴 29 이전 캡 도달: %s" % ("없음" if earliest_cap == 99 else "턴 %d" % earliest_cap))

@@ -31,8 +31,17 @@ const COND_FAILED := "failed"             ## 낙제
 ## 계절 심사 낙방·기권이 이만큼이면 낙제한다.
 const MILESTONE_FAIL_LIMIT := 2
 
+## 컨디션 배율표의 키. 상태이상이 아니다 — 이름을 COND_ 로 시작하면
+## 콘텐츠 린트가 탈출 경로 없는 상태이상으로 오인한다.
+const CONDITION_GOOD := "good"
+const CONDITION_NORMAL := "normal"
+
+## "좋음"으로 치는 마음 상한. 초상 표정(SaRunController.apprentice_art)도 같은
+## 값을 본다 — 표정과 배율이 어긋나면 플레이어가 규칙을 오독한다.
+const GOOD_CONDITION_STRESS_MAX := 25
+
 const CONDITION_MULTIPLIER := {
-	"good": 1.15, "normal": 1.00, COND_SLUMP_LIGHT: 0.75, COND_SLUMP: 0.45,
+	CONDITION_GOOD: 1.15, CONDITION_NORMAL: 1.00, COND_SLUMP_LIGHT: 0.75, COND_SLUMP: 0.45,
 }
 
 static func fail_chance(stress: int, energy: int, tier: String, talent_bonus: float) -> float:
@@ -144,9 +153,19 @@ static func should_fail_out(state: Dictionary) -> bool:
 		return false
 	return milestone_failures(state) >= MILESTONE_FAIL_LIMIT
 
-static func current_condition_key(conditions: Array) -> String:
+## 우선순위: 슬럼프 > 부진 > 좋음 > 보통.
+##
+## "좋음"이 없던 시절에는 스트레스 축이 한쪽으로만 작동했다 — 높으면 벌을 받고
+## 낮아도 보상이 없어서, 휴식과 체력 투자의 상방이 통째로 눌려 있었다.
+static func current_condition_key(conditions: Array, stress: int) -> String:
 	if conditions.has(COND_SLUMP):
 		return COND_SLUMP
 	if conditions.has(COND_SLUMP_LIGHT):
 		return COND_SLUMP_LIGHT
-	return "normal"
+	# 부상·번아웃·평판 추락·낙제를 안고 컨디션이 "좋음"일 수는 없다.
+	for c in [COND_INJURY, COND_BURNOUT, COND_DISGRACE, COND_FAILED]:
+		if conditions.has(c):
+			return CONDITION_NORMAL
+	if stress <= GOOD_CONDITION_STRESS_MAX:
+		return CONDITION_GOOD
+	return CONDITION_NORMAL

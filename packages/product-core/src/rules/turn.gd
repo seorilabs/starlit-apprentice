@@ -69,7 +69,7 @@ static func resolve(
 	# ── 스탯 ──────────────────────────────────────────────────────────
 	var gains := {}
 	if primary != "":
-		var condition_key := SaRisk.current_condition_key(conditions)
+		var condition_key := SaRisk.current_condition_key(conditions, int(out["stress"]))
 		var condition_mult := SaRisk.condition_multiplier(condition_key)
 		var outcome_mult := SaRisk.outcome_multiplier(outcome)
 		var together_mult := 1.25 if together_npc != "" else 1.0

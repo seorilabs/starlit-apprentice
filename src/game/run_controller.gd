@@ -182,6 +182,14 @@ func judge() -> Dictionary:
 			return e
 	return {}
 
+## 지금 컨디션. 성장 배율이 여기서 갈리므로 화면에 보여야 한다.
+func condition_label() -> String:
+	match SaRisk.current_condition_key(state.get("conditions", []), int(state.get("stress", 0))):
+		SaRisk.COND_SLUMP: return "슬럼프"
+		SaRisk.COND_SLUMP_LIGHT: return "부진"
+		SaRisk.CONDITION_GOOD: return "좋음"
+		_: return "보통"
+
 ## 초상의 표정이 마음 수치의 1차 표시다. docs/game-design/03-ui-ux-spec.md
 func apprentice_art() -> String:
 	var conditions: Array = state.get("conditions", [])
@@ -189,7 +197,7 @@ func apprentice_art() -> String:
 		return "apprentice_tired"
 	if int(state.get("stress", 0)) >= 60:
 		return "apprentice_tired"
-	if int(state.get("stress", 0)) <= 25:
+	if int(state.get("stress", 0)) <= SaRisk.GOOD_CONDITION_STRESS_MAX:
 		return "apprentice_bright"
 	return "apprentice"
 
