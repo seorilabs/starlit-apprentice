@@ -30,6 +30,7 @@ func run_all() -> Array[String]:
 	_test_skipped_turns_still_pay_tuition()
 	_test_awaken_promotes_talent()
 	_test_good_condition_is_reachable()
+	_test_milestone_failures_single_source()
 	# 빈 스위트가 초록으로 통과하지 않게 한다.
 	if _executed == 0:
 		_failures.append("실행된 검사가 0개다. 스위트가 비었거나 러너가 깨졌다.")
@@ -716,3 +717,47 @@ func _test_good_condition_is_reachable() -> void:
 		"좋음 컨디션의 획득량이 보통보다 커야 한다. %d vs %d" % [calm_gain, tense_gain])
 	_check(is_equal_approx(SaRisk.condition_multiplier(SaRisk.CONDITION_GOOD), 1.15),
 		"좋음 배율은 1.15 다.")
+
+## 낙제 판정의 원장은 플래그 하나뿐이어야 한다.
+##
+## 상태에 milestone_failures 필드가 함수와 같은 이름으로 나란히 있었다. 읽는
+## 코드도 쓰는 코드도 없었지만, 다음에 이 코드를 만지는 사람이 필드를 갱신하는
+## 쪽을 고르면 판정은 여전히 플래그만 보므로 조용히 어긋난다. 저장이 붙은 뒤로는
+## 그 0 이 저장 파일에 남아 "저장된 값이 진실" 로 오인되기까지 한다.
+func _test_milestone_failures_single_source() -> void:
+	var state := SaResources.new_state(1)
+	_check(not state.has("milestone_failures"),
+		"상태에 milestone_failures 필드가 남아 있으면 원장이 둘이 된다.")
+
+	# 판정은 플래그에서만 유도된다.
+	var flags: Dictionary = state["flags"]
+	flags["milestone:s1:fail"] = 1
+	_check(SaRisk.milestone_failures(state) == 1, "낙방 플래그가 세어져야 한다.")
+	flags["milestone:s2:skip"] = 1
+	_check(SaRisk.milestone_failures(state) == SaRisk.MILESTONE_FAIL_LIMIT,
+		"기권도 같은 원장에 들어간다.")
+	_check(SaRisk.should_fail_out(state), "한도에 닿으면 낙제여야 한다.")
+	flags["milestone:s3:pass"] = 1
+	_check(SaRisk.milestone_failures(state) == SaRisk.MILESTONE_FAIL_LIMIT,
+		"통과 플래그는 실패 수를 늘리지 않는다.")
+
+	# 낙제한 뒤에는 다시 낙제하지 않는다.
+	(state["conditions"] as Array).append(SaRisk.COND_FAILED)
+	_check(not SaRisk.should_fail_out(state), "이미 낙제한 런은 다시 낙제하지 않는다.")
+
+	# 구 저장 파일에는 이 키가 남아 있다. 알 수 없는 키가 섞여도 규칙이 돌아야 한다.
+	var legacy := SaResources.new_state(2)
+	legacy["milestone_failures"] = 99
+	legacy["some_removed_field"] = {"nested": true}
+	var clamped := SaResources.clamp_state(legacy)
+	_check(int(clamped.get("milestone_failures", 0)) == 99,
+		"알 수 없는 키는 건드리지 않고 그대로 둔다.")
+	var apt := {}
+	for k in SaStatKeys.ALL: apt[k] = "B"
+	var rest := {"id": "r", "cost": {}, "category": "rest", "tier": "basic"}
+	var resolved: Dictionary = SaTurn.resolve(legacy, rest, apt, SaRng.new(3))["state"]
+	_check(int(resolved.get("turn", 0)) == 2,
+		"알 수 없는 키가 있어도 턴이 정상 진행돼야 한다.")
+	# 그 값이 판정에 끼어들지 않는다는 것이 핵심이다.
+	_check(SaRisk.milestone_failures(resolved) == 0,
+		"구 저장의 milestone_failures 값이 판정에 영향을 주면 안 된다.")

@@ -57,9 +57,11 @@ static func new_state(seed_value: int, deck: int = 0) -> Dictionary:
 		"consecutive_fails": 0,
 		"high_stress_turns": 0,
 		"slump_light_turns": 0,
-		"milestone_failures": 0,
 		"consecutive_rests": 0,
 		"injury_turns": 0,
+		# 규칙이 읽지 않는 유일한 필드다. 저장본과 버그 리포트에서 "이 런이 어느
+		# 시드였나" 를 알 수 있는 값이라 남긴다. RNG 상태는 따로 직렬화되므로
+		# 재현에 필수는 아니다.
 		"seed": seed_value,
 	}
 

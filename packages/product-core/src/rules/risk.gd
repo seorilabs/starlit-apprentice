@@ -140,6 +140,10 @@ static func exiting_conditions(state: Dictionary, was_rest: bool, outcome: Strin
 
 ## 심사에서 떨어지거나 기권한 횟수. 이걸 낙제로 연결하지 않으면 계절 심사가
 ## 아무것도 걸지 않는 서사가 되고 band 0 실패 엔딩 3종이 도달 불가가 된다.
+##
+## **플래그가 단일 출처다.** 이 함수가 유일한 계산 경로이고, 상태에 같은 이름의
+## 필드를 두지 않는다. 원장이 둘이면 다음에 이 코드를 만지는 사람이 필드를
+## 갱신하는 쪽을 골라도 판정은 플래그만 보므로 조용히 어긋난다.
 static func milestone_failures(state: Dictionary) -> int:
 	var n := 0
 	for key in (state.get("flags", {}) as Dictionary).keys():
