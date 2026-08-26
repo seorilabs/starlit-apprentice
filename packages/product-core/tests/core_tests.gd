@@ -28,6 +28,7 @@ func run_all() -> Array[String]:
 	_test_failed_locks_legendary()
 	_test_debt_is_repayable()
 	_test_skipped_turns_still_pay_tuition()
+	_test_awaken_promotes_talent()
 	# 빈 스위트가 초록으로 통과하지 않게 한다.
 	if _executed == 0:
 		_failures.append("실행된 검사가 0개다. 스위트가 비었거나 러너가 깨졌다.")
@@ -591,3 +592,78 @@ func _test_skipped_turns_still_pay_tuition() -> void:
 	var spent := 9999 - int(run["gold"])
 	_check(spent == SaResources.MONTHLY_TUITION * 11,
 		"정상 런의 총 수업료는 11회분이어야 한다. 실제: %d" % spent)
+
+## 각성은 재능 등급을 영구히 올린다.
+##
+## SaAptitude.promote() 는 정의돼 있었지만 호출부가 0 이었다. 런당 1회뿐인
+## 최상위 결과가 그 턴의 3.0배 획득으로 끝나고, 남은 턴의 성장률·안정성
+## 상방이 통째로 사라져 있었다.
+func _test_awaken_promotes_talent() -> void:
+	var apt := {}
+	for k in SaStatKeys.ALL: apt[k] = "B"
+	var lesson := {"id": "l", "cost": {"gold": -20, "energy": -8, "stress": 5},
+		"tier": "basic", "stat": SaStatKeys.INTELLECT, "npc_tag": "", "flag": "lesson:x"}
+
+	# 각성 결과를 직접 만들어 승급 경로만 본다. 각성은 확률 0.02 라
+	# 난수에 기대면 테스트가 시드 사냥이 된다.
+	var promoted := SaAptitude.promote(apt, SaStatKeys.INTELLECT)
+	_check(String(promoted[SaStatKeys.INTELLECT]) == "A",
+		"각성은 등급을 한 단계 올린다. 실제: %s" % String(promoted[SaStatKeys.INTELLECT]))
+	_check(SaAptitude.multiplier(promoted, SaStatKeys.INTELLECT)
+		> SaAptitude.multiplier(apt, SaStatKeys.INTELLECT),
+		"승급하면 성장 배율이 커져야 한다.")
+	_check(SaAptitude.roll_bonus(promoted, SaStatKeys.INTELLECT)
+		> SaAptitude.roll_bonus(apt, SaStatKeys.INTELLECT),
+		"승급하면 판정 보정이 커져야 한다.")
+
+	# S 는 상한이다. 크래시 없이 그대로 유지된다.
+	var maxed := {}
+	for k in SaStatKeys.ALL: maxed[k] = "S"
+	_check(String(SaAptitude.promote(maxed, SaStatKeys.INTELLECT)[SaStatKeys.INTELLECT]) == "S",
+		"S 등급에서 각성해도 S 를 유지해야 한다.")
+
+	# resolve() 는 승급 여부와 무관하게 늘 재능을 돌려준다. 호출자가
+	# 이것만 보고 갱신할 수 있어야 한다.
+	var state := SaResources.new_state(1)
+	var result := SaTurn.resolve(state, lesson, apt, SaRng.new(1))
+	_check((result as Dictionary).has("aptitude"),
+		"resolve() 는 재능을 결과에 담아야 한다.")
+	if not bool(result["promoted_talent"]):
+		_check(result["aptitude"] == apt,
+			"각성이 없으면 재능이 그대로여야 한다.")
+
+	# 승급된 재능으로 같은 행동을 하면 더 많이 자란다.
+	var plain := SaTurn.resolve(state, lesson, apt, SaRng.new(9))
+	var boosted := SaTurn.resolve(state, lesson, promoted, SaRng.new(9))
+	_check(int((boosted["gains"] as Dictionary).get(SaStatKeys.INTELLECT, 0))
+		> int((plain["gains"] as Dictionary).get(SaStatKeys.INTELLECT, 0)),
+		"승급 후 성장량이 커야 한다. %d vs %d"
+			% [int((boosted["gains"] as Dictionary).get(SaStatKeys.INTELLECT, 0)),
+			   int((plain["gains"] as Dictionary).get(SaStatKeys.INTELLECT, 0))])
+
+	# 런당 1회. awakened 가 서면 roll_outcome 이 각성을 더 내지 않는다.
+	var spent := SaResources.new_state(1)
+	spent["awakened"] = true
+	var awakened_again := false
+	var rng := SaRng.new(7)
+	for i in 400:
+		if SaRisk.roll_outcome(rng, 10, 90, "basic", 0.0, 0, false, SaRisk.AWAKEN_CHANCE) \
+			== SaRisk.OUTCOME_AWAKEN:
+			awakened_again = true
+			break
+	_check(not awakened_again, "각성은 런당 1회여야 한다.")
+
+	# 휴식처럼 stat 이 비어 있으면 올릴 대상이 없다.
+	var rest := {"id": "r", "cost": {}, "category": "rest", "tier": "basic"}
+	var rested := SaTurn.resolve(SaResources.new_state(1), rest, apt, SaRng.new(3))
+	_check(not bool(rested["promoted_talent"]), "stat 이 없는 행동은 승급하지 않는다.")
+	_check(rested["aptitude"] == apt, "stat 이 없는 행동은 재능을 바꾸지 않는다.")
+
+	# 번아웃 경로는 재능을 건드리지 않는다 — 결과에 aptitude 를 담지 않아
+	# 호출자의 기존 값이 그대로 남는다.
+	var burnt := SaResources.new_state(1)
+	(burnt["conditions"] as Array).append(SaRisk.COND_BURNOUT)
+	var skipped := SaTurn.resolve(burnt, lesson, apt, SaRng.new(4))
+	_check(not (skipped as Dictionary).has("aptitude"),
+		"번아웃 경로는 재능을 돌려주지 않아야 한다.")
+	_check(not bool(skipped["promoted_talent"]), "번아웃 경로는 승급하지 않는다.")

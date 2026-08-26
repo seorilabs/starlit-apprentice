@@ -43,10 +43,9 @@ static func resolve(
 
 	var talent_bonus := SaAptitude.roll_bonus(aptitude, primary) if primary != "" else 0.0
 	var affinity := int((out.get("affinity", {}) as Dictionary).get(_text(action.get("npc_tag", "")), 0))
-	var awaken_chance := SaRisk.AWAKEN_CHANCE
 	var outcome := SaRisk.roll_outcome(
 		rng, int(out["stress"]), int(out["energy"]), tier,
-		talent_bonus, affinity, not bool(out.get("awakened", false)), awaken_chance)
+		talent_bonus, affinity, not bool(out.get("awakened", false)), SaRisk.AWAKEN_CHANCE)
 
 	# ── 자원 ──────────────────────────────────────────────────────────
 	var cost: Dictionary = action.get("cost", {})
@@ -100,10 +99,16 @@ static func resolve(
 		flags[flag] = int(flags.get(flag, 0)) + 1
 
 	# ── 각성: 해당 스탯 재능 등급 영구 상승. 런당 1회 ─────────────────
+	# 승급본을 결과에 실어 보낸다. 코어는 재능을 들고 있지 않으므로 호출자가
+	# 갱신해야 한다 — 이 값을 버리면 각성이 그 턴의 3.0배로 끝나고 남은 턴의
+	# 성장률·안정성 상방이 통째로 사라진다.
 	var promoted := false
+	var grades := aptitude
 	if outcome == SaRisk.OUTCOME_AWAKEN and primary != "":
 		out["awakened"] = true
 		promoted = true
+		# 이미 S 면 promote() 가 그대로 돌려준다. 각성 자체는 소모된다.
+		grades = SaAptitude.promote(aptitude, primary)
 
 	# ── 연속 휴식 추적 (상태이상 해제 조건) ───────────────────────────
 	var is_rest := _text(action.get("category", "")) == "rest"
@@ -154,6 +159,7 @@ static func resolve(
 		"outcome": outcome,
 		"gains": gains,
 		"entered_conditions": entered,
+		"aptitude": grades,
 		"tuition_charged": tuition_charged,
 		"tuition_paid": tuition_paid,
 		"debt_amount": int(out.get("debt_amount", 0)),

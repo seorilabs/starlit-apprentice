@@ -36,6 +36,10 @@ func _initialize() -> void:
 	var declared_endings := 0
 	var failed_runs := 0
 	var debt_runs := 0
+	var awakened_runs := 0
+	var awakened_stat_total := 0
+	var plain_stat_total := 0
+	var plain_runs := 0
 	var debt_cleared := 0
 	var end_reputation := 0
 	var ending_codes := {}
@@ -44,7 +48,7 @@ func _initialize() -> void:
 	for seed_value in SEEDS:
 		seed_index += 1
 		var rng := SaRng.new(seed_value)
-		var apt := SaAptitude.assign(SaRng.new(seed_value * 31 + 7))
+		var apt: Dictionary = SaAptitude.assign(SaRng.new(seed_value * 31 + 7))
 		# 덱을 돌려야 기회 이벤트 24종이 전부 검증 범위에 들어온다.
 		var state := SaResources.new_state(seed_value, seed_index % SaResources.DECK_COUNT)
 		var min_gold := 99999
@@ -66,6 +70,10 @@ func _initialize() -> void:
 			# 함께는 호감의 주 채널이다. 안 쓰면 NPC 콘텐츠 30종이 검증되지 않는다.
 			var together := SaTurn.together_candidate(state, pick)
 			var result := SaTurn.resolve(state, pick, apt, rng, together)
+			# 각성 승급을 받아 두지 않으면 시뮬레이션이 실제 게임보다 약해진다.
+			apt = result.get("aptitude", apt)
+			if bool(result.get("promoted_talent", false)):
+				awakened_runs += 1
 			if together != "":
 				together_used += 1
 			state = result["state"]
@@ -129,6 +137,14 @@ func _initialize() -> void:
 		# 진로 선언은 후반 콘텐츠 전체의 관문이다. 선언이 상태에 남지 않으면
 		# 진로 전용 액션 6종과 declared 요건 엔딩 12건이 통째로 죽는다.
 		end_reputation += int(state.get("reputation", 0))
+		var stat_sum := 0
+		for v in (state.get("stats", {}) as Dictionary).values():
+			stat_sum += int(v)
+		if bool(state.get("awakened", false)):
+			awakened_stat_total += stat_sum
+		else:
+			plain_stat_total += stat_sum
+			plain_runs += 1
 		var declared_path := String(state.get("declared_path", ""))
 		if declared_path != "":
 			declared_runs += 1
@@ -163,6 +179,11 @@ func _initialize() -> void:
 		% [together_used, npc_events, str(peak_affinity)])
 	print("진로 선언 %d/%d 시드 | declared 요건 엔딩 도달 %d회 | 낙제 %d시드 | 도달 엔딩 %s"
 		% [declared_runs, SEEDS.size(), declared_endings, failed_runs, str(ending_codes)])
+	var awakened_seeds := SEEDS.size() - plain_runs
+	print("각성 %d시드 | 각성 런 스탯 총합 평균 %.1f · 비각성 %.1f"
+		% [awakened_seeds,
+		   (float(awakened_stat_total) / float(maxi(1, awakened_seeds))),
+		   (float(plain_stat_total) / float(maxi(1, plain_runs)))])
 	print("빚 경험 %d시드 · 그중 청산 %d시드 | 종료 평판 평균 %.1f"
 		% [debt_runs, debt_cleared, float(end_reputation) / float(SEEDS.size())])
 	print("턴 29 이전 캡 도달: %s" % ("없음" if earliest_cap == 99 else "턴 %d" % earliest_cap))

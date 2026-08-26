@@ -154,7 +154,7 @@ func _path_lookup(endings: Array) -> Dictionary:
 ## 선택지를 잡는다. band 0 엔딩이 실제로 나오는지 확인한다.
 func _neglect_run(actions: Array, events: Array) -> Dictionary:
 	var rng := SaRng.new(20260823)
-	var apt := SaAptitude.assign(SaRng.new(99991))
+	var apt: Dictionary = SaAptitude.assign(SaRng.new(99991))
 	var state := SaResources.new_state(20260823)
 	var guard := 0
 	while int(state.get("turn", 1)) <= SaGrowthCurve.TURNS_TOTAL and guard < 200:
@@ -172,6 +172,7 @@ func _neglect_run(actions: Array, events: Array) -> Dictionary:
 				break
 		var result := SaTurn.resolve(state, pick, apt, rng)
 		state = result["state"]
+		apt = result.get("aptitude", apt)
 		var beat := SaEventResolution.beat_state(state, int(result["played_turn"]))
 		var scheduled: Array = []
 		for e in events:
@@ -209,7 +210,7 @@ func _ending_of(endings: Array, code: String) -> Dictionary:
 ## 쉬지 않는 플레이. 마음이 쌓이도록 성장 행동만 고른다.
 func _grind_run(actions: Array, events: Array) -> Dictionary:
 	var rng := SaRng.new(31337)
-	var apt := SaAptitude.assign(SaRng.new(7717))
+	var apt: Dictionary = SaAptitude.assign(SaRng.new(7717))
 	var state := SaResources.new_state(31337)
 	var seen := {}
 	var guard := 0
@@ -234,6 +235,7 @@ func _grind_run(actions: Array, events: Array) -> Dictionary:
 				pick = ad
 		var result := SaTurn.resolve(state, pick, apt, rng)
 		state = result["state"]
+		apt = result.get("aptitude", apt)
 		if bool(result.get("tuition_charged", false)):
 			tuition_charges += 1
 		for c in (result["entered_conditions"] as Array):

@@ -149,6 +149,9 @@ func together_candidate(action: Dictionary) -> String:
 func resolve(action: Dictionary, together: String = "") -> Dictionary:
 	last_result = SaTurn.resolve(state, action, aptitude, rng, together)
 	state = last_result["state"]
+	# 각성은 재능 등급을 영구히 올린다. 받아 두지 않으면 승급이 그 턴에 증발한다.
+	# 번아웃 경로는 aptitude 를 돌려주지 않으므로 기존 값이 그대로 남는다.
+	aptitude = last_result.get("aptitude", aptitude)
 	# 이벤트는 방금 플레이한 턴의 비트다. state.turn 으로 판정하면 개막과
 	# 종막이 창 밖으로 밀려 영영 뜨지 않는다.
 	beat = SaEventResolution.beat_state(state, int(last_result["played_turn"]))

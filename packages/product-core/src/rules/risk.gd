@@ -19,7 +19,6 @@ const OUTCOME_MULTIPLIER := {
 const TIER_PENALTY := {"basic": 0.0, "advanced": 0.05, "arcane": 0.12}
 
 const AWAKEN_CHANCE := 0.02
-const AWAKEN_CHANCE_SIGIL := 0.05
 
 # ── 상태이상 ────────────────────────────────────────────────────────────────
 const COND_SLUMP_LIGHT := "slump_light"   ## 부진

@@ -133,6 +133,14 @@ func _show_resolution(action: Dictionary, result: Dictionary) -> void:
 		col.add_child(SaUiKit.label("%s %s" % [_stat_name(String(k)), SaUiKit.format_delta(v)],
 			SaUiKit.FONT_BODY, SaUiKit.delta_color(v)))
 
+	# 각성은 런당 1회다. 등급이 올랐다는 사실을 그 자리에서 보여주지 않으면
+	# 플레이어에게는 조금 큰 대성공과 구분되지 않는다.
+	if bool(result.get("promoted_talent", false)):
+		var stat_key := String(action.get("stat", "")) if action.get("stat") != null else ""
+		col.add_child(SaUiKit.label("각성 · %s 재능이 %s 로 올랐다"
+			% [_stat_name(stat_key), String(_run.aptitude.get(stat_key, "B"))],
+			SaUiKit.FONT_HEAD, SaUiKit.GOLD))
+
 	# 분기가 바뀌는 턴에는 적립된 숙련도가 함께 들어온다. 표시하지 않으면
 	# 플레이어에게는 상한에서 사라진 성장이 영영 돌아오지 않은 것처럼 보인다.
 	var released: Dictionary = result.get("mastery_released", {})
