@@ -29,6 +29,7 @@ func run_all() -> Array[String]:
 	_test_debt_is_repayable()
 	_test_skipped_turns_still_pay_tuition()
 	_test_awaken_promotes_talent()
+	_test_good_condition_is_reachable()
 	# 빈 스위트가 초록으로 통과하지 않게 한다.
 	if _executed == 0:
 		_failures.append("실행된 검사가 0개다. 스위트가 비었거나 러너가 깨졌다.")
@@ -632,14 +633,14 @@ func _test_awaken_promotes_talent() -> void:
 		_check(result["aptitude"] == apt,
 			"각성이 없으면 재능이 그대로여야 한다.")
 
-	# 승급된 재능으로 같은 행동을 하면 더 많이 자란다.
-	var plain := SaTurn.resolve(state, lesson, apt, SaRng.new(9))
-	var boosted := SaTurn.resolve(state, lesson, promoted, SaRng.new(9))
-	_check(int((boosted["gains"] as Dictionary).get(SaStatKeys.INTELLECT, 0))
-		> int((plain["gains"] as Dictionary).get(SaStatKeys.INTELLECT, 0)),
-		"승급 후 성장량이 커야 한다. %d vs %d"
-			% [int((boosted["gains"] as Dictionary).get(SaStatKeys.INTELLECT, 0)),
-			   int((plain["gains"] as Dictionary).get(SaStatKeys.INTELLECT, 0))])
+	# 승급된 재능은 같은 조건에서 더 많이 자란다. 성장 곡선을 직접 본다 —
+	# resolve() 로 비교하면 판정 배율(실패 0.4)에 눌려 반올림이 두 값을 같게 만든다.
+	var plain_gain := SaGrowthCurve.gain(10.0, 5, "basic",
+		SaAptitude.multiplier(apt, SaStatKeys.INTELLECT), 1.0, 1.0)
+	var boosted_gain := SaGrowthCurve.gain(10.0, 5, "basic",
+		SaAptitude.multiplier(promoted, SaStatKeys.INTELLECT), 1.0, 1.0)
+	_check(boosted_gain > plain_gain,
+		"승급 후 성장량이 커야 한다. %.1f vs %.1f" % [boosted_gain, plain_gain])
 
 	# 런당 1회. awakened 가 서면 roll_outcome 이 각성을 더 내지 않는다.
 	var spent := SaResources.new_state(1)
@@ -667,3 +668,51 @@ func _test_awaken_promotes_talent() -> void:
 	_check(not (skipped as Dictionary).has("aptitude"),
 		"번아웃 경로는 재능을 돌려주지 않아야 한다.")
 	_check(not bool(skipped["promoted_talent"]), "번아웃 경로는 승급하지 않는다.")
+
+## "좋음" 컨디션(1.15배)이 실제로 도달 가능해야 한다.
+##
+## current_condition_key() 가 상태이상 세 가지만 봐서 배율표 4개 중 하나가
+## 사문이었다. 그래서 스트레스는 "일정 선 아래로만 유지하면 되는 위험 지표"였고,
+## 더 낮게 관리할 유인도 휴식·체력 투자의 상방도 없었다.
+func _test_good_condition_is_reachable() -> void:
+	var calm: Array = []
+	_check(SaRisk.current_condition_key(calm, SaRisk.GOOD_CONDITION_STRESS_MAX) == SaRisk.CONDITION_GOOD,
+		"저스트레스·무상태이상은 좋음이어야 한다.")
+	_check(SaRisk.current_condition_key(calm, SaRisk.GOOD_CONDITION_STRESS_MAX + 1) == SaRisk.CONDITION_NORMAL,
+		"임계를 넘으면 보통이다.")
+
+	# 부진·슬럼프는 스트레스가 아무리 낮아도 좋음이 아니다.
+	_check(SaRisk.current_condition_key([SaRisk.COND_SLUMP_LIGHT], 0) == SaRisk.COND_SLUMP_LIGHT,
+		"부진 중에는 좋음이 될 수 없다.")
+	_check(SaRisk.current_condition_key([SaRisk.COND_SLUMP], 0) == SaRisk.COND_SLUMP,
+		"슬럼프 중에는 좋음이 될 수 없다.")
+	for c in [SaRisk.COND_INJURY, SaRisk.COND_BURNOUT, SaRisk.COND_DISGRACE, SaRisk.COND_FAILED]:
+		_check(SaRisk.current_condition_key([c], 0) == SaRisk.CONDITION_NORMAL,
+			"%s 를 안고 좋음일 수는 없다." % c)
+
+	# 배율표 4개 키가 모두 도달 가능하다.
+	var reachable := {}
+	reachable[SaRisk.current_condition_key([], 0)] = true
+	reachable[SaRisk.current_condition_key([], 50)] = true
+	reachable[SaRisk.current_condition_key([SaRisk.COND_SLUMP_LIGHT], 50)] = true
+	reachable[SaRisk.current_condition_key([SaRisk.COND_SLUMP], 50)] = true
+	for key in SaRisk.CONDITION_MULTIPLIER.keys():
+		_check(reachable.has(key), "배율 키 '%s' 가 도달 불가다." % key)
+
+	# 좋음 상태의 획득량이 보통보다 커야 한다.
+	var apt := {}
+	for k in SaStatKeys.ALL: apt[k] = "B"
+	var lesson := {"id": "l", "cost": {"gold": -20, "energy": -8, "stress": 0},
+		"tier": "basic", "stat": SaStatKeys.INTELLECT, "npc_tag": "", "flag": "lesson:x"}
+	var calm_state := SaResources.new_state(1)
+	calm_state["stress"] = SaRisk.GOOD_CONDITION_STRESS_MAX
+	var tense_state := SaResources.new_state(1)
+	tense_state["stress"] = SaRisk.GOOD_CONDITION_STRESS_MAX + 20
+	var calm_gain := int((SaTurn.resolve(calm_state, lesson, apt, SaRng.new(5))["gains"] as Dictionary)
+		.get(SaStatKeys.INTELLECT, 0))
+	var tense_gain := int((SaTurn.resolve(tense_state, lesson, apt, SaRng.new(5))["gains"] as Dictionary)
+		.get(SaStatKeys.INTELLECT, 0))
+	_check(calm_gain > tense_gain,
+		"좋음 컨디션의 획득량이 보통보다 커야 한다. %d vs %d" % [calm_gain, tense_gain])
+	_check(is_equal_approx(SaRisk.condition_multiplier(SaRisk.CONDITION_GOOD), 1.15),
+		"좋음 배율은 1.15 다.")
