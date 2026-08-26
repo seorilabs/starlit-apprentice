@@ -18,8 +18,20 @@ var last_result: Dictionary = {}
 var pending_events: Array = []
 ## 이벤트 판정용 상태. state 는 이미 다음 턴을 가리킨다.
 var beat: Dictionary = {}
+## run_completed 중복 방지. 엔딩 화면은 여러 번 그려질 수 있다.
+var _completed_emitted := false
+
+## 계측 신호. 여기서 전역 버스(Events)를 직접 부르지 않는다 — autoload 이름은
+## --script 러너에서 해석되지 않아 하네스가 통째로 컴파일 실패한다.
+## 중계는 씬 트리를 아는 src/ui/main.gd 가 한다.
+signal turn_resolved(payload: Dictionary)
+signal condition_entered(condition: String)
+signal event_choice_made(event_id: String, choice_id: String)
+signal milestone_result(season: int, grade: String)
+signal run_completed(ending_code: String)
 
 func start(seed_value: int, content: Dictionary, deck: int = 0) -> void:
+	_completed_emitted = false
 	rng = SaRng.new(seed_value)
 	aptitude = SaAptitude.assign(SaRng.new(seed_value * 31 + 7))
 	state = SaResources.new_state(seed_value, deck)
@@ -152,6 +164,17 @@ func resolve(action: Dictionary, together: String = "") -> Dictionary:
 	# 각성은 재능 등급을 영구히 올린다. 받아 두지 않으면 승급이 그 턴에 증발한다.
 	# 번아웃 경로는 aptitude 를 돌려주지 않으므로 기존 값이 그대로 남는다.
 	aptitude = last_result.get("aptitude", aptitude)
+	# 계측. 코어는 시그널을 모르므로 emit 은 여기서 한다.
+	turn_resolved.emit({
+		SaAnalyticsPort.PARAM_TURN: int(last_result["played_turn"]),
+		SaAnalyticsPort.PARAM_MONTH: SaResources.month_of(int(last_result["played_turn"])),
+		SaAnalyticsPort.PARAM_ACTION_ID: String(action.get("id", "")),
+		SaAnalyticsPort.PARAM_OUTCOME: String(last_result.get("outcome", "")),
+		SaAnalyticsPort.PARAM_STRESS: int(state.get("stress", 0)),
+		SaAnalyticsPort.PARAM_ENERGY: int(state.get("energy", 0)),
+	})
+	for c in (last_result.get("entered_conditions", []) as Array):
+		condition_entered.emit(String(c))
 	# 이벤트는 방금 플레이한 턴의 비트다. state.turn 으로 판정하면 개막과
 	# 종막이 창 밖으로 밀려 영영 뜨지 않는다.
 	beat = SaEventResolution.beat_state(state, int(last_result["played_turn"]))
@@ -167,9 +190,21 @@ func apply_event_choice(choice: Dictionary) -> Dictionary:
 	var ev: Dictionary = pending_events.pop_front() if not pending_events.is_empty() else {}
 	var outcome := SaEventResolution.apply(state, ev, choice, rng)
 	state = outcome["state"]
+	event_choice_made.emit(String(ev.get("id", "")), String(choice.get("id", "")))
+	_emit_milestone(outcome)
 	# 결과는 실제 상태에 적용하되, 남은 비트의 판정은 같은 턴에 머문다.
 	beat = SaEventResolution.beat_state(state, int(beat.get("turn", 1)))
 	return outcome
+
+## 계절 심사 결과는 이벤트가 남기는 milestone:sN:<등급> 플래그가 원장이다.
+## 별도 표를 만들지 않고 그 플래그에서 유도한다.
+func _emit_milestone(outcome: Dictionary) -> void:
+	var flags: Dictionary = (outcome.get("effects", {}) as Dictionary).get("flags", {})
+	for key in flags.keys():
+		var parts := String(key).split(":")
+		if parts.size() != 3 or parts[0] != "milestone":
+			continue
+		milestone_result.emit(int(parts[1].substr(1)), parts[2])
 
 func judge() -> Dictionary:
 	# 선언한 진로의 엔딩 코드는 엔딩 데이터에서 유도한다. 빈 문자열을 넘기면
@@ -177,6 +212,10 @@ func judge() -> Dictionary:
 	var declared := SaEndingJudgement.declared_ending_code(
 		state, endings, String(state.get("declared_path", "")))
 	var code := SaEndingJudgement.judge(state, endings, declared)
+	# 런당 한 번만 센다. judge() 는 화면을 다시 그릴 때 여러 번 불릴 수 있다.
+	if not _completed_emitted:
+		_completed_emitted = true
+		run_completed.emit(code)
 	for e in endings:
 		if String((e as Dictionary).get("code", "")) == code:
 			return e

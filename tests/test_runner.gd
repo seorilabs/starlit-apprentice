@@ -5,7 +5,7 @@ extends SceneTree
 func _initialize() -> void:
 	var failures: Array[String] = []
 
-	for name in ["Events", "Ui", "GameData", "Platform", "Profile", "Audio"]:
+	for name in ["Events", "Ui", "GameData", "Platform", "Profile", "Audio", "Analytics"]:
 		if root.get_node_or_null(NodePath(name)) == null:
 			failures.append("autoload 누락: %s" % name)
 

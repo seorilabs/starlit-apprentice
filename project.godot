@@ -31,6 +31,7 @@ GameData="*res://autoload/game_data.gd"
 Platform="*res://autoload/platform.gd"
 Profile="*res://autoload/profile.gd"
 Audio="*res://autoload/audio.gd"
+Analytics="*res://autoload/analytics.gd"
 
 [importer_defaults]
 
