@@ -25,13 +25,10 @@
 
 ## 남긴 것
 
-`package.json` 과 `scripts/resolve-release-version.mjs` 만 남는다. **org 재사용 워크플로우의 caller 계약 자산**이라 필요하다. 태그에서 마켓별 버전 값을 유도한다.
-
-```
-node scripts/resolve-release-version.mjs --tag v1.2.3
-  version_name 1.2.3 · android_version_code 1002003
-  apple_marketing_version 1.2.3 · apple_build_number 1002003
-```
+당시에는 `package.json`과 저장소 로컬 버전 resolver를 caller 계약 자산으로 남겼다. 이후
+`release-version-authority-v1` 이관으로 resolver는 제거했고, exact stable GitHub 태그와 고정된
+중앙 workflow SHA만 display version과 deterministic build number를 파생한다. `package.json`은
+정적 검증 도구 실행을 위해 유지한다.
 
 등가성 증명 자체는 `docs/04-work/2026-08-23-p4-core-port.md` 에 수치와 함께 남아 있다. 기계장치를 영구히 들고 다닐 이유는 없다.
 

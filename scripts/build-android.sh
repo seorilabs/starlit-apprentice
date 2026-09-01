@@ -95,14 +95,20 @@ if [ "$build_mode" = build-only ]; then
   export GODOT_ANDROID_KEYSTORE_RELEASE_USER=seori-build-only
   export GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD="$password"
 else
-  : "${ANDROID_VERSION_NAME:?ANDROID_VERSION_NAME이 필요하다.}"
-  version_name="${ANDROID_VERSION_NAME#v}"
+  if [ -n "${ANDROID_VERSION_NAME:-}" ] || [ -n "${ANDROID_VERSION_CODE:-}" ]; then
+    fail "legacy ANDROID_VERSION_NAME/ANDROID_VERSION_CODE를 사용할 수 없다."
+  fi
+  : "${SEORI_RELEASE_TAG:?SEORI_RELEASE_TAG가 필요하다.}"
+  : "${SEORI_RELEASE_VERSION_NAME:?SEORI_RELEASE_VERSION_NAME이 필요하다.}"
+  : "${SEORI_RELEASE_VERSION_CODE:?SEORI_RELEASE_VERSION_CODE가 필요하다.}"
+  version_name="$SEORI_RELEASE_VERSION_NAME"
   [[ "$version_name" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]] || \
-    fail "ANDROID_VERSION_NAME은 stable SemVer여야 한다."
-  IFS=. read -r version_major version_minor version_patch <<<"$version_name"
-  version_code="${ANDROID_VERSION_CODE:-$((version_major * 1000000 + version_minor * 1000 + version_patch))}"
+    fail "SEORI_RELEASE_VERSION_NAME은 stable SemVer여야 한다."
+  [ "$SEORI_RELEASE_TAG" = "v$version_name" ] || \
+    fail "SEORI_RELEASE_TAG와 SEORI_RELEASE_VERSION_NAME이 다르다."
+  version_code="$SEORI_RELEASE_VERSION_CODE"
   if [[ ! "$version_code" =~ ^[1-9][0-9]*$ ]] || (( version_code > 2100000000 )); then
-    fail "ANDROID_VERSION_CODE는 1..2100000000 정수여야 한다."
+    fail "SEORI_RELEASE_VERSION_CODE는 1..2100000000 정수여야 한다."
   fi
   : "${GOOGLE_PLAY_UPLOAD_KEYSTORE_BASE64:?GOOGLE_PLAY_UPLOAD_KEYSTORE_BASE64가 필요하다.}"
   : "${GOOGLE_PLAY_UPLOAD_KEYSTORE_PASSWORD:?GOOGLE_PLAY_UPLOAD_KEYSTORE_PASSWORD가 필요하다.}"
