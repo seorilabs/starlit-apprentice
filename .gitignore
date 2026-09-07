@@ -31,3 +31,9 @@ AGENTS.local.md
 
 # QA 콘택트시트는 재생성 가능한 산출물이다
 assets/art/qa_sheet.png
+
+# vendoring한 Platform SDK 옆에 Godot이 만드는 .uid 사이드카.
+# Release archive에 없는 파일이라 커밋하면 Backoffice discovery가 계산하는
+# vendoring tree 체크섬이 CHECKSUM과 어긋나 SDK 소비자로 인식되지 않는다.
+# 이 디렉터리 밖의 .uid는 프로젝트 자산이므로 그대로 커밋한다.
+/addons/seorilabs_platform/**/*.uid
