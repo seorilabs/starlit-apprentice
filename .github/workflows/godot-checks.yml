@@ -41,6 +41,8 @@ jobs:
         ${{ (github.event.repository.private && !github.event.pull_request.head.repo.fork)
             && 'seorilabs-rpi-arm64' || 'ubuntu-latest' }}
       check_command: |
+        node scripts/check_platform_sdk.mjs
+        node --test scripts/tests/*.test.mjs
         python3 tools/check_core_boundary.py .
         python3 tools/validate_content.py .
         bash scripts/check_docs.sh

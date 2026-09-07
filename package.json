@@ -11,6 +11,7 @@
     "godot:web": "$GODOT_BIN --headless --path . --export-release Web build/web/index.html",
     "godot:budget": "bash scripts/check_web_budget.sh .",
     "godot:test": "bash scripts/test_all.sh",
+    "check:platform-sdk": "node scripts/check_platform_sdk.mjs && node --test scripts/tests/*.test.mjs",
     "godot:docs": "bash scripts/check_docs.sh .",
     "art:finalize": "bash scripts/finalize_art.sh assets/art"
   },
