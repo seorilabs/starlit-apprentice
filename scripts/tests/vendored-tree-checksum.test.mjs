@@ -14,7 +14,7 @@ import {
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const addonDir = join(repoRoot, "addons", "seorilabs_platform");
 const ADDON_PREFIX = "addons/seorilabs_platform";
-const RELEASE_CHECKSUM = "44aefc49e7cf53ebfda1872ff9e7d500fc270d06089b0657cba561ba317daaa5";
+const RELEASE_CHECKSUM = "231b8922cce3985ed69e40b1d25df6a82453a972457c14f48adf21ae6080a4f2";
 
 function git(...args) {
   return execFileSync("git", ["-C", repoRoot, ...args], { maxBuffer: 1 << 28 });
